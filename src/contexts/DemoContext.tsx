@@ -1,0 +1,110 @@
+import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import type { DemoState, Role, CheckIn, BarometerResponse } from '@/types/demo';
+import { getLevel } from '@/types/demo';
+import { createInitialState } from '@/data/demo-seed';
+
+type DemoAction =
+  | { type: 'CHECK_IN'; payload: { userId: string; challengeId: string; weekNumber: number; completedActionIds: string[]; note: string } }
+  | { type: 'SUBMIT_BAROMETER'; payload: { userId: string; challengeId: string; weekNumber: number; scores: { confidence: number; engagement: number; clarity: number } } }
+  | { type: 'SWITCH_ROLE'; payload: Role }
+  | { type: 'RESET_DEMO' };
+
+function recalculateUserXP(state: DemoState, userId: string): DemoState {
+  const userCheckIns = state.checkIns.filter(ci => ci.userId === userId);
+  const challenge = state.challenges.find(c => c.id === 'ch-1');
+  if (!challenge) return state;
+
+  let totalXP = 0;
+  for (const ci of userCheckIns) {
+    for (const actionId of ci.completedActionIds) {
+      const action = challenge.weeklyActions.find(a => a.id === actionId);
+      if (action) totalXP += action.points;
+    }
+  }
+
+  // Calculate streak (consecutive weeks with check-ins)
+  const weeks = [...new Set(userCheckIns.map(ci => ci.weekNumber))].sort();
+  let streak = 0;
+  for (let i = weeks.length - 1; i >= 0; i--) {
+    if (i === weeks.length - 1 || weeks[i] === weeks[i + 1] - 1) {
+      streak++;
+    } else break;
+  }
+
+  return {
+    ...state,
+    users: state.users.map(u =>
+      u.id === userId ? { ...u, xp: totalXP, level: getLevel(totalXP), streak } : u
+    ),
+  };
+}
+
+function demoReducer(state: DemoState, action: DemoAction): DemoState {
+  switch (action.type) {
+    case 'CHECK_IN': {
+      const { userId, challengeId, weekNumber, completedActionIds, note } = action.payload;
+      const newCheckIn: CheckIn = {
+        id: `ci-${Date.now()}`,
+        userId,
+        challengeId,
+        weekNumber,
+        completedActionIds,
+        note,
+        createdAt: new Date().toISOString(),
+      };
+      const newState = { ...state, checkIns: [...state.checkIns, newCheckIn] };
+      return recalculateUserXP(newState, userId);
+    }
+
+    case 'SUBMIT_BAROMETER': {
+      const { userId, challengeId, weekNumber, scores } = action.payload;
+      const newResponse: BarometerResponse = {
+        id: `br-${Date.now()}`,
+        userId,
+        challengeId,
+        weekNumber,
+        scores,
+      };
+      return { ...state, barometerResponses: [...state.barometerResponses, newResponse] };
+    }
+
+    case 'SWITCH_ROLE':
+      return createInitialState(action.payload);
+
+    case 'RESET_DEMO':
+      return createInitialState(state.currentRole);
+
+    default:
+      return state;
+  }
+}
+
+interface DemoContextValue {
+  state: DemoState;
+  dispatch: React.Dispatch<DemoAction>;
+  currentUser: DemoState['users'][0] | undefined;
+  switchRole: (role: Role) => void;
+  resetDemo: () => void;
+}
+
+const DemoContext = createContext<DemoContextValue | null>(null);
+
+export function DemoProvider({ children, initialRole = 'manager' }: { children: React.ReactNode; initialRole?: Role }) {
+  const [state, dispatch] = useReducer(demoReducer, initialRole, createInitialState);
+
+  const currentUser = state.users.find(u => u.id === state.currentUserId);
+  const switchRole = useCallback((role: Role) => dispatch({ type: 'SWITCH_ROLE', payload: role }), []);
+  const resetDemo = useCallback(() => dispatch({ type: 'RESET_DEMO' }), []);
+
+  return (
+    <DemoContext.Provider value={{ state, dispatch, currentUser, switchRole, resetDemo }}>
+      {children}
+    </DemoContext.Provider>
+  );
+}
+
+export function useDemo() {
+  const ctx = useContext(DemoContext);
+  if (!ctx) throw new Error('useDemo must be used within DemoProvider');
+  return ctx;
+}
