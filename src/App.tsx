@@ -13,6 +13,7 @@ import CheckInPage from "./pages/CheckIn";
 import TeamLeaderboard from "./pages/TeamLeaderboard";
 import Barometer from "./pages/Barometer";
 import Admin from "./pages/Admin";
+import DemoScript from "./pages/DemoScript";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
               <Route path="team" element={<TeamLeaderboard />} />
               <Route path="barometer" element={<Barometer />} />
               <Route path="admin" element={<Admin />} />
+              <Route path="demo" element={<DemoScript />} />
             </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
