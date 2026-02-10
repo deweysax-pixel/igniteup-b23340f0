@@ -6,6 +6,7 @@ import {
   Users,
   BarChart3,
   Shield,
+  Play,
   RotateCcw,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
@@ -30,6 +31,7 @@ const navItems = [
   { title: 'Team', url: '/app/team', icon: Users },
   { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
   { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] as const },
+  { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] as const },
 ];
 
 export function AppSidebar() {
