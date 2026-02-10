@@ -18,11 +18,11 @@ export default function Admin() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Administration</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Admin</h2>
           <p className="text-sm text-muted-foreground mt-1">{state.organization.name}</p>
         </div>
-        <Button variant="outline" onClick={() => toast.info('Export simulé — fonctionnalité démo.')}>
-          Exporter les données
+        <Button variant="outline" onClick={() => toast.info('Simulated export — demo feature.')}>
+          Export Data
         </Button>
       </div>
 
@@ -32,11 +32,11 @@ export default function Admin() {
           <Card key={team.id}>
             <CardHeader>
               <CardTitle className="text-base">{team.name}</CardTitle>
-              <CardDescription>{team.members.length} membres · {team.totalCheckIns} check-ins</CardDescription>
+              <CardDescription>{team.members.length} members · {team.totalCheckIns} check-ins</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">XP moyen</span>
+                <span className="text-sm text-muted-foreground">Avg. XP</span>
                 <span className="text-lg font-bold">{team.avgXP}</span>
               </div>
               <div className="mt-3 space-y-1">
@@ -55,7 +55,7 @@ export default function Admin() {
       {/* Challenges management */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Gestion des défis</CardTitle>
+          <CardTitle className="text-base">Challenge Management</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {state.challenges.map(ch => (
@@ -65,7 +65,7 @@ export default function Admin() {
                 <p className="text-xs text-muted-foreground">{ch.startDate} → {ch.endDate}</p>
               </div>
               <Badge variant={ch.status === 'active' ? 'default' : 'secondary'}>
-                {ch.status === 'active' ? 'Actif' : ch.status === 'upcoming' ? 'À venir' : 'Terminé'}
+                {ch.status === 'active' ? 'Active' : ch.status === 'upcoming' ? 'Upcoming' : 'Completed'}
               </Badge>
             </div>
           ))}

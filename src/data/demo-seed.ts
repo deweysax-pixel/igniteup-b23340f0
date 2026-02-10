@@ -6,47 +6,47 @@ const organization: Organization = {
 };
 
 const users: User[] = [
-  { id: 'u1', name: 'Claire Dubois', role: 'admin', teamId: 't1', level: 'Or', xp: 320, streak: 4 },
-  { id: 'u2', name: 'Marc Leroy', role: 'manager', teamId: 't1', level: 'Argent', xp: 180, streak: 3 },
-  { id: 'u3', name: 'Sophie Martin', role: 'participant', teamId: 't1', level: 'Argent', xp: 150, streak: 2 },
+  { id: 'u1', name: 'Claire Dubois', role: 'admin', teamId: 't1', level: 'Gold', xp: 320, streak: 4 },
+  { id: 'u2', name: 'Marc Leroy', role: 'manager', teamId: 't1', level: 'Silver', xp: 180, streak: 3 },
+  { id: 'u3', name: 'Sophie Martin', role: 'participant', teamId: 't1', level: 'Silver', xp: 150, streak: 2 },
   { id: 'u4', name: 'Lucas Bernard', role: 'participant', teamId: 't1', level: 'Bronze', xp: 80, streak: 1 },
-  { id: 'u5', name: 'Emma Petit', role: 'manager', teamId: 't2', level: 'Or', xp: 290, streak: 4 },
-  { id: 'u6', name: 'Thomas Moreau', role: 'participant', teamId: 't2', level: 'Argent', xp: 200, streak: 3 },
+  { id: 'u5', name: 'Emma Petit', role: 'manager', teamId: 't2', level: 'Gold', xp: 290, streak: 4 },
+  { id: 'u6', name: 'Thomas Moreau', role: 'participant', teamId: 't2', level: 'Silver', xp: 200, streak: 3 },
   { id: 'u7', name: 'Julie Fournier', role: 'participant', teamId: 't2', level: 'Bronze', xp: 60, streak: 0 },
-  { id: 'u8', name: 'Nicolas Girard', role: 'participant', teamId: 't2', level: 'Argent', xp: 120, streak: 2 },
+  { id: 'u8', name: 'Nicolas Girard', role: 'participant', teamId: 't2', level: 'Silver', xp: 120, streak: 2 },
 ];
 
 const teams: Team[] = [
-  { id: 't1', name: 'Équipe Alpha', managerId: 'u2', memberIds: ['u2', 'u3', 'u4'] },
-  { id: 't2', name: 'Équipe Beta', managerId: 'u5', memberIds: ['u5', 'u6', 'u7', 'u8'] },
+  { id: 't1', name: 'Team Alpha', managerId: 'u2', memberIds: ['u2', 'u3', 'u4'] },
+  { id: 't2', name: 'Team Beta', managerId: 'u5', memberIds: ['u5', 'u6', 'u7', 'u8'] },
 ];
 
 const challenges: Challenge[] = [
   {
     id: 'ch-1',
-    title: 'Leadership Agile — Février 2026',
-    description: 'Développez 4 habitudes clés du leadership agile en 4 semaines. Chaque semaine, réalisez les actions proposées et validez votre progression.',
+    title: 'Challenge of the Month: Weekly Feedback',
+    description: 'Build 4 key agile leadership habits over 4 weeks. Complete the proposed actions each week and track your progress.',
     startDate: '2026-02-01',
     endDate: '2026-02-28',
     status: 'active',
     weeklyActions: [
-      { id: 'a1', label: 'Donner un feedback constructif à un collègue', points: 15 },
-      { id: 'a2', label: 'Animer un stand-up de 10 min avec son équipe', points: 10 },
-      { id: 'a3', label: 'Prendre une décision déléguée documentée', points: 20 },
-      { id: 'a4', label: 'Partager une réussite d\'équipe en réunion', points: 10 },
+      { id: 'a1', label: 'Give constructive feedback to a colleague', points: 15 },
+      { id: 'a2', label: 'Run a 10-min stand-up with your team', points: 10 },
+      { id: 'a3', label: 'Make a documented delegated decision', points: 20 },
+      { id: 'a4', label: 'Share a team win during a meeting', points: 10 },
     ],
   },
   {
     id: 'ch-2',
-    title: 'Communication Impactante — Mars 2026',
-    description: 'Maîtrisez les techniques de communication exécutive pour gagner en influence.',
+    title: 'Impactful Communication — March 2026',
+    description: 'Master executive communication techniques to increase your influence.',
     startDate: '2026-03-01',
     endDate: '2026-03-28',
     status: 'upcoming',
     weeklyActions: [
-      { id: 'a5', label: 'Préparer un pitch de 2 minutes', points: 15 },
-      { id: 'a6', label: 'Pratiquer l\'écoute active en réunion', points: 10 },
-      { id: 'a7', label: 'Rédiger un message de synthèse clair', points: 15 },
+      { id: 'a5', label: 'Prepare a 2-minute pitch', points: 15 },
+      { id: 'a6', label: 'Practice active listening in a meeting', points: 10 },
+      { id: 'a7', label: 'Write a clear summary message', points: 15 },
     ],
   },
 ];
@@ -109,4 +109,3 @@ export function createInitialState(role: Role = 'manager'): DemoState {
     currentRole: role,
   };
 }
-

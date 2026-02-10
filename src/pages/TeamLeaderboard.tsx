@@ -22,7 +22,7 @@ export default function TeamLeaderboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Classement</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Leaderboard</h2>
         {state.currentRole !== 'admin' && teamName && (
           <p className="text-sm text-muted-foreground mt-1">{teamName}</p>
         )}
