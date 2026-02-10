@@ -24,12 +24,12 @@ import {
 import { Button } from '@/components/ui/button';
 
 const navItems = [
-  { title: 'Tableau de bord', url: '/app', icon: LayoutDashboard },
-  { title: 'Défis', url: '/app/challenges', icon: Target },
-  { title: 'Mon check-in', url: '/app/checkin', icon: ClipboardCheck, roles: ['manager', 'participant'] as const },
-  { title: 'Classement', url: '/app/team', icon: Users },
-  { title: 'Baromètre ROI', url: '/app/barometer', icon: BarChart3 },
-  { title: 'Administration', url: '/app/admin', icon: Shield, roles: ['admin'] as const },
+  { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
+  { title: 'Challenges', url: '/app/challenges', icon: Target },
+  { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck, roles: ['manager', 'participant'] as const },
+  { title: 'Team', url: '/app/team', icon: Users },
+  { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
+  { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] as const },
 ];
 
 export function AppSidebar() {
@@ -45,10 +45,10 @@ export function AppSidebar() {
       <div className="p-4 border-b border-sidebar-border">
         <h1 className="text-lg font-bold tracking-tight">
           <span className="text-primary">Ignite</span>
-          <span className="text-muted-foreground">+</span>
+          <span className="text-muted-foreground">Up</span>
         </h1>
         <p className="text-xs text-muted-foreground mt-1 capitalize">
-          Rôle : {state.currentRole}
+          Role: {state.currentRole}
         </p>
       </div>
 
@@ -87,7 +87,7 @@ export function AppSidebar() {
           onClick={resetDemo}
         >
           <RotateCcw className="h-4 w-4" />
-          Réinitialiser la démo
+          Reset Demo
         </Button>
       </SidebarFooter>
     </Sidebar>

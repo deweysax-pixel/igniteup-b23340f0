@@ -38,14 +38,14 @@ export default function CheckInPage() {
       },
     });
     setSubmitted(true);
-    toast.success('Check-in validé ! Vos XP ont été mis à jour.');
+    toast.success('Check-in submitted! Your XP has been updated.');
   };
 
   if (!activeChallenge) {
     return (
       <div className="animate-fade-in">
-        <h2 className="text-2xl font-bold tracking-tight mb-4">Mon check-in</h2>
-        <p className="text-muted-foreground">Aucun défi actif pour le moment.</p>
+        <h2 className="text-2xl font-bold tracking-tight mb-4">My Check-in</h2>
+        <p className="text-muted-foreground">No active challenge at the moment.</p>
       </div>
     );
   }
@@ -54,8 +54,8 @@ export default function CheckInPage() {
     return (
       <div className="animate-fade-in flex flex-col items-center justify-center py-20 space-y-4">
         <CheckCircle className="h-16 w-16 text-primary animate-scale-in" />
-        <h2 className="text-2xl font-bold">Check-in validé !</h2>
-        <p className="text-muted-foreground">Semaine {currentWeek} — Rendez-vous la semaine prochaine.</p>
+        <h2 className="text-2xl font-bold">Check-in submitted!</h2>
+        <p className="text-muted-foreground">Week {currentWeek} — See you next week.</p>
       </div>
     );
   }
@@ -63,13 +63,13 @@ export default function CheckInPage() {
   return (
     <div className="space-y-6 max-w-xl animate-fade-in">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Mon check-in</h2>
-        <p className="text-sm text-muted-foreground mt-1">Semaine {currentWeek} · {activeChallenge.title}</p>
+        <h2 className="text-2xl font-bold tracking-tight">My Check-in</h2>
+        <p className="text-sm text-muted-foreground mt-1">Week {currentWeek} · {activeChallenge.title}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Actions réalisées cette semaine</CardTitle>
+          <CardTitle className="text-base">Actions completed this week</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {activeChallenge.weeklyActions.map(action => (
@@ -87,7 +87,7 @@ export default function CheckInPage() {
 
           <div className="pt-2">
             <Textarea
-              placeholder="Un commentaire sur votre semaine ? (optionnel)"
+              placeholder="Any notes about your week? (optional)"
               value={note}
               onChange={e => setNote(e.target.value)}
               className="resize-none"
@@ -100,7 +100,7 @@ export default function CheckInPage() {
             disabled={selectedActions.length === 0}
             className="w-full"
           >
-            Valider mon check-in
+            Submit Check-in
           </Button>
         </CardContent>
       </Card>

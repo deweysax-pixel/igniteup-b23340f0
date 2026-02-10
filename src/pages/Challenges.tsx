@@ -7,9 +7,9 @@ export default function Challenges() {
 
   const statusLabel = (s: string) => {
     switch (s) {
-      case 'active': return 'Actif';
-      case 'upcoming': return 'À venir';
-      case 'completed': return 'Terminé';
+      case 'active': return 'Active';
+      case 'upcoming': return 'Upcoming';
+      case 'completed': return 'Completed';
       default: return s;
     }
   };
@@ -20,10 +20,10 @@ export default function Challenges() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <h2 className="text-2xl font-bold tracking-tight">Défis</h2>
+      <h2 className="text-2xl font-bold tracking-tight">Challenges</h2>
 
       {state.challenges.length === 0 ? (
-        <p className="text-muted-foreground">Aucun défi actif pour le moment. Créez-en un pour lancer la dynamique.</p>
+        <p className="text-muted-foreground">No active challenge at the moment. Create one to kick things off.</p>
       ) : (
         <div className="grid gap-4">
           {state.challenges.map(ch => (
@@ -40,7 +40,7 @@ export default function Challenges() {
                   {ch.startDate} → {ch.endDate}
                 </p>
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Actions hebdomadaires</p>
+                  <p className="text-sm font-medium">Weekly Actions</p>
                   {ch.weeklyActions.map(a => (
                     <div key={a.id} className="flex items-center justify-between text-sm">
                       <span>{a.label}</span>

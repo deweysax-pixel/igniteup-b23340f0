@@ -31,7 +31,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Tableau de bord</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
         {activeChallenge && (
           <p className="text-sm text-muted-foreground mt-1">{activeChallenge.title}</p>
         )}
@@ -50,16 +50,16 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Streak moyen</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Avg. Streak</CardTitle>
             <Flame className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgStreak} sem.</div>
+            <div className="text-2xl font-bold">{avgStreak} wk</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">XP moyen</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Avg. XP</CardTitle>
             <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -68,7 +68,7 @@ export default function Dashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Mon niveau</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">My Level</CardTitle>
             <Trophy className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -84,7 +84,7 @@ export default function Dashboard() {
       {/* Mini Leaderboard */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Top 5 — Classement</CardTitle>
+          <CardTitle className="text-base">Top 5 — Leaderboard</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {leaderboard.map((user, i) => (

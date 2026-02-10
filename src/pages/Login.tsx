@@ -6,9 +6,9 @@ import { Shield, Users, User } from 'lucide-react';
 import type { Role } from '@/types/demo';
 
 const roles: { role: Role; label: string; description: string; icon: React.ElementType }[] = [
-  { role: 'admin', label: 'Administrateur', description: 'Vue complète de l\'organisation, gestion des défis et export des données.', icon: Shield },
-  { role: 'manager', label: 'Manager', description: 'Anime son équipe, suit le classement et valide ses actions hebdomadaires.', icon: Users },
-  { role: 'participant', label: 'Participant', description: 'Réalise les actions du défi, suit sa progression et celle de son équipe.', icon: User },
+  { role: 'admin', label: 'Administrator', description: 'Full organizational view, challenge management, and data export.', icon: Shield },
+  { role: 'manager', label: 'Manager', description: 'Lead your team, track rankings, and validate weekly actions.', icon: Users },
+  { role: 'participant', label: 'Participant', description: 'Complete challenge actions, track your progress and your team\'s.', icon: User },
 ];
 
 export default function Login() {
@@ -26,11 +26,11 @@ export default function Login() {
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold tracking-tight">
             <span className="text-primary">Ignite</span>
-            <span className="text-muted-foreground">+</span>
-            <span className="ml-2">Démo</span>
+            <span className="text-muted-foreground">Up</span>
+            <span className="ml-2">Demo</span>
           </h1>
           <p className="text-sm text-muted-foreground">
-            Choisissez un rôle pour explorer la plateforme
+            Choose a role to explore the platform
           </p>
         </div>
 

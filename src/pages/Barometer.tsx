@@ -7,9 +7,9 @@ import { toast } from 'sonner';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const dimensions = [
-  { key: 'confidence' as const, label: 'Confiance', question: 'Je me sens confiant(e) dans mes capacités de leadership.' },
-  { key: 'engagement' as const, label: 'Engagement', question: 'Je suis engagé(e) dans le développement de mon équipe.' },
-  { key: 'clarity' as const, label: 'Clarté', question: 'J\'ai une vision claire de mes objectifs de leadership.' },
+  { key: 'confidence' as const, label: 'Confidence', question: 'I feel confident in my leadership capabilities.' },
+  { key: 'engagement' as const, label: 'Engagement', question: 'I am actively invested in developing my team.' },
+  { key: 'clarity' as const, label: 'Clarity', question: 'I have a clear vision of my leadership objectives.' },
 ];
 
 export default function Barometer() {
@@ -32,7 +32,7 @@ export default function Barometer() {
       },
     });
     setSubmitted(true);
-    toast.success('Baromètre enregistré. Merci pour votre feedback !');
+    toast.success('Barometer recorded. Thank you for your feedback!');
   };
 
   // Compute aggregate data for chart
@@ -46,23 +46,23 @@ export default function Barometer() {
     const current = latest.length > 0 ? latest.reduce((s, r) => s + r.scores[d.key], 0) / latest.length : 0;
     return {
       dimension: d.label,
-      'Baseline (S1)': +baseline.toFixed(1),
-      Actuel: +current.toFixed(1),
+      'Baseline (W1)': +baseline.toFixed(1),
+      Current: +current.toFixed(1),
     };
   });
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Baromètre ROI</h2>
-        <p className="text-sm text-muted-foreground mt-1">Évaluez votre semaine en 30 secondes</p>
+        <h2 className="text-2xl font-bold tracking-tight">ROI Barometer</h2>
+        <p className="text-sm text-muted-foreground mt-1">Rate your week in 30 seconds</p>
       </div>
 
       {/* Form */}
       {!submitted && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Semaine {currentWeek}</CardTitle>
+            <CardTitle className="text-base">Week {currentWeek}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             {dimensions.map(d => (
@@ -83,20 +83,20 @@ export default function Barometer() {
                 </div>
               </div>
             ))}
-            <Button onClick={handleSubmit} className="w-full">Valider</Button>
+            <Button onClick={handleSubmit} className="w-full">Submit</Button>
           </CardContent>
         </Card>
       )}
 
       {submitted && (
-        <p className="text-sm text-muted-foreground">Merci ! Votre feedback a été enregistré.</p>
+        <p className="text-sm text-muted-foreground">Thank you! Your feedback has been recorded.</p>
       )}
 
       {/* Aggregate Chart */}
       {canSeeAggregate && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Évolution agrégée</CardTitle>
+            <CardTitle className="text-base">Aggregate Trend</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -108,8 +108,8 @@ export default function Barometer() {
                   labelStyle={{ color: 'hsl(0 0% 95%)' }}
                 />
                 <Legend />
-                <Bar dataKey="Baseline (S1)" fill="hsl(240 5% 35%)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Actuel" fill="hsl(262 83% 58%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Baseline (W1)" fill="hsl(240 5% 35%)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Current" fill="hsl(262 83% 58%)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

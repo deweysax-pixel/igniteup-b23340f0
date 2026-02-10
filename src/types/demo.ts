@@ -1,6 +1,6 @@
 export type Role = 'admin' | 'manager' | 'participant';
 
-export type Level = 'Bronze' | 'Argent' | 'Or' | 'Platine';
+export type Level = 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
 
 export type ChallengeStatus = 'active' | 'upcoming' | 'completed';
 
@@ -93,17 +93,17 @@ export interface DemoState {
 }
 
 export function getLevel(xp: number): Level {
-  if (xp >= 500) return 'Platine';
-  if (xp >= 250) return 'Or';
-  if (xp >= 100) return 'Argent';
+  if (xp >= 500) return 'Platinum';
+  if (xp >= 250) return 'Gold';
+  if (xp >= 100) return 'Silver';
   return 'Bronze';
 }
 
 export function getLevelColor(level: Level): string {
   switch (level) {
-    case 'Platine': return 'text-purple-300';
-    case 'Or': return 'text-yellow-400';
-    case 'Argent': return 'text-gray-300';
+    case 'Platinum': return 'text-purple-300';
+    case 'Gold': return 'text-yellow-400';
+    case 'Silver': return 'text-gray-300';
     case 'Bronze': return 'text-orange-400';
   }
 }
