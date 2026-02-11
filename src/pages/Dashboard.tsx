@@ -1,11 +1,16 @@
+import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { getLevelColor } from '@/types/demo';
-import { TrendingUp, Users, Flame, Trophy } from 'lucide-react';
+import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen } from 'lucide-react';
+import { toast } from 'sonner';
+import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 
 export default function Dashboard() {
   const { state, currentUser } = useDemo();
+  const navigate = useNavigate();
   const activeChallenge = state.challenges.find(c => c.status === 'active');
 
   // KPI calculations
@@ -28,6 +33,11 @@ export default function Dashboard() {
     .sort((a, b) => b.xp - a.xp)
     .slice(0, 5);
 
+  const handleCopySBI = async () => {
+    await copyToClipboard(SBI_TEMPLATE);
+    toast.success('Copied to clipboard');
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -36,6 +46,33 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground mt-1">{activeChallenge.title}</p>
         )}
       </div>
+
+      {/* This week's focus */}
+      <Card className="border-primary/30 bg-primary/5">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-sm font-semibold">This week's focus</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium">Goal:</span>
+            <span className="text-muted-foreground">1 feedback conversation</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="font-medium">Tip:</span>
+            <span className="text-muted-foreground">Keep it under 2 minutes.</span>
+          </div>
+          <div className="flex flex-wrap gap-2 pt-1">
+            <Button size="sm" variant="default" className="gap-2" onClick={() => navigate('/app/playbooks')}>
+              <BookOpen className="h-3.5 w-3.5" />
+              Open Weekly Feedback Playbook
+            </Button>
+            <Button size="sm" variant="outline" className="gap-2" onClick={handleCopySBI}>
+              <Copy className="h-3.5 w-3.5" />
+              Copy SBI Template
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-4">

@@ -1,13 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Lightbulb, BookOpen } from 'lucide-react';
 
 export default function CheckInPage() {
+  const navigate = useNavigate();
   const { state, dispatch, currentUser } = useDemo();
   const activeChallenge = state.challenges.find(c => c.status === 'active');
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
@@ -93,6 +95,25 @@ export default function CheckInPage() {
               className="resize-none"
               rows={3}
             />
+          </div>
+
+          {/* Coach tip */}
+          <div className="flex items-start gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3">
+            <Lightbulb className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+            <div className="space-y-1.5">
+              <p className="text-sm text-muted-foreground">
+                If you're stuck, use the SBI template and keep it factual.
+              </p>
+              <Button
+                variant="link"
+                size="sm"
+                className="h-auto p-0 gap-1.5 text-primary"
+                onClick={() => navigate('/app/playbooks')}
+              >
+                <BookOpen className="h-3.5 w-3.5" />
+                Open Playbook
+              </Button>
+            </div>
           </div>
 
           <Button
