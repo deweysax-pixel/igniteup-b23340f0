@@ -68,10 +68,15 @@ export default function Challenges() {
                       <li>Keep it factual — no judgments, just observations.</li>
                       <li>Send it via chat, email, or say it face-to-face.</li>
                     </ul>
-                    <Button size="sm" variant="outline" className="gap-2" onClick={handleCopySBI}>
-                      <Copy className="h-3.5 w-3.5" />
-                      Copy SBI Template
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline" className="gap-2" onClick={handleCopySBI}>
+                        <Copy className="h-3.5 w-3.5" />
+                        Copy SBI Template
+                      </Button>
+                      <Button size="sm" variant="link" className="gap-2" asChild>
+                        <a href="/app/playbooks">Open Playbook</a>
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>
