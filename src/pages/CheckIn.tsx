@@ -6,7 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { CheckCircle, Lightbulb, BookOpen } from 'lucide-react';
+import { CheckCircle, Lightbulb, BookOpen, Copy } from 'lucide-react';
+import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 
 export default function CheckInPage() {
   const navigate = useNavigate();
@@ -104,15 +105,26 @@ export default function CheckInPage() {
               <p className="text-sm text-muted-foreground">
                 If you're stuck, use the SBI template and keep it factual.
               </p>
-              <Button
-                variant="link"
-                size="sm"
-                className="h-auto p-0 gap-1.5 text-primary"
-                onClick={() => navigate('/app/playbooks')}
-              >
-                <BookOpen className="h-3.5 w-3.5" />
-                Open Playbook
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-auto p-1.5 gap-1.5"
+                  onClick={async () => { await copyToClipboard(SBI_TEMPLATE); toast.success('Copied to clipboard'); }}
+                >
+                  <Copy className="h-3.5 w-3.5" />
+                  Copy SBI Template
+                </Button>
+                <Button
+                  variant="link"
+                  size="sm"
+                  className="h-auto p-0 gap-1.5 text-primary"
+                  onClick={() => navigate('/app/playbooks')}
+                >
+                  <BookOpen className="h-3.5 w-3.5" />
+                  Open Playbook
+                </Button>
+              </div>
             </div>
           </div>
 
