@@ -1,6 +1,10 @@
 import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Copy } from 'lucide-react';
+import { toast } from 'sonner';
+import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 
 export default function Challenges() {
   const { state } = useDemo();
@@ -16,6 +20,11 @@ export default function Challenges() {
 
   const statusVariant = (s: string) => {
     return s === 'active' ? 'default' : 'secondary';
+  };
+
+  const handleCopySBI = async () => {
+    await copyToClipboard(SBI_TEMPLATE);
+    toast.success('Copied to clipboard');
   };
 
   return (
@@ -35,8 +44,8 @@ export default function Challenges() {
                 </div>
                 <CardDescription>{ch.description}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <p className="text-xs text-muted-foreground mb-3">
+              <CardContent className="space-y-4">
+                <p className="text-xs text-muted-foreground">
                   {ch.startDate} → {ch.endDate}
                 </p>
                 <div className="space-y-2">
@@ -48,6 +57,23 @@ export default function Challenges() {
                     </div>
                   ))}
                 </div>
+
+                {/* How to do it — only for the active feedback challenge */}
+                {ch.status === 'active' && (
+                  <div className="border-t border-border pt-4 space-y-3">
+                    <p className="text-sm font-semibold">How to do it (2 minutes)</p>
+                    <ul className="space-y-1.5 text-sm text-muted-foreground list-disc ml-5">
+                      <li>Pick one colleague you worked with this week.</li>
+                      <li>Use the SBI template: Situation → Behavior → Impact.</li>
+                      <li>Keep it factual — no judgments, just observations.</li>
+                      <li>Send it via chat, email, or say it face-to-face.</li>
+                    </ul>
+                    <Button size="sm" variant="outline" className="gap-2" onClick={handleCopySBI}>
+                      <Copy className="h-3.5 w-3.5" />
+                      Copy SBI Template
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}
