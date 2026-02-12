@@ -1,13 +1,21 @@
+import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
+import { useJourney } from '@/contexts/JourneyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Copy } from 'lucide-react';
+import { Copy, Map, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 
 export default function Challenges() {
+  const navigate = useNavigate();
   const { state } = useDemo();
+  const { journey, modules } = useJourney();
+
+  // Check if the feedback module is linked to the current journey
+  const feedbackModule = modules.find(m => m.id === 'mod-1');
+  const isLinkedToJourney = journey.steps.some(s => s.moduleId === 'mod-1');
 
   const statusLabel = (s: string) => {
     switch (s) {
@@ -68,13 +76,26 @@ export default function Challenges() {
                       <li>Keep it factual — no judgments, just observations.</li>
                       <li>Send it via chat, email, or say it face-to-face.</li>
                     </ul>
-                    <div className="flex gap-2">
+                    {isLinkedToJourney && (
+                      <div className="flex items-center gap-2 text-xs text-primary">
+                        <Map className="h-3.5 w-3.5" />
+                        <span className="font-medium">Linked to your journey</span>
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-2">
                       <Button size="sm" variant="outline" className="gap-2" onClick={handleCopySBI}>
                         <Copy className="h-3.5 w-3.5" />
                         Copy SBI Template
                       </Button>
-                      <Button size="sm" variant="link" className="gap-2" asChild>
-                        <a href="/app/playbooks">Open Playbook</a>
+                      {feedbackModule?.playbookRoute && (
+                        <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(feedbackModule.playbookRoute!)}>
+                          <BookOpen className="h-3.5 w-3.5" />
+                          Open Module
+                        </Button>
+                      )}
+                      <Button size="sm" variant="link" className="gap-1.5" onClick={() => navigate('/app/journey')}>
+                        <Map className="h-3.5 w-3.5" />
+                        Back to My Journey
                       </Button>
                     </div>
                   </div>
