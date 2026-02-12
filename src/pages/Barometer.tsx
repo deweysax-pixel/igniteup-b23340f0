@@ -1,9 +1,12 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
+import { useJourney } from '@/contexts/JourneyContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { toast } from 'sonner';
+import { Map } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 const dimensions = [
@@ -13,7 +16,9 @@ const dimensions = [
 ];
 
 export default function Barometer() {
+  const navigate = useNavigate();
   const { state, dispatch, currentUser } = useDemo();
+  const { journey } = useJourney();
   const [scores, setScores] = useState({ confidence: 3, engagement: 3, clarity: 3 });
   const [submitted, setSubmitted] = useState(false);
 
@@ -56,6 +61,17 @@ export default function Barometer() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">ROI Barometer</h2>
         <p className="text-sm text-muted-foreground mt-1">Rate your week in 30 seconds</p>
+      </div>
+
+      {/* Journey banner */}
+      <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5">
+        <p className="text-xs text-muted-foreground">
+          Measurement for: <span className="text-foreground font-medium">{journey.title}</span>
+        </p>
+        <Button variant="link" size="sm" className="h-auto p-0 gap-1.5 text-primary shrink-0" onClick={() => navigate('/app/journey')}>
+          <Map className="h-3.5 w-3.5" />
+          Back to My Journey
+        </Button>
       </div>
 
       {/* Form */}

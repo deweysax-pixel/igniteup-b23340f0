@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
+import { useJourney } from '@/contexts/JourneyContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { CheckCircle, Lightbulb, BookOpen, Copy } from 'lucide-react';
+import { CheckCircle, Lightbulb, BookOpen, Copy, Map } from 'lucide-react';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 
 export default function CheckInPage() {
   const navigate = useNavigate();
   const { state, dispatch, currentUser } = useDemo();
+  const { journey } = useJourney();
   const activeChallenge = state.challenges.find(c => c.status === 'active');
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [note, setNote] = useState('');
@@ -68,6 +70,17 @@ export default function CheckInPage() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">My Check-in</h2>
         <p className="text-sm text-muted-foreground mt-1">Week {currentWeek} · {activeChallenge.title}</p>
+      </div>
+
+      {/* Journey link */}
+      <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5">
+        <p className="text-xs text-muted-foreground">
+          This check-in supports your current journey: <span className="text-foreground font-medium">{journey.title}</span>
+        </p>
+        <Button variant="link" size="sm" className="h-auto p-0 gap-1.5 text-primary shrink-0" onClick={() => navigate('/app/journey')}>
+          <Map className="h-3.5 w-3.5" />
+          Back to My Journey
+        </Button>
       </div>
 
       <Card>
