@@ -47,7 +47,7 @@ export default function Landing() {
 
           <Link to="/login">
             <Button size="lg" className="text-base px-8 mt-4">
-              Explore the Demo
+              Start Your Journey
             </Button>
           </Link>
         </div>
