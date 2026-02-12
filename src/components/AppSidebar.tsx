@@ -9,6 +9,9 @@ import {
   Shield,
   Play,
   RotateCcw,
+  Map,
+  Library,
+  Hammer,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -25,24 +28,50 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 
-const navItems = [
-  { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
-  { title: 'Challenges', url: '/app/challenges', icon: Target },
-  { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck, roles: ['manager', 'participant'] as const },
-  { title: 'Team', url: '/app/team', icon: Users },
-  { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
-  { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
-  { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] as const },
-  { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] as const },
+type NavItem = { title: string; url: string; icon: React.ElementType; roles?: readonly string[] };
+
+const sections: { label: string; items: NavItem[] }[] = [
+  {
+    label: 'Journey',
+    items: [
+      { title: 'My Journey', url: '/app/journey', icon: Map },
+      { title: 'Catalog', url: '/app/catalog', icon: Library },
+      { title: 'Build Journey', url: '/app/builder', icon: Hammer },
+    ],
+  },
+  {
+    label: 'Practice',
+    items: [
+      { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
+      { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck, roles: ['manager', 'participant'] },
+      { title: 'Team', url: '/app/team', icon: Users },
+    ],
+  },
+  {
+    label: 'Library',
+    items: [
+      { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
+    ],
+  },
+  {
+    label: 'Measure',
+    items: [
+      { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
+    ],
+  },
+  {
+    label: 'Admin',
+    items: [
+      { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
+      { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
+    ],
+  },
 ];
 
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
   const location = useLocation();
-
-  const visibleItems = navItems.filter(
-    item => !item.roles || (item.roles as readonly string[]).includes(state.currentRole)
-  );
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -57,30 +86,38 @@ export function AppSidebar() {
       </div>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
-            Navigation
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {visibleItems.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === '/app'}
-                      className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
-                      activeClassName="bg-sidebar-accent text-primary font-medium"
-                    >
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {sections.map(section => {
+          const visibleItems = section.items.filter(
+            item => !item.roles || (item.roles as readonly string[]).includes(state.currentRole)
+          );
+          if (visibleItems.length === 0) return null;
+          return (
+            <SidebarGroup key={section.label}>
+              <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
+                {section.label}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {visibleItems.map(item => (
+                    <SidebarMenuItem key={item.url}>
+                      <SidebarMenuButton asChild>
+                        <NavLink
+                          to={item.url}
+                          end={item.url === '/app'}
+                          className="flex items-center gap-3 px-3 py-2 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                          activeClassName="bg-sidebar-accent text-primary font-medium"
+                        >
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
 
       <SidebarFooter className="p-4">
