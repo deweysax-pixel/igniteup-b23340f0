@@ -19,6 +19,7 @@ import Playbooks from "./pages/Playbooks";
 import JourneyPage from "./pages/Journey";
 import CatalogPage from "./pages/Catalog";
 import BuilderPage from "./pages/Builder";
+import ModulePlayer from "./pages/ModulePlayer";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => (
                 <Route path="journey" element={<JourneyPage />} />
                 <Route path="catalog" element={<CatalogPage />} />
                 <Route path="builder" element={<BuilderPage />} />
+                <Route path="modules/:id" element={<ModulePlayer />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

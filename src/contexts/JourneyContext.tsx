@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import type { Module, Journey, JourneyStep } from '@/types/journey';
+import type { Module, Journey, JourneyStep, ModuleStatus, ModuleProgress } from '@/types/journey';
 import { modules as seedModules, defaultJourney } from '@/data/journey-seed';
 
 interface JourneyContextValue {
   modules: Module[];
   journey: Journey;
+  moduleProgress: Record<string, ModuleProgress>;
   addModuleToJourney: (moduleId: string) => void;
   removeModuleFromJourney: (moduleId: string) => void;
   setDuration: (weeks: 4 | 8) => void;
@@ -12,6 +13,9 @@ interface JourneyContextValue {
   saveJourney: () => void;
   getModule: (id: string) => Module | undefined;
   currentStepModule: Module | undefined;
+  updateModuleStatus: (moduleId: string, status: ModuleStatus) => void;
+  completedCount: number;
+  firstIncompleteModule: Module | undefined;
 }
 
 const JourneyContext = createContext<JourneyContextValue | null>(null);
@@ -19,12 +23,36 @@ const JourneyContext = createContext<JourneyContextValue | null>(null);
 export function JourneyProvider({ children }: { children: React.ReactNode }) {
   const [modules] = useState<Module[]>(seedModules);
   const [journey, setJourney] = useState<Journey>({ ...defaultJourney });
+  const [moduleProgress, setModuleProgress] = useState<Record<string, ModuleProgress>>({});
 
   const getModule = useCallback((id: string) => modules.find(m => m.id === id), [modules]);
 
   const currentStepModule = journey.steps.find(s => s.weekNumber === journey.currentWeek)
     ? getModule(journey.steps.find(s => s.weekNumber === journey.currentWeek)!.moduleId)
     : undefined;
+
+  const updateModuleStatus = useCallback((moduleId: string, status: ModuleStatus) => {
+    setModuleProgress(prev => ({
+      ...prev,
+      [moduleId]: {
+        status,
+        completedAt: status === 'completed' ? new Date().toISOString() : undefined,
+      },
+    }));
+  }, []);
+
+  const journeyModuleIds = journey.steps.map(s => s.moduleId);
+  const uniqueModuleIds = [...new Set(journeyModuleIds)];
+  const completedCount = uniqueModuleIds.filter(id => moduleProgress[id]?.status === 'completed').length;
+
+  const firstIncompleteModule = (() => {
+    for (const step of journey.steps) {
+      if (moduleProgress[step.moduleId]?.status !== 'completed') {
+        return getModule(step.moduleId);
+      }
+    }
+    return undefined;
+  })();
 
   const addModuleToJourney = useCallback((moduleId: string) => {
     setJourney(prev => {
@@ -69,8 +97,9 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <JourneyContext.Provider value={{
-      modules, journey, addModuleToJourney, removeModuleFromJourney,
+      modules, journey, moduleProgress, addModuleToJourney, removeModuleFromJourney,
       setDuration, generatePlan, saveJourney, getModule, currentStepModule,
+      updateModuleStatus, completedCount, firstIncompleteModule,
     }}>
       {children}
     </JourneyContext.Provider>

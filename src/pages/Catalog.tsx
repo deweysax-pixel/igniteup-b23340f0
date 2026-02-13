@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,8 @@ import type { Module } from '@/types/journey';
 const categories = ['all', 'feedback', 'communication', 'delegation', 'coaching', 'strategy'] as const;
 
 export default function CatalogPage() {
-  const { modules, journey, addModuleToJourney } = useJourney();
+  const navigate = useNavigate();
+  const { modules, journey, addModuleToJourney, moduleProgress } = useJourney();
   const [filter, setFilter] = useState<string>('all');
   const [preview, setPreview] = useState<Module | null>(null);
 
@@ -22,6 +24,13 @@ export default function CatalogPage() {
   const handleAdd = (mod: Module) => {
     addModuleToJourney(mod.id);
     toast.success(`"${mod.title}" added to your journey`);
+  };
+
+  const statusBadge = (modId: string) => {
+    const p = moduleProgress[modId];
+    if (p?.status === 'completed') return <Badge variant="outline" className="text-xs border-primary/30 text-primary">Completed</Badge>;
+    if (p?.status === 'in_progress') return <Badge variant="outline" className="text-xs">In Progress</Badge>;
+    return null;
   };
 
   return (
@@ -51,21 +60,24 @@ export default function CatalogPage() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <Badge variant="secondary" className="capitalize text-xs">{mod.category}</Badge>
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />{mod.durationMinutes}m
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {statusBadge(mod.id)}
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />{mod.durationMinutes}m
+                    </span>
+                  </div>
                 </div>
                 <CardTitle className="text-base mt-2">{mod.title}</CardTitle>
                 <CardDescription className="text-xs">{mod.shortDescription}</CardDescription>
               </CardHeader>
               <CardContent className="mt-auto pt-0">
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" className="gap-1.5" onClick={() => setPreview(mod)}>
+                  <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(`/app/modules/${mod.id}`)}>
                     <Eye className="h-3.5 w-3.5" />
                     Preview
                   </Button>
                   <Button size="sm" className="gap-1.5" disabled={added} onClick={() => handleAdd(mod)}>
-                    {added ? <><Check className="h-3.5 w-3.5" />Added</> : <><Plus className="h-3.5 w-3.5" />Add to Journey</>}
+                    {added ? <><Check className="h-3.5 w-3.5" />In Journey</> : <><Plus className="h-3.5 w-3.5" />Add to Journey</>}
                   </Button>
                 </div>
               </CardContent>
@@ -73,34 +85,6 @@ export default function CatalogPage() {
           );
         })}
       </div>
-
-      <Dialog open={!!preview} onOpenChange={() => setPreview(null)}>
-        <DialogContent>
-          {preview && (
-            <>
-              <DialogHeader>
-                <DialogTitle>{preview.title}</DialogTitle>
-                <DialogDescription>{preview.shortDescription}</DialogDescription>
-              </DialogHeader>
-              <div className="space-y-3 text-sm">
-                <div className="flex gap-4 text-muted-foreground">
-                  <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{preview.durationMinutes} min</span>
-                  <Badge variant="secondary" className="capitalize">{preview.category}</Badge>
-                </div>
-                {preview.playbookRoute && <p>📖 Linked playbook available</p>}
-                {preview.practiceRoute && <p>🎯 Practice activity linked</p>}
-                {preview.measureRoute && <p>📊 ROI measurement linked</p>}
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <Button variant="outline" onClick={() => setPreview(null)}>Close</Button>
-                <Button className="gap-1.5" disabled={inJourney.has(preview.id)} onClick={() => { handleAdd(preview); setPreview(null); }}>
-                  {inJourney.has(preview.id) ? 'Already added' : <><Plus className="h-3.5 w-3.5" />Add to Journey</>}
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
