@@ -76,6 +76,9 @@ export default function JourneyPage() {
             <span>{progressPercent}%</span>
           </div>
           <Progress value={progressPercent} className="h-2.5" />
+          {journey.durationWeeks >= 12 && (
+            <p className="text-xs text-muted-foreground italic">Designed for sustainable habit-building (Learning + Practice weeks).</p>
+          )}
         </CardContent>
       </Card>
 
@@ -186,7 +189,7 @@ export default function JourneyPage() {
                     >
                       <span className="text-xs font-medium text-primary w-10 shrink-0">W{step.weekNumber}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{mod.title}</p>
+                        <p className="font-medium truncate">{mod.title}{step.isPracticeWeek ? ' — Practice & Embed' : ''}</p>
                         <span className="flex items-center gap-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />{mod.durationMinutes} min
                         </span>
