@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
 import { moduleContent } from '@/data/module-content';
+import type { Unit } from '@/types/journey';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,7 +36,7 @@ function statusButton(status: string | undefined): { label: string; variant: 'de
 
 export default function JourneyPage() {
   const navigate = useNavigate();
-  const { journey, firstIncompleteModule, getModule, completedCount, moduleProgress, updateModuleStatus } = useJourney();
+  const { journey, firstIncompleteModule, getModule, completedCount, moduleProgress, updateModuleStatus, unitProgress } = useJourney();
 
   const uniqueModuleIds = [...new Set(journey.steps.map(s => s.moduleId))];
   const totalModules = uniqueModuleIds.length;
@@ -56,6 +57,10 @@ export default function JourneyPage() {
   const nextModContent = nextMod ? moduleContent[nextMod.id] : undefined;
   const nextModStatus = nextMod ? moduleProgress[nextMod.id]?.status : undefined;
   const nextBtn = statusButton(nextModStatus);
+
+  // Find next incomplete unit for macro-modules
+  const nextUnit: Unit | undefined = nextMod?.units?.find(u => unitProgress[u.unitId]?.status !== 'completed');
+  const hasUnits = nextMod?.units && nextMod.units.length > 0;
 
   return (
     <div className="space-y-6">
@@ -121,6 +126,22 @@ export default function JourneyPage() {
                     ))}
                   </ul>
                 )}
+
+                {/* Next unit callout for macro-modules */}
+                {hasUnits && nextUnit && (
+                  <div className="rounded-md border border-primary/20 bg-accent/30 p-3 space-y-2">
+                    <p className="text-xs font-medium text-primary uppercase tracking-wider">Next Unit</p>
+                    <p className="text-sm font-medium">{nextUnit.title}</p>
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Clock className="h-3 w-3" />{nextUnit.durationMinutes} min
+                      <Badge variant="outline" className="capitalize text-xs ml-1">{nextUnit.type}</Badge>
+                    </span>
+                    <Button size="sm" className="gap-1.5 mt-1" onClick={() => navigate(`/app/modules/${nextMod.id}#units`)}>
+                      <Play className="h-3.5 w-3.5" /> Start unit
+                    </Button>
+                  </div>
+                )}
+
                 <div className="flex gap-2 pt-1">
                   <Button className="gap-1.5" onClick={() => handleModuleAction(nextMod.id)}>
                     <BookOpen className="h-4 w-4" />

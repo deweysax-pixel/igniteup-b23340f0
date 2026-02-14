@@ -10,7 +10,7 @@ import { Plus, Eye, Clock, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Module } from '@/types/journey';
 
-const categories = ['all', 'feedback', 'communication', 'delegation', 'coaching', 'strategy'] as const;
+const categories = ['all', 'feedback', 'communication', 'delegation', 'coaching', 'strategy', 'team performance'] as const;
 
 export default function CatalogPage() {
   const navigate = useNavigate();
@@ -63,7 +63,7 @@ export default function CatalogPage() {
                   <div className="flex items-center gap-2">
                     {statusBadge(mod.id)}
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />{mod.durationMinutes}m
+                      <Clock className="h-3 w-3" />{mod.totalDurationMinutes ? `${Math.floor(mod.totalDurationMinutes / 60)}h ${mod.totalDurationMinutes % 60}m` : `${mod.durationMinutes}m`}
                     </span>
                   </div>
                 </div>

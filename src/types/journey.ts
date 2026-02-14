@@ -3,12 +3,23 @@ export interface ModuleContent {
   coreLesson: string[];
 }
 
+export interface Unit {
+  unitId: string;
+  title: string;
+  durationMinutes: number;
+  type: 'learn' | 'exercise' | 'reflection' | 'practice';
+  summaryBullets: string[];
+}
+
 export interface Module {
   id: string;
   title: string;
   shortDescription: string;
   durationMinutes: number;
+  totalDurationMinutes?: number;
   category: string;
+  level?: string;
+  units?: Unit[];
   playbookRoute?: string;
   practiceRoute?: string;
   measureRoute?: string;
@@ -18,6 +29,11 @@ export interface Module {
 export type ModuleStatus = 'not_started' | 'in_progress' | 'completed';
 
 export interface ModuleProgress {
+  status: ModuleStatus;
+  completedAt?: string;
+}
+
+export interface UnitProgress {
   status: ModuleStatus;
   completedAt?: string;
 }

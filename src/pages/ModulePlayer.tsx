@@ -5,16 +5,37 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle } from 'lucide-react';
 import { moduleContent } from '@/data/module-content';
+import { toast } from 'sonner';
+
+function formatDuration(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+function unitStatusBadge(status: string | undefined) {
+  switch (status) {
+    case 'completed':
+      return <Badge variant="outline" className="border-primary/30 text-primary text-xs gap-1"><CheckCircle2 className="h-3 w-3" />Completed</Badge>;
+    case 'in_progress':
+      return <Badge variant="secondary" className="text-xs gap-1"><Play className="h-3 w-3" />In progress</Badge>;
+    default:
+      return <Badge variant="outline" className="text-xs text-muted-foreground gap-1"><Circle className="h-3 w-3" />Not started</Badge>;
+  }
+}
 
 export default function ModulePlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { getModule, moduleProgress, updateModuleStatus } = useJourney();
+  const { getModule, moduleProgress, updateModuleStatus, unitProgress, updateUnitStatus } = useJourney();
 
   const mod = id ? getModule(id) : undefined;
   const content = id ? moduleContent[id] : undefined;
   const progress = id ? moduleProgress[id] : undefined;
   const isCompleted = progress?.status === 'completed';
+  const hasUnits = mod?.units && mod.units.length > 0;
+  const displayDuration = mod?.totalDurationMinutes || mod?.durationMinutes || 0;
 
   if (!mod) {
     return (
@@ -32,6 +53,19 @@ export default function ModulePlayer() {
     updateModuleStatus(id, isCompleted ? 'not_started' : 'completed');
   };
 
+  const handleUnitAction = (unitId: string) => {
+    const current = unitProgress[unitId]?.status;
+    if (!current || current === 'not_started') {
+      updateUnitStatus(unitId, 'in_progress', id);
+      toast.success('Unit started');
+    }
+  };
+
+  const handleUnitComplete = (unitId: string) => {
+    updateUnitStatus(unitId, 'completed', id);
+    toast.success('Unit completed');
+  };
+
   return (
     <div className="space-y-6 max-w-3xl">
       <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => navigate(-1)}>
@@ -40,10 +74,11 @@ export default function ModulePlayer() {
 
       {/* Header */}
       <div className="space-y-2">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <Badge variant="secondary" className="capitalize">{mod.category}</Badge>
+          {mod.level && <Badge variant="outline" className="text-xs">{mod.level}</Badge>}
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />{mod.durationMinutes} min
+            <Clock className="h-3 w-3" />{formatDuration(displayDuration)}
           </span>
           {isCompleted && (
             <Badge variant="outline" className="gap-1 border-primary/30 text-primary">
@@ -97,6 +132,50 @@ export default function ModulePlayer() {
         </Card>
       )}
 
+      {/* Units */}
+      {hasUnits && (
+        <Card id="units">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Units</CardTitle>
+            <CardDescription className="text-xs">{mod.units!.length} units · {formatDuration(displayDuration)} total</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {mod.units!.map((unit, idx) => {
+                const uStatus = unitProgress[unit.unitId]?.status;
+                const isUnitCompleted = uStatus === 'completed';
+                const btnLabel = uStatus === 'completed' ? 'Review' : uStatus === 'in_progress' ? 'Continue' : 'Start';
+                return (
+                  <div key={unit.unitId} className="flex items-center gap-3 p-3 rounded-md bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                    <span className="text-xs font-medium text-primary w-6 shrink-0">{idx + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{unit.title}</p>
+                      <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="h-3 w-3" />{unit.durationMinutes}m
+                        <Badge variant="outline" className="capitalize text-xs">{unit.type}</Badge>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {unitStatusBadge(uStatus)}
+                      {!isUnitCompleted && (
+                        <Button size="sm" variant="outline" onClick={() => handleUnitAction(unit.unitId)}>
+                          {btnLabel}
+                        </Button>
+                      )}
+                      {uStatus === 'in_progress' && (
+                        <Button size="sm" onClick={() => handleUnitComplete(unit.unitId)}>
+                          <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Done
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Practice */}
       <Card>
         <CardHeader className="pb-3">
@@ -120,21 +199,23 @@ export default function ModulePlayer() {
       </Card>
 
       {/* Mark Complete */}
-      <div className="flex items-center gap-4 pt-2">
-        <Button
-          variant={isCompleted ? 'outline' : 'default'}
-          className="gap-2"
-          onClick={handleToggleComplete}
-        >
-          <CheckCircle2 className="h-4 w-4" />
-          {isCompleted ? 'Mark as Incomplete' : 'Mark as Completed'}
-        </Button>
-        {isCompleted && progress?.completedAt && (
-          <span className="text-xs text-muted-foreground">
-            Completed {new Date(progress.completedAt).toLocaleDateString()}
-          </span>
-        )}
-      </div>
+      {!hasUnits && (
+        <div className="flex items-center gap-4 pt-2">
+          <Button
+            variant={isCompleted ? 'outline' : 'default'}
+            className="gap-2"
+            onClick={handleToggleComplete}
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            {isCompleted ? 'Mark as Incomplete' : 'Mark as Completed'}
+          </Button>
+          {isCompleted && progress?.completedAt && (
+            <span className="text-xs text-muted-foreground">
+              Completed {new Date(progress.completedAt).toLocaleDateString()}
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

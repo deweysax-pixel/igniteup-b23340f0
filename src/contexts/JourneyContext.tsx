@@ -1,19 +1,21 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import type { Module, Journey, JourneyStep, ModuleStatus, ModuleProgress } from '@/types/journey';
+import type { Module, Journey, JourneyStep, ModuleStatus, ModuleProgress, UnitProgress } from '@/types/journey';
 import { modules as seedModules, defaultJourney } from '@/data/journey-seed';
 
 interface JourneyContextValue {
   modules: Module[];
   journey: Journey;
   moduleProgress: Record<string, ModuleProgress>;
+  unitProgress: Record<string, UnitProgress>;
   addModuleToJourney: (moduleId: string) => void;
   removeModuleFromJourney: (moduleId: string) => void;
-  setDuration: (weeks: 4 | 8) => void;
+  setDuration: (weeks: 2 | 4 | 8 | 12 | 16 | 20 | 24) => void;
   generatePlan: () => void;
   saveJourney: () => void;
   getModule: (id: string) => Module | undefined;
   currentStepModule: Module | undefined;
   updateModuleStatus: (moduleId: string, status: ModuleStatus) => void;
+  updateUnitStatus: (unitId: string, status: ModuleStatus, parentModuleId?: string) => void;
   completedCount: number;
   firstIncompleteModule: Module | undefined;
 }
@@ -24,6 +26,7 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
   const [modules] = useState<Module[]>(seedModules);
   const [journey, setJourney] = useState<Journey>({ ...defaultJourney });
   const [moduleProgress, setModuleProgress] = useState<Record<string, ModuleProgress>>({});
+  const [unitProgress, setUnitProgress] = useState<Record<string, UnitProgress>>({});
 
   const getModule = useCallback((id: string) => modules.find(m => m.id === id), [modules]);
 
@@ -39,6 +42,37 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
         completedAt: status === 'completed' ? new Date().toISOString() : undefined,
       },
     }));
+  }, []);
+
+  const updateUnitStatus = useCallback((unitId: string, status: ModuleStatus, parentModuleId?: string) => {
+    setUnitProgress(prev => {
+      const next = {
+        ...prev,
+        [unitId]: {
+          status,
+          completedAt: status === 'completed' ? new Date().toISOString() : undefined,
+        },
+      };
+
+      // Check if all units in parent module are completed
+      if (parentModuleId && status === 'completed') {
+        const mod = seedModules.find(m => m.id === parentModuleId);
+        if (mod?.units) {
+          const allDone = mod.units.every(u => {
+            if (u.unitId === unitId) return true; // this one is being set to completed
+            return next[u.unitId]?.status === 'completed';
+          });
+          if (allDone) {
+            setModuleProgress(mp => ({
+              ...mp,
+              [parentModuleId]: { status: 'completed', completedAt: new Date().toISOString() },
+            }));
+          }
+        }
+      }
+
+      return next;
+    });
   }, []);
 
   const journeyModuleIds = journey.steps.map(s => s.moduleId);
@@ -85,21 +119,17 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
       const newSteps: JourneyStep[] = [];
 
       if (prev.durationWeeks <= 8) {
-        // Short journeys: distribute evenly
         for (let w = 1; w <= prev.durationWeeks; w++) {
           const modId = moduleIds[(w - 1) % moduleIds.length];
           newSteps.push({ weekNumber: w, moduleId: modId });
         }
       } else {
-        // Long journeys: 2-week blocks (Learning + Practice & Embed)
         let week = 1;
         let modIndex = 0;
         while (week <= prev.durationWeeks) {
           const modId = moduleIds[modIndex % moduleIds.length];
-          // Week A: Learning
           newSteps.push({ weekNumber: week, moduleId: modId });
           week++;
-          // Week B: Practice & Embed (same module)
           if (week <= prev.durationWeeks) {
             newSteps.push({ weekNumber: week, moduleId: modId, isPracticeWeek: true });
             week++;
@@ -112,15 +142,13 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const saveJourney = useCallback(() => {
-    // In demo mode this is a no-op beyond state; toast handled by caller
-  }, []);
+  const saveJourney = useCallback(() => {}, []);
 
   return (
     <JourneyContext.Provider value={{
-      modules, journey, moduleProgress, addModuleToJourney, removeModuleFromJourney,
+      modules, journey, moduleProgress, unitProgress, addModuleToJourney, removeModuleFromJourney,
       setDuration, generatePlan, saveJourney, getModule, currentStepModule,
-      updateModuleStatus, completedCount, firstIncompleteModule,
+      updateModuleStatus, updateUnitStatus, completedCount, firstIncompleteModule,
     }}>
       {children}
     </JourneyContext.Provider>

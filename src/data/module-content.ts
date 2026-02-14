@@ -76,4 +76,84 @@ export const moduleContent: Record<string, ModuleContent> = {
       'Practice the elevator version. If you cannot say it in 30 seconds, it is not clear enough.',
     ],
   },
+  // Team Performance macro-modules
+  'tp-1': {
+    outcomes: [
+      'Establish measurable trust behaviors across your team',
+      'Apply repair moves when trust is damaged',
+      'Co-create a team agreement that defines how you show up together',
+    ],
+    coreLesson: [
+      'Trust is not a feeling. It is a set of observable, repeatable behaviors.',
+      'Psychological safety means people speak up without fear of punishment.',
+      'Micro-behaviors compound: small daily trust signals outweigh grand gestures.',
+      'Assume positive intent as a default. Reset when you catch yourself judging.',
+      'Repair fast. A quick "I got that wrong" restores more trust than a perfect track record.',
+      'Team agreements only work when the team writes them together.',
+      'One trust action per week is enough to shift a culture over 90 days.',
+    ],
+  },
+  'tp-2': {
+    outcomes: [
+      'Transform unproductive conflict into structured, constructive debate',
+      'Apply the "challenge the idea, not the person" principle consistently',
+      'Use the disagree-and-commit framework to maintain momentum after debate',
+    ],
+    coreLesson: [
+      'Healthy teams argue about ideas. Dysfunctional teams argue about people.',
+      'Conflict avoidance is more dangerous than conflict itself.',
+      'Rules of engagement create a safe container for productive tension.',
+      'The 2-minute debate format prevents tangents and keeps energy high.',
+      'Facilitation moves — like naming the tension — keep conversations on track.',
+      'Disagree and commit: once a decision is made, everyone rows in the same direction.',
+    ],
+  },
+  'tp-3': {
+    outcomes: [
+      'Turn vague discussions into documented, actionable decisions',
+      'Implement a decision log that creates transparency and accountability',
+      'Use pre-mortems to surface risks before they derail execution',
+    ],
+    coreLesson: [
+      'Most teams discuss endlessly without deciding. Decision hygiene fixes that.',
+      'A decision statement has four parts: what, who owns it, by when, and how we will know.',
+      'If it is not written down, it is not a decision — it is a conversation.',
+      'Pre-mortems catch blind spots that post-mortems reveal too late.',
+      'Every decision needs an owner and a due date. No exceptions.',
+      'Weekly written decisions create a rhythm of clarity and forward motion.',
+      'Reflection on where clarity breaks down reveals systemic gaps, not individual failures.',
+    ],
+  },
+  'tp-4': {
+    outcomes: [
+      'Build a culture of peer-to-peer accountability without hierarchy',
+      'Use factual, non-judgmental scripts for difficult accountability moments',
+      'Create a visible team standards board that reinforces shared expectations',
+    ],
+    coreLesson: [
+      'Accountability is not punishment. It is a commitment to shared standards.',
+      'Name issues early. Small problems left unaddressed become big cultural debts.',
+      'Keep accountability conversations factual: behavior, impact, request.',
+      'Peers hold each other accountable better than managers — when they have the tools.',
+      'A coaching stance balances support with challenge. Hold the bar and hold the person.',
+      'Team standards boards make expectations visible and reduce ambiguity.',
+      'Reflect on what you tolerate. Tolerance of low standards is contagious.',
+    ],
+  },
+  'tp-5': {
+    outcomes: [
+      'Install a lightweight operating system for tracking team results',
+      'Shift team focus from outputs to outcomes that matter',
+      'Run weekly reviews that maintain alignment and momentum',
+    ],
+    coreLesson: [
+      'Outcomes tell you if you are winning. Outputs tell you if you are busy.',
+      'Three metrics is enough. More than that, and nobody watches any of them.',
+      'A weekly review ritual keeps priorities honest and surfaces drift early.',
+      'Trade-offs are not failures. They are decisions that deserve clarity.',
+      'Meetings should produce decisions and actions, not status updates.',
+      'A scoreboard check-in takes 15 minutes and saves hours of misalignment.',
+      'Embed weeks turn one-time learning into sustained habits.',
+    ],
+  },
 };
