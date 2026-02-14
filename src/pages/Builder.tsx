@@ -36,13 +36,25 @@ export default function BuilderPage() {
           <CardDescription className="text-xs">Choose how long your journey should last</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex gap-2">
-            <Button size="sm" variant={journey.durationWeeks === 4 ? 'default' : 'outline'} onClick={() => setDuration(4)}>
-              4 Weeks
-            </Button>
-            <Button size="sm" variant={journey.durationWeeks === 8 ? 'default' : 'outline'} onClick={() => setDuration(8)}>
-              8 Weeks
-            </Button>
+          <div className="flex flex-wrap gap-2">
+            {([
+              [2, '2 weeks (Sprint)'],
+              [4, '4 weeks (1 month)'],
+              [8, '8 weeks (2 months)'],
+              [12, '12 weeks (3 months)'],
+              [16, '16 weeks (4 months)'],
+              [20, '20 weeks (5 months)'],
+              [24, '24 weeks (6 months)'],
+            ] as const).map(([weeks, label]) => (
+              <Button
+                key={weeks}
+                size="sm"
+                variant={journey.durationWeeks === weeks ? 'default' : 'outline'}
+                onClick={() => setDuration(weeks as any)}
+              >
+                {label}
+              </Button>
+            ))}
           </div>
         </CardContent>
       </Card>
@@ -67,7 +79,7 @@ export default function BuilderPage() {
                   <div key={`${step.weekNumber}-${step.moduleId}`} className="flex items-center gap-3 p-3 rounded-md bg-secondary/50">
                     <span className="text-xs font-medium text-primary w-10 shrink-0">W{step.weekNumber}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{mod.title}</p>
+                      <p className="text-sm font-medium truncate">{mod.title}{step.isPracticeWeek ? ' — Practice & Embed' : ''}</p>
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Clock className="h-3 w-3" />{mod.durationMinutes}m
                         <Badge variant="secondary" className="capitalize text-xs ml-2">{mod.category}</Badge>

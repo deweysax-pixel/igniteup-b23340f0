@@ -25,12 +25,13 @@ export interface ModuleProgress {
 export interface JourneyStep {
   weekNumber: number;
   moduleId: string;
+  isPracticeWeek?: boolean;
 }
 
 export interface Journey {
   id: string;
   title: string;
-  durationWeeks: number;
+  durationWeeks: 2 | 4 | 8 | 12 | 16 | 20 | 24;
   steps: JourneyStep[];
   currentWeek: number;
 }

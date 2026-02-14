@@ -74,7 +74,7 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const setDuration = useCallback((weeks: 4 | 8) => {
+  const setDuration = useCallback((weeks: 2 | 4 | 8 | 12 | 16 | 20 | 24) => {
     setJourney(prev => ({ ...prev, durationWeeks: weeks }));
   }, []);
 
@@ -83,10 +83,31 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
       if (prev.steps.length === 0) return prev;
       const moduleIds = prev.steps.map(s => s.moduleId);
       const newSteps: JourneyStep[] = [];
-      for (let w = 1; w <= prev.durationWeeks; w++) {
-        const modId = moduleIds[(w - 1) % moduleIds.length];
-        newSteps.push({ weekNumber: w, moduleId: modId });
+
+      if (prev.durationWeeks <= 8) {
+        // Short journeys: distribute evenly
+        for (let w = 1; w <= prev.durationWeeks; w++) {
+          const modId = moduleIds[(w - 1) % moduleIds.length];
+          newSteps.push({ weekNumber: w, moduleId: modId });
+        }
+      } else {
+        // Long journeys: 2-week blocks (Learning + Practice & Embed)
+        let week = 1;
+        let modIndex = 0;
+        while (week <= prev.durationWeeks) {
+          const modId = moduleIds[modIndex % moduleIds.length];
+          // Week A: Learning
+          newSteps.push({ weekNumber: week, moduleId: modId });
+          week++;
+          // Week B: Practice & Embed (same module)
+          if (week <= prev.durationWeeks) {
+            newSteps.push({ weekNumber: week, moduleId: modId, isPracticeWeek: true });
+            week++;
+          }
+          modIndex++;
+        }
       }
+
       return { ...prev, steps: newSteps };
     });
   }, []);
