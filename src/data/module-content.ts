@@ -76,6 +76,36 @@ export const moduleContent: Record<string, ModuleContent> = {
       'Practice the elevator version. If you cannot say it in 30 seconds, it is not clear enough.',
     ],
   },
+  'mod-6': {
+    outcomes: [
+      'Run 1:1 meetings that surface real issues and build trust',
+      'Use a repeatable 1:1 structure that respects everyone\'s time',
+      'Turn 1:1s into a coaching and development accelerator',
+    ],
+    coreLesson: [
+      'The 1:1 belongs to the direct report, not the manager. Let them set the agenda.',
+      'Open with "What is on your mind?" Not "Here is what I need from you."',
+      'Separate performance conversations from development conversations.',
+      'Use a simple template: wins, blockers, one thing I need from you.',
+      'Follow up on previous action items. Consistency builds trust.',
+      'End with: "What is the one thing I can do to support you this week?"',
+    ],
+  },
+  'mod-7': {
+    outcomes: [
+      'Deliver recognition that reinforces specific, high-impact behaviors',
+      'Build a recognition habit that compounds team motivation',
+      'Avoid generic praise that dilutes trust and credibility',
+    ],
+    coreLesson: [
+      'Recognition works when it is specific, timely, and tied to impact.',
+      'Name the behavior, not the person. "You prepared a clear brief" beats "Great job."',
+      'Public recognition amplifies the behavior across the team.',
+      'Mix written and verbal. A short Slack message can be as powerful as a speech.',
+      'Recognize effort during struggle, not just outcomes after success.',
+      'One genuine recognition per week changes how your team experiences work.',
+    ],
+  },
   // Team Performance macro-modules
   'tp-1': {
     outcomes: [

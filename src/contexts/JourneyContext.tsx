@@ -12,6 +12,7 @@ interface JourneyContextValue {
   setDuration: (weeks: 2 | 4 | 8 | 12 | 16 | 20 | 24) => void;
   generatePlan: () => void;
   saveJourney: () => void;
+  replaceJourney: (journey: Journey) => void;
   getModule: (id: string) => Module | undefined;
   currentStepModule: Module | undefined;
   updateModuleStatus: (moduleId: string, status: ModuleStatus) => void;
@@ -142,12 +143,18 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const replaceJourney = useCallback((newJourney: Journey) => {
+    setJourney(newJourney);
+    setModuleProgress({});
+    setUnitProgress({});
+  }, []);
+
   const saveJourney = useCallback(() => {}, []);
 
   return (
     <JourneyContext.Provider value={{
       modules, journey, moduleProgress, unitProgress, addModuleToJourney, removeModuleFromJourney,
-      setDuration, generatePlan, saveJourney, getModule, currentStepModule,
+      setDuration, generatePlan, saveJourney, replaceJourney, getModule, currentStepModule,
       updateModuleStatus, updateUnitStatus, completedCount, firstIncompleteModule,
     }}>
       {children}
