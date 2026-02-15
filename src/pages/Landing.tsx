@@ -15,61 +15,39 @@ export default function Landing() {
       </header>
 
       {/* Hero */}
-      <main className="flex-1 flex items-center justify-center px-6 py-20 md:py-32">
-        <div className="max-w-3xl text-center space-y-10 animate-fade-in">
-          <div className="space-y-6">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.15] text-balance">
-              <span className="relative inline-block">
-                <span className="font-extrabold">IgniteUp</span>{' '}your{' '}
-                <span className="font-extrabold">potential</span>
-                <span
-                  className="absolute -bottom-2 left-0 w-full h-[3px] rounded-full"
-                  style={{ background: 'var(--gradient-primary)' }}
-                  aria-hidden="true"
-                />
-              </span>
-              <br className="hidden sm:block" />
-              <span className="text-foreground"> — one journey at a time.</span>
-            </h1>
+      <main className="flex-1 flex items-center justify-center px-6">
+        <div className="max-w-2xl text-center space-y-8 animate-fade-in">
+          <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
+            Transform your managers into high-impact leaders
+            <span className="text-primary"> — one challenge at a time.</span>
+          </h2>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Build measurable habits through curated learning, real-world practice, and clear progress signals.
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/app/journey">
-              <Button size="lg" className="text-base px-8 min-w-[200px]">
-                Start Your Journey
-              </Button>
-            </Link>
-            <Link to="/app/journey">
-              <Button variant="outline" size="lg" className="text-base px-8 min-w-[200px]">
-                Open Demo
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3 text-left pt-6">
+          <div className="grid gap-4 md:grid-cols-3 text-left">
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <Target className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                Measurable growth in weeks
+                Measurable leadership habits in 4 weeks
               </p>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <BarChart3 className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                ROI signals leaders understand
+                An ROI barometer that speaks the boardroom's language
               </p>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <Trophy className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                Momentum through practice & recognition
+                Team dynamics driven by gamification and recognition
               </p>
             </div>
           </div>
+
+          <Link to="/login">
+            <Button size="lg" className="text-base px-8 mt-4">
+              Start Your Journey
+            </Button>
+          </Link>
         </div>
       </main>
 
