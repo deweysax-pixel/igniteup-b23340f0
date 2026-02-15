@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Shield, Users, User } from 'lucide-react';
 import type { Role } from '@/types/demo';
+import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const roles: { role: Role; label: string; description: string; icon: React.ElementType }[] = [
   { role: 'admin', label: 'Administrator', description: 'Full organizational view, challenge management, and data export.', icon: Shield },
@@ -24,11 +25,8 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-lg space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold tracking-tight">
-            <span className="text-primary">Ignite</span>
-            <span className="text-muted-foreground">Up</span>
-            <span className="ml-2">Demo</span>
-          </h1>
+           <img src={igniteupLogo} alt="IgniteUp" className="h-16 w-auto object-contain mx-auto" />
+           <span className="block text-lg font-medium text-muted-foreground mt-2">Demo</span>
           <p className="text-sm text-muted-foreground">
             Choose a role to explore the platform
           </p>
