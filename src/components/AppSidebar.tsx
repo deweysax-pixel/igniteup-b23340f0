@@ -79,7 +79,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-sidebar-border">
       <div className="p-4 border-b border-sidebar-border">
-        <img src={igniteupLogo} alt="IgniteUp" className="h-8 object-contain" />
+        <img src={igniteupLogo} alt="IgniteUp" className="h-12 w-auto object-contain" />
         <p className="text-xs text-muted-foreground mt-1 capitalize">
           Role: {state.currentRole}
         </p>
