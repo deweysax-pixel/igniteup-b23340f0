@@ -42,6 +42,22 @@ export const modules: Module[] = [
     category: 'communication',
     playbookRoute: '/app/playbooks',
   },
+  {
+    id: 'mod-6',
+    title: 'Effective 1:1s',
+    shortDescription: 'Run 1:1 meetings that build trust, surface issues, and drive accountability.',
+    durationMinutes: 20,
+    category: 'coaching',
+    practiceRoute: '/app/challenges',
+  },
+  {
+    id: 'mod-7',
+    title: 'Recognition That Sticks',
+    shortDescription: 'Deliver recognition that reinforces the right behaviors and motivates your team.',
+    durationMinutes: 15,
+    category: 'feedback',
+    practiceRoute: '/app/challenges',
+  },
   // Team Performance track — macro-modules
   {
     id: 'tp-1',

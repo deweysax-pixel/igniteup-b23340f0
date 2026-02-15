@@ -64,9 +64,14 @@ export default function JourneyPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">My Journey</h1>
-        <p className="text-sm text-muted-foreground mt-1">Your personalized leadership development path</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">My Journey</h1>
+          <p className="text-sm text-muted-foreground mt-1">Your personalized leadership development path</p>
+        </div>
+        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/app/onboarding')}>
+          <Hammer className="h-3.5 w-3.5" /> Rebuild my journey
+        </Button>
       </div>
 
       {/* Training Progress */}

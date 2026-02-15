@@ -20,6 +20,7 @@ import JourneyPage from "./pages/Journey";
 import CatalogPage from "./pages/Catalog";
 import BuilderPage from "./pages/Builder";
 import ModulePlayer from "./pages/ModulePlayer";
+import OnboardingPage from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
                 <Route path="catalog" element={<CatalogPage />} />
                 <Route path="builder" element={<BuilderPage />} />
                 <Route path="modules/:id" element={<ModulePlayer />} />
+                <Route path="onboarding" element={<OnboardingPage />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
