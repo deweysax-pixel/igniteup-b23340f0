@@ -25,7 +25,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-lg space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
-           <img src={igniteupLogo} alt="IgniteUp" className="h-16 w-auto object-contain mx-auto" />
+           <img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto" />
            <span className="block text-lg font-medium text-muted-foreground mt-2">Demo</span>
           <p className="text-sm text-muted-foreground">
             Choose a role to explore the platform
