@@ -67,3 +67,27 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
 }
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .print\:hidden, nav, aside, [data-sidebar], header {
+    display: none !important;
+  }
+  .print\:block {
+    display: block !important;
+  }
+  .print\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  }
+  [data-chart] {
+    break-inside: avoid;
+  }
+  table {
+    break-inside: avoid;
+  }
+}
