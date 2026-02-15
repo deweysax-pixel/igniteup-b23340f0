@@ -13,6 +13,7 @@ import {
   Library,
   Hammer,
   HeadphonesIcon,
+  FileBarChart,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -60,6 +61,7 @@ const sections: { label: string; items: NavItem[] }[] = [
     label: 'Measure',
     items: [
       { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
+      { title: 'Reports', url: '/app/reports', icon: FileBarChart, roles: ['admin', 'manager'] },
     ],
   },
   {
