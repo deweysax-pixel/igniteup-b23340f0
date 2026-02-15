@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
+import igniteupLogo from '@/assets/igniteup-logo.png';
 import {
   Sidebar,
   SidebarContent,
@@ -78,10 +79,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-sidebar-border">
       <div className="p-4 border-b border-sidebar-border">
-        <h1 className="text-lg font-bold tracking-tight">
-          <span className="text-primary">Ignite</span>
-          <span className="text-muted-foreground">Up</span>
-        </h1>
+        <img src={igniteupLogo} alt="IgniteUp" className="h-8 object-contain" />
         <p className="text-xs text-muted-foreground mt-1 capitalize">
           Role: {state.currentRole}
         </p>
