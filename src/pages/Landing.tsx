@@ -1,16 +1,14 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Target, BarChart3, Trophy } from 'lucide-react';
+import igniteupLogo from '@/assets/igniteup-logo.png';
 
 export default function Landing() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <h1 className="text-xl font-bold tracking-tight">
-          <span className="text-primary">Ignite</span>
-          <span className="text-muted-foreground">Up</span>
-        </h1>
+        <img src={igniteupLogo} alt="IgniteUp" className="h-8 object-contain" />
         <Link to="/login">
           <Button variant="outline" size="sm">Sign In</Button>
         </Link>
