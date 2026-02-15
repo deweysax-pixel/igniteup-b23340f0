@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
+import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle } from 'lucide-react';
+import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle, HeadphonesIcon, MessageSquare, Users } from 'lucide-react';
 import { moduleContent } from '@/data/module-content';
 import { toast } from 'sonner';
+import { SupportRequestModal } from '@/components/SupportRequestModal';
+import type { ServiceRequestType } from '@/types/demo';
 
 function formatDuration(minutes: number) {
   const h = Math.floor(minutes / 60);
@@ -29,7 +33,9 @@ export default function ModulePlayer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getModule, moduleProgress, updateModuleStatus, unitProgress, updateUnitStatus } = useJourney();
-
+  const { state, currentUser, dispatch } = useDemo();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<ServiceRequestType>('coaching_session');
   const mod = id ? getModule(id) : undefined;
   const content = id ? moduleContent[id] : undefined;
   const progress = id ? moduleProgress[id] : undefined;
@@ -197,6 +203,50 @@ export default function ModulePlayer() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Need support? */}
+      <Card className="border-primary/20 bg-gradient-to-br from-card to-accent/10">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Need support?</CardTitle>
+          <CardDescription className="text-xs">Get help from our training team</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { setModalType('coaching_session'); setModalOpen(true); }}>
+              <HeadphonesIcon className="h-3.5 w-3.5" /> Request coaching session
+            </Button>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { setModalType('ask_expert'); setModalOpen(true); }}>
+              <MessageSquare className="h-3.5 w-3.5" /> Ask an expert
+            </Button>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { setModalType('team_workshop'); setModalOpen(true); }}>
+              <Users className="h-3.5 w-3.5" /> Request team workshop
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <SupportRequestModal
+        open={modalOpen}
+        onOpenChange={setModalOpen}
+        requestType={modalType}
+        moduleTitle={mod.title}
+        onSubmit={(data) => {
+          dispatch({
+            type: 'ADD_SERVICE_REQUEST',
+            payload: {
+              requesterName: currentUser?.name || 'Unknown',
+              role: state.currentRole,
+              requestType: modalType,
+              moduleId: id,
+              moduleTitle: mod.title,
+              message: data.message,
+              preferredTimeframe: data.preferredTimeframe,
+              requesterEmail: data.email,
+            },
+          });
+          toast.success('Request sent');
+        }}
+      />
 
       {/* Mark Complete */}
       {!hasUnits && (

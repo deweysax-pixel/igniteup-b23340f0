@@ -12,6 +12,7 @@ import {
   Map,
   Library,
   Hammer,
+  HeadphonesIcon,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -64,6 +65,7 @@ const sections: { label: string; items: NavItem[] }[] = [
     label: 'Admin',
     items: [
       { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
+      { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin'] },
       { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
     ],
   },

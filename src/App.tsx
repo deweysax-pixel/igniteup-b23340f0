@@ -21,6 +21,7 @@ import CatalogPage from "./pages/Catalog";
 import BuilderPage from "./pages/Builder";
 import ModulePlayer from "./pages/ModulePlayer";
 import OnboardingPage from "./pages/Onboarding";
+import ServiceRequests from "./pages/ServiceRequests";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
                 <Route path="builder" element={<BuilderPage />} />
                 <Route path="modules/:id" element={<ModulePlayer />} />
                 <Route path="onboarding" element={<OnboardingPage />} />
+                <Route path="services" element={<ServiceRequests />} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -1,16 +1,20 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
+import { useDemo } from '@/contexts/DemoContext';
 import { moduleContent } from '@/data/module-content';
 import type { Unit } from '@/types/journey';
+import type { ServiceRequestType } from '@/types/demo';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   BookOpen, Play, BarChart3, ArrowRight, CheckCircle2,
-  PartyPopper, Hammer, Clock, Circle,
+  PartyPopper, Hammer, Clock, Circle, HeadphonesIcon, Ticket,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { SupportRequestModal } from '@/components/SupportRequestModal';
 
 function statusLabel(status: string | undefined) {
   switch (status) {
@@ -37,7 +41,9 @@ function statusButton(status: string | undefined): { label: string; variant: 'de
 export default function JourneyPage() {
   const navigate = useNavigate();
   const { journey, firstIncompleteModule, getModule, completedCount, moduleProgress, updateModuleStatus, unitProgress } = useJourney();
-
+  const { state, currentUser, dispatch } = useDemo();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalType, setModalType] = useState<ServiceRequestType>('coaching_session');
   const uniqueModuleIds = [...new Set(journey.steps.map(s => s.moduleId))];
   const totalModules = uniqueModuleIds.length;
   const allCompleted = totalModules > 0 && completedCount === totalModules;
@@ -195,6 +201,56 @@ export default function JourneyPage() {
             </Card>
           </div>
 
+          {/* Support options */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base">Support Options</CardTitle>
+              <CardDescription className="text-xs">Get expert help along your journey</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Ticket className="h-5 w-5 text-primary" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Coaching credits: {state.coachingCredits}</p>
+                  <p className="text-xs text-muted-foreground">Use credits for 1-on-1 coaching sessions</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={state.coachingCredits <= 0}
+                  onClick={() => {
+                    dispatch({ type: 'USE_COACHING_CREDIT' });
+                    toast.success('Credit used');
+                  }}
+                >
+                  Use a credit
+                </Button>
+              </div>
+              <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { setModalType('coaching_session'); setModalOpen(true); }}>
+                <HeadphonesIcon className="h-3.5 w-3.5" /> Request support
+              </Button>
+            </CardContent>
+          </Card>
+
+          <SupportRequestModal
+            open={modalOpen}
+            onOpenChange={setModalOpen}
+            requestType={modalType}
+            onSubmit={(data) => {
+              dispatch({
+                type: 'ADD_SERVICE_REQUEST',
+                payload: {
+                  requesterName: currentUser?.name || 'Unknown',
+                  role: state.currentRole,
+                  requestType: modalType,
+                  message: data.message,
+                  preferredTimeframe: data.preferredTimeframe,
+                  requesterEmail: data.email,
+                },
+              });
+              toast.success('Request sent');
+            }}
+          />
           {/* Journey Modules list */}
           <Card>
             <CardHeader className="pb-3">
