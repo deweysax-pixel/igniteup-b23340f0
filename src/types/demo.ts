@@ -81,6 +81,24 @@ export interface BarometerAggregate {
   delta: number;
 }
 
+export type ServiceRequestType = 'coaching_session' | 'ask_expert' | 'team_workshop';
+export type ServiceRequestStatus = 'new' | 'in_review' | 'scheduled' | 'closed';
+
+export interface ServiceRequest {
+  id: string;
+  createdAt: string;
+  requesterName: string;
+  requesterEmail?: string;
+  role: Role;
+  team?: string;
+  requestType: ServiceRequestType;
+  moduleId?: string;
+  moduleTitle?: string;
+  message: string;
+  status: ServiceRequestStatus;
+  preferredTimeframe?: string;
+}
+
 export interface DemoState {
   organization: Organization;
   users: User[];
@@ -88,6 +106,8 @@ export interface DemoState {
   challenges: Challenge[];
   checkIns: CheckIn[];
   barometerResponses: BarometerResponse[];
+  serviceRequests: ServiceRequest[];
+  coachingCredits: number;
   currentUserId: string;
   currentRole: Role;
 }

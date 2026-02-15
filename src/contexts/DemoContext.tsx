@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import type { DemoState, Role, CheckIn, BarometerResponse } from '@/types/demo';
+import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType } from '@/types/demo';
 import { getLevel } from '@/types/demo';
 import { createInitialState } from '@/data/demo-seed';
 
@@ -7,7 +7,10 @@ type DemoAction =
   | { type: 'CHECK_IN'; payload: { userId: string; challengeId: string; weekNumber: number; completedActionIds: string[]; note: string } }
   | { type: 'SUBMIT_BAROMETER'; payload: { userId: string; challengeId: string; weekNumber: number; scores: { confidence: number; engagement: number; clarity: number } } }
   | { type: 'SWITCH_ROLE'; payload: Role }
-  | { type: 'RESET_DEMO' };
+  | { type: 'RESET_DEMO' }
+  | { type: 'ADD_SERVICE_REQUEST'; payload: Omit<ServiceRequest, 'id' | 'createdAt' | 'status'> }
+  | { type: 'UPDATE_REQUEST_STATUS'; payload: { id: string; status: ServiceRequest['status'] } }
+  | { type: 'USE_COACHING_CREDIT' };
 
 function recalculateUserXP(state: DemoState, userId: string): DemoState {
   const userCheckIns = state.checkIns.filter(ci => ci.userId === userId);
@@ -73,6 +76,27 @@ function demoReducer(state: DemoState, action: DemoAction): DemoState {
 
     case 'RESET_DEMO':
       return createInitialState(state.currentRole);
+
+    case 'ADD_SERVICE_REQUEST': {
+      const newRequest: ServiceRequest = {
+        ...action.payload,
+        id: `sr-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        status: 'new',
+      };
+      return { ...state, serviceRequests: [...state.serviceRequests, newRequest] };
+    }
+
+    case 'UPDATE_REQUEST_STATUS':
+      return {
+        ...state,
+        serviceRequests: state.serviceRequests.map(r =>
+          r.id === action.payload.id ? { ...r, status: action.payload.status } : r
+        ),
+      };
+
+    case 'USE_COACHING_CREDIT':
+      return { ...state, coachingCredits: Math.max(0, state.coachingCredits - 1) };
 
     default:
       return state;

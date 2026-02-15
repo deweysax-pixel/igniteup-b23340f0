@@ -105,6 +105,8 @@ export function createInitialState(role: Role = 'manager'): DemoState {
     challenges: [...challenges],
     checkIns: generateCheckIns(),
     barometerResponses: generateBarometerResponses(),
+    serviceRequests: [],
+    coachingCredits: 3,
     currentUserId: roleUserMap[role],
     currentRole: role,
   };
