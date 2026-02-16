@@ -43,11 +43,18 @@ export default function Landing() {
             </div>
           </div>
 
-          <Link to="/login">
-            <Button size="lg" className="text-base px-8 mt-4">
-              Start Your Journey
-            </Button>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+            <Link to="/fit-check">
+              <Button size="lg" className="text-base px-8">
+                Take the 90-second Fit Check
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button size="lg" variant="outline" className="text-base px-8">
+                Start Your Journey
+              </Button>
+            </Link>
+          </div>
         </div>
       </main>
 

@@ -5,7 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DemoProvider } from "@/contexts/DemoContext";
 import { JourneyProvider } from "@/contexts/JourneyContext";
+import { PreviewProvider } from "@/contexts/PreviewContext";
 import Landing from "./pages/Landing";
+import FitCheck from "./pages/FitCheck";
+import PreviewJourney from "./pages/PreviewJourney";
 import Login from "./pages/Login";
 import AppLayout from "./components/AppLayout";
 import Dashboard from "./pages/Dashboard";
@@ -30,14 +33,17 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <DemoProvider>
-        <JourneyProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
+      <PreviewProvider>
+        <DemoProvider>
+          <JourneyProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Landing />} />
+                <Route path="/fit-check" element={<FitCheck />} />
+                <Route path="/preview/journey" element={<PreviewJourney />} />
+                <Route path="/login" element={<Login />} />
               <Route path="/app" element={<AppLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="challenges" element={<Challenges />} />
@@ -55,11 +61,12 @@ const App = () => (
                 <Route path="services" element={<ServiceRequests />} />
                 <Route path="reports" element={<Reports />} />
               </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </JourneyProvider>
-      </DemoProvider>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </JourneyProvider>
+        </DemoProvider>
+      </PreviewProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
