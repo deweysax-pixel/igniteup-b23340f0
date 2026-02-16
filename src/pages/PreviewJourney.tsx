@@ -3,7 +3,7 @@ import { usePreview } from '@/contexts/PreviewContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Rocket, Play, BookOpen, Target, Clock } from 'lucide-react';
+import { ArrowRight, Rocket, Play, BookOpen, Target, Clock, Timer } from 'lucide-react';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const challengeLabels: Record<string, string> = {
@@ -99,7 +99,10 @@ export default function PreviewJourney() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button size="lg" className="gap-2" onClick={handleOpenDemo}>
+            <Button size="lg" className="gap-2" onClick={() => navigate('/preview/sandbox')}>
+              <Timer className="h-4 w-4" /> Try it in 2 minutes
+            </Button>
+            <Button size="lg" variant="outline" className="gap-2" onClick={handleOpenDemo}>
               <Play className="h-4 w-4" /> Open the interactive demo
             </Button>
             <Button size="lg" variant="outline" className="gap-2" onClick={handleUseInWorkspace}>
