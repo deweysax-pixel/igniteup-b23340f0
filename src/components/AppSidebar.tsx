@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
+import { usePreview } from '@/contexts/PreviewContext';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 import {
   Sidebar,
@@ -74,8 +75,11 @@ const sections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
+const PREVIEW_ALLOWED_URLS = ['/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app'];
+
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
+  const { isPreviewMode } = usePreview();
   const location = useLocation();
 
   return (
@@ -89,9 +93,12 @@ export function AppSidebar() {
 
       <SidebarContent>
         {sections.map(section => {
-          const visibleItems = section.items.filter(
+          let visibleItems = section.items.filter(
             item => !item.roles || (item.roles as readonly string[]).includes(state.currentRole)
           );
+          if (isPreviewMode) {
+            visibleItems = visibleItems.filter(item => PREVIEW_ALLOWED_URLS.includes(item.url));
+          }
           if (visibleItems.length === 0) return null;
           return (
             <SidebarGroup key={section.label}>

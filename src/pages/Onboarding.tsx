@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,8 +36,21 @@ const FOCUS_TO_MODULES: Record<FocusArea, string[]> = {
   'recognition': ['mod-7'],
 };
 
+const CHALLENGE_TO_FOCUS: Record<string, FocusArea[]> = {
+  alignment: ['team-performance'],
+  accountability: ['team-performance'],
+  'hard-conversations': ['weekly-feedback', 'team-performance'],
+  motivation: ['recognition', 'weekly-feedback'],
+  overwhelmed: ['team-performance', 'weekly-feedback'],
+};
+
+const DURATION_MAP: Record<string, Journey['durationWeeks']> = {
+  '4w': 4, '8w': 8, '3m': 12, '6m': 24,
+};
+
 export default function OnboardingPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { replaceJourney, getModule } = useJourney();
 
   const [step, setStep] = useState(1);
@@ -45,6 +58,21 @@ export default function OnboardingPage() {
   const [duration, setDuration] = useState<Journey['durationWeeks']>(8);
   const [generated, setGenerated] = useState(false);
   const [shortNote, setShortNote] = useState(false);
+  const [prefilled, setPrefilled] = useState(false);
+
+  useEffect(() => {
+    const challenge = searchParams.get('challenge');
+    const dur = searchParams.get('duration');
+    if (challenge || dur) {
+      if (challenge && CHALLENGE_TO_FOCUS[challenge]) {
+        setSelected(CHALLENGE_TO_FOCUS[challenge]);
+      }
+      if (dur && DURATION_MAP[dur]) {
+        setDuration(DURATION_MAP[dur]);
+      }
+      setPrefilled(true);
+    }
+  }, [searchParams]);
 
   const toggleFocus = (id: FocusArea) => {
     setSelected(prev => prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]);
@@ -109,6 +137,12 @@ export default function OnboardingPage() {
       </div>
 
       <Progress value={progressValue} className="h-1.5" />
+
+      {prefilled && (
+        <div className="text-xs text-primary bg-primary/5 border border-primary/20 rounded-md px-3 py-2">
+          Prefilled from your Fit Check — you can edit anytime.
+        </div>
+      )}
 
       {/* Step 1 */}
       {step === 1 && (

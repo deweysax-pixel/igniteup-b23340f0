@@ -1,18 +1,36 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
+import { useEffect } from 'react';
 import { useDemo } from '@/contexts/DemoContext';
+import { usePreview } from '@/contexts/PreviewContext';
 import { AppSidebar } from '@/components/AppSidebar';
+import { PreviewBanner } from '@/components/PreviewBanner';
+import { PreviewGate } from '@/components/PreviewGate';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
 import { getLevelColor } from '@/types/demo';
 
+const PREVIEW_ALLOWED_PATHS = ['/app', '/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/onboarding'];
+
 export default function AppLayout() {
   const { currentUser } = useDemo();
+  const { isPreviewMode, setPreviewMode } = usePreview();
+  const [searchParams] = useSearchParams();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (searchParams.get('mode') === 'preview') {
+      setPreviewMode(true);
+    }
+  }, [searchParams, setPreviewMode]);
+
+  const isGated = isPreviewMode && !PREVIEW_ALLOWED_PATHS.includes(location.pathname) && !location.pathname.startsWith('/app/modules/');
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
+          <PreviewBanner />
           <header className="h-14 border-b border-border flex items-center justify-between px-4">
             <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
             {currentUser && (
@@ -25,7 +43,7 @@ export default function AppLayout() {
             )}
           </header>
           <main className="flex-1 p-6 overflow-auto">
-            <Outlet />
+            {isGated ? <PreviewGate /> : <Outlet />}
           </main>
         </div>
       </div>
