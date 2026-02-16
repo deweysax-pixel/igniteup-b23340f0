@@ -8,7 +8,7 @@ export default function Landing() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain" />
+        <Link to="/"><img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain cursor-pointer" /></Link>
         <Link to="/login">
           <Button variant="outline" size="sm">Sign In</Button>
         </Link>
