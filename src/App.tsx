@@ -8,6 +8,7 @@ import { JourneyProvider } from "@/contexts/JourneyContext";
 import { PreviewProvider } from "@/contexts/PreviewContext";
 import Landing from "./pages/Landing";
 import FitCheck from "./pages/FitCheck";
+import PreviewSandbox from "./pages/PreviewSandbox";
 import PreviewJourney from "./pages/PreviewJourney";
 import Login from "./pages/Login";
 import AppLayout from "./components/AppLayout";
@@ -43,6 +44,7 @@ const App = () => (
                 <Route path="/" element={<Landing />} />
                 <Route path="/fit-check" element={<FitCheck />} />
                 <Route path="/preview/journey" element={<PreviewJourney />} />
+                <Route path="/preview/sandbox" element={<PreviewSandbox />} />
                 <Route path="/login" element={<Login />} />
               <Route path="/app" element={<AppLayout />}>
                 <Route index element={<Dashboard />} />
