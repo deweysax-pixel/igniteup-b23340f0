@@ -68,9 +68,9 @@ export function TeamAttentionCard() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
             <div className="space-y-1.5">
-              <p className="text-sm font-medium">Ignite At Risk</p>
+              <p className="text-sm font-medium">Renewals due</p>
               <p className="text-2xl font-bold">{atRiskCount}</p>
-              <p className="text-xs text-muted-foreground">members need attention</p>
+              <p className="text-xs text-muted-foreground">At Risk + Inactive members</p>
               <Button size="sm" variant="outline" className="gap-1.5 h-7 text-xs mt-1" onClick={() => navigate('/app/ignite-team')}>
                 Open Ignite heatmap
               </Button>

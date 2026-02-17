@@ -7,10 +7,12 @@ import { getLevelColor } from '@/types/demo';
 import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
+import { TeamAttentionCard } from '@/components/TeamAttentionCard';
 
 export default function Dashboard() {
   const { state, currentUser } = useDemo();
   const navigate = useNavigate();
+  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
   const activeChallenge = state.challenges.find(c => c.status === 'active');
 
   // KPI calculations
@@ -46,6 +48,9 @@ export default function Dashboard() {
           <p className="text-sm text-muted-foreground mt-1">{activeChallenge.title}</p>
         )}
       </div>
+
+      {/* Team attention — Manager/Admin only */}
+      {isManager && <TeamAttentionCard />}
 
       {/* This week's focus */}
       <Card className="border-primary/30 bg-primary/5">

@@ -16,7 +16,7 @@ import {
 import { useIgniteStatus, type IgniteStatus } from '@/pages/Ignite';
 import { toast } from 'sonner';
 import { SupportRequestModal } from '@/components/SupportRequestModal';
-import { TeamAttentionCard } from '@/components/TeamAttentionCard';
+
 
 function statusLabel(status: string | undefined) {
   switch (status) {
@@ -102,9 +102,6 @@ export default function JourneyPage() {
           </Button>
         </div>
       </div>
-
-      {/* Team attention — Manager only */}
-      {isManager && <TeamAttentionCard />}
 
       {/* Training Progress */}
       <Card className="border-primary/30 bg-gradient-to-br from-card to-accent/20">
