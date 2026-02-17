@@ -18,7 +18,7 @@ export default function Login() {
 
   const handleSelect = (role: Role) => {
     switchRole(role);
-    navigate('/app/journey');
+    navigate(role === 'manager' || role === 'admin' ? '/app' : '/app/journey');
   };
 
   return (
