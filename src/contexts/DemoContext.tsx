@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType } from '@/types/demo';
+import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType, EvidenceItem, EvidenceType } from '@/types/demo';
 import { getLevel } from '@/types/demo';
 import { createInitialState } from '@/data/demo-seed';
 
@@ -10,7 +10,8 @@ type DemoAction =
   | { type: 'RESET_DEMO' }
   | { type: 'ADD_SERVICE_REQUEST'; payload: Omit<ServiceRequest, 'id' | 'createdAt' | 'status'> }
   | { type: 'UPDATE_REQUEST_STATUS'; payload: { id: string; status: ServiceRequest['status'] } }
-  | { type: 'USE_COACHING_CREDIT' };
+  | { type: 'USE_COACHING_CREDIT' }
+  | { type: 'ADD_EVIDENCE'; payload: Omit<EvidenceItem, 'id' | 'createdAt'> };
 
 function recalculateUserXP(state: DemoState, userId: string): DemoState {
   const userCheckIns = state.checkIns.filter(ci => ci.userId === userId);
@@ -97,6 +98,15 @@ function demoReducer(state: DemoState, action: DemoAction): DemoState {
 
     case 'USE_COACHING_CREDIT':
       return { ...state, coachingCredits: Math.max(0, state.coachingCredits - 1) };
+
+    case 'ADD_EVIDENCE': {
+      const newEvidence: EvidenceItem = {
+        ...action.payload,
+        id: `ev-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+      };
+      return { ...state, evidenceLog: [...state.evidenceLog, newEvidence] };
+    }
 
     default:
       return state;

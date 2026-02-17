@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { useDemo } from '@/contexts/DemoContext';
 import {
   BookOpen,
   Copy,
@@ -22,10 +23,11 @@ import {
   copyToClipboard,
 } from '@/lib/playbook-content';
 
-function CopyButton({ text, label }: { text: string; label: string }) {
+function CopyButton({ text, label, onCopied }: { text: string; label: string; onCopied?: (label: string) => void }) {
   const handleCopy = async () => {
     await copyToClipboard(text);
     toast.success('Copied to clipboard');
+    onCopied?.(label);
   };
   return (
     <Button variant="outline" size="sm" className="gap-2" onClick={handleCopy}>
@@ -65,6 +67,20 @@ function CollapsibleSection({
 }
 
 export default function Playbooks() {
+  const { state, dispatch } = useDemo();
+
+  const logCopy = (label: string) => {
+    dispatch({
+      type: 'ADD_EVIDENCE',
+      payload: {
+        userId: state.currentUserId,
+        type: 'script_used',
+        moduleId: 'mod-1',
+        content: `Copied: ${label}`,
+      },
+    });
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div>
@@ -126,7 +142,7 @@ export default function Playbooks() {
                 <div className="bg-muted/50 rounded-md p-3 text-sm mb-2 whitespace-pre-line">
                   {ASK_FOR_FEEDBACK_MSG}
                 </div>
-                <CopyButton text={ASK_FOR_FEEDBACK_MSG} label="Copy message" />
+                <CopyButton text={ASK_FOR_FEEDBACK_MSG} label="Copy message" onCopied={logCopy} />
               </div>
 
               <div>
@@ -136,7 +152,7 @@ export default function Playbooks() {
                 <div className="bg-muted/50 rounded-md p-3 text-sm mb-2 whitespace-pre-line">
                   {SBI_TEMPLATE}
                 </div>
-                <CopyButton text={SBI_TEMPLATE} label="Copy SBI template" />
+                <CopyButton text={SBI_TEMPLATE} label="Copy SBI template" onCopied={logCopy} />
               </div>
 
               <div>
@@ -146,7 +162,7 @@ export default function Playbooks() {
                 <div className="bg-muted/50 rounded-md p-3 text-sm mb-2 whitespace-pre-line">
                   {POSITIVE_FEEDBACK_EXAMPLE}
                 </div>
-                <CopyButton text={POSITIVE_FEEDBACK_EXAMPLE} label="Copy example" />
+                <CopyButton text={POSITIVE_FEEDBACK_EXAMPLE} label="Copy example" onCopied={logCopy} />
               </div>
 
               <div>
@@ -156,7 +172,7 @@ export default function Playbooks() {
                 <div className="bg-muted/50 rounded-md p-3 text-sm mb-2 whitespace-pre-line">
                   {COURSE_CORRECT_EXAMPLE}
                 </div>
-                <CopyButton text={COURSE_CORRECT_EXAMPLE} label="Copy example" />
+                <CopyButton text={COURSE_CORRECT_EXAMPLE} label="Copy example" onCopied={logCopy} />
               </div>
             </div>
           </CollapsibleSection>

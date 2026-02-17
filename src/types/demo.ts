@@ -99,6 +99,18 @@ export interface ServiceRequest {
   preferredTimeframe?: string;
 }
 
+export type EvidenceType = 'script_used' | 'practice_done' | 'reflection';
+
+export interface EvidenceItem {
+  id: string;
+  createdAt: string;
+  userId: string;
+  type: EvidenceType;
+  packId?: string;
+  moduleId?: string;
+  content: string;
+}
+
 export interface DemoState {
   organization: Organization;
   users: User[];
@@ -107,6 +119,7 @@ export interface DemoState {
   checkIns: CheckIn[];
   barometerResponses: BarometerResponse[];
   serviceRequests: ServiceRequest[];
+  evidenceLog: EvidenceItem[];
   coachingCredits: number;
   currentUserId: string;
   currentRole: Role;
