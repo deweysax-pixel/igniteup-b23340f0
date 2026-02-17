@@ -16,6 +16,7 @@ import {
 import { useIgniteStatus, type IgniteStatus } from '@/pages/Ignite';
 import { toast } from 'sonner';
 import { SupportRequestModal } from '@/components/SupportRequestModal';
+import { TeamAttentionCard } from '@/components/TeamAttentionCard';
 
 function statusLabel(status: string | undefined) {
   switch (status) {
@@ -71,6 +72,15 @@ export default function JourneyPage() {
   const nextUnit: Unit | undefined = nextMod?.units?.find(u => unitProgress[u.unitId]?.status !== 'completed');
   const hasUnits = nextMod?.units && nextMod.units.length > 0;
 
+  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
+
+  // Next step label for Training Progress card
+  const nextStepLabel = (() => {
+    if (hasUnits && nextUnit) return `${nextUnit.title} (${nextUnit.durationMinutes} min)`;
+    if (nextMod) return `${nextMod.title} (${nextMod.durationMinutes} min)`;
+    return null;
+  })();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -93,6 +103,9 @@ export default function JourneyPage() {
         </div>
       </div>
 
+      {/* Team attention — Manager only */}
+      {isManager && <TeamAttentionCard />}
+
       {/* Training Progress */}
       <Card className="border-primary/30 bg-gradient-to-br from-card to-accent/20">
         <CardHeader className="pb-2">
@@ -100,11 +113,16 @@ export default function JourneyPage() {
           <CardTitle className="text-xl">{journey.title}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <Progress value={progressPercent} className="h-2.5" />
+          <div className="flex items-center justify-between text-xs text-muted-foreground">
             <span>{completedCount} of {totalModules} modules completed</span>
             <span>{progressPercent}%</span>
           </div>
-          <Progress value={progressPercent} className="h-2.5" />
+          {nextStepLabel && (
+            <p className="text-sm font-medium text-foreground">
+              Next: {nextStepLabel}
+            </p>
+          )}
           {journey.durationWeeks >= 12 && (
             <p className="text-xs text-muted-foreground italic">Designed for sustainable habit-building (Learning + Practice weeks).</p>
           )}
@@ -169,15 +187,16 @@ export default function JourneyPage() {
                 <div className="flex gap-2 pt-1">
                   <Button className="gap-1.5" onClick={() => handleModuleAction(nextMod.id)}>
                     <BookOpen className="h-4 w-4" />
-                    {nextBtn.label}
+                    {hasUnits && nextUnit
+                      ? `Start unit (${nextUnit.durationMinutes} min)`
+                      : `${nextBtn.label} (${nextMod.durationMinutes} min)`}
                   </Button>
-                  {nextMod.practiceRoute && (
-                    <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(nextMod.practiceRoute!)}>
-                      <Play className="h-3.5 w-3.5" />
-                      Start Practice
-                    </Button>
-                  )}
+                  <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate('/app/checkin')}>
+                    <Play className="h-3.5 w-3.5" />
+                    Do check-in (60s)
+                  </Button>
                 </div>
+                <p className="text-xs text-muted-foreground italic pt-1">Best loop: Learn → Practice → Signal</p>
               </CardContent>
             </Card>
           )}
