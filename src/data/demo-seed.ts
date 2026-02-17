@@ -144,47 +144,54 @@ function generateBarometerResponses(): BarometerResponse[] {
 
 /*
  * Per-user seeded unit progress for the Team Ignite Heatmap.
- * Maps userId → Record<unitId, UnitProgress>.
+ * Varies per pack to create realistic column differentiation.
+ *
+ * Distribution target (user-level dominant status):
+ *   Active  (7): u2, u3, u5, u6, u9, u10, u11
+ *   At Risk (3): u4 (units only), u8 (check-ins only), u12 (units outside window)
+ *   Inactive(2): u7, u13
+ *
+ * Pack-level variation (Active users don't all have every pack):
+ *   u2:  packs 1-5  (all Active)
+ *   u3:  packs 1,2,3,4  (pack 5 At Risk — missing unit)
+ *   u5:  packs 1-5  (all Active)
+ *   u6:  packs 1,2,3,5  (pack 4 At Risk — missing unit)
+ *   u9:  packs 1,3,4,5  (pack 2 At Risk — missing unit)
+ *   u10: packs 1,2,4     (packs 3,5 At Risk — missing unit)
+ *   u11: packs 1-5  (all Active)
+ *   u4:  packs 1,2,3     (packs 4,5 Inactive — no units, no check-in)
+ *   u12: packs 1,2 old   (outside window → At Risk with check-in, Inactive without)
  */
 export function getSeededUnitProgressForUser(userId: string): Record<string, UnitProgress> {
   const now = new Date('2026-02-17T12:00:00Z').getTime();
   const daysAgo = (d: number) => new Date(now - d * 86400000).toISOString();
 
-  // Active users: one unit completed per pack within 14 days
-  const activeUsers = ['u2', 'u3', 'u5', 'u6', 'u9', 'u10', 'u11'];
-  if (activeUsers.includes(userId)) {
-    const idx = activeUsers.indexOf(userId);
-    const base = idx * 1.5 + 1; // spread 1-11 days ago
-    return {
-      'tp1-u1': { status: 'completed', completedAt: daysAgo(base) },
-      'tp2-u1': { status: 'completed', completedAt: daysAgo(base + 1) },
-      'tp3-u1': { status: 'completed', completedAt: daysAgo(base + 0.5) },
-      'tp4-u1': { status: 'completed', completedAt: daysAgo(base + 2) },
-      'tp5-u1': { status: 'completed', completedAt: daysAgo(base + 1.5) },
-    };
-  }
+  const packUnit = (packIdx: number, day: number): [string, UnitProgress] => [
+    `tp${packIdx}-u1`,
+    { status: 'completed' as const, completedAt: daysAgo(day) },
+  ];
 
-  // At Risk — u4: has units within window, no recent check-ins
-  if (userId === 'u4') {
-    return {
-      'tp1-u1': { status: 'completed', completedAt: daysAgo(5) },
-      'tp2-u1': { status: 'completed', completedAt: daysAgo(7) },
-      'tp3-u1': { status: 'completed', completedAt: daysAgo(6) },
-      'tp4-u1': { status: 'completed', completedAt: daysAgo(8) },
-      'tp5-u1': { status: 'completed', completedAt: daysAgo(9) },
-    };
-  }
+  const userPackMap: Record<string, [string, UnitProgress][]> = {
+    // Active across all 5 packs
+    u2:  [packUnit(1, 1), packUnit(2, 3), packUnit(3, 2), packUnit(4, 4), packUnit(5, 5)],
+    u5:  [packUnit(1, 2), packUnit(2, 5), packUnit(3, 3), packUnit(4, 6), packUnit(5, 4)],
+    u11: [packUnit(1, 1), packUnit(2, 4), packUnit(3, 6), packUnit(4, 3), packUnit(5, 2)],
+    // Active in 4 packs, At Risk in 1 (missing unit for that pack)
+    u3:  [packUnit(1, 3), packUnit(2, 5), packUnit(3, 7), packUnit(4, 4)],              // missing pack 5
+    u6:  [packUnit(1, 2), packUnit(2, 6), packUnit(3, 8), packUnit(5, 3)],              // missing pack 4
+    u9:  [packUnit(1, 4), packUnit(3, 5), packUnit(4, 7), packUnit(5, 6)],              // missing pack 2
+    // Active in 3 packs, At Risk in 2
+    u10: [packUnit(1, 5), packUnit(2, 9), packUnit(4, 11)],                              // missing packs 3,5
+    // At Risk — u4: units within window but no check-ins → At Risk for packs with units, Inactive for rest
+    u4:  [packUnit(1, 5), packUnit(2, 7), packUnit(3, 6)],                               // packs 4,5 no unit
+    // At Risk — u12: units OUTSIDE 14-day window
+    u12: [['tp1-u1', { status: 'completed', completedAt: daysAgo(16) }],
+          ['tp2-u1', { status: 'completed', completedAt: daysAgo(18) }]],
+  };
 
-  // At Risk — u12: units OUTSIDE 14-day window, check-in within window
-  if (userId === 'u12') {
-    return {
-      'tp1-u1': { status: 'completed', completedAt: daysAgo(16) },
-      'tp2-u1': { status: 'completed', completedAt: daysAgo(18) },
-    };
-  }
-
-  // u8 (at risk — check-ins only, no units), u7, u13 (inactive)
-  return {};
+  const entries = userPackMap[userId];
+  if (!entries) return {}; // u7, u8, u13 → empty
+  return Object.fromEntries(entries);
 }
 
 /*
