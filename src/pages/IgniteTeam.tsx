@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
-import { useJourney } from '@/contexts/JourneyContext';
 import { IGNITE_PACKS, computePackStatusForUser, STATUS_CONFIG, type IgniteStatus } from '@/pages/Ignite';
+import { getSeededUnitProgressForUser } from '@/data/demo-seed';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,22 +16,22 @@ const NUDGE_MESSAGE = "Quick nudge: to keep your Ignite pack Active, complete on
 
 export default function IgniteTeam() {
   const { state } = useDemo();
-  const { unitProgress } = useJourney();
   const navigate = useNavigate();
   const [selectedCell, setSelectedCell] = useState<{ userId: string; packId: string } | null>(null);
 
   // Get team members (exclude admin user)
   const teamMembers = useMemo(() => state.users.filter(u => u.role !== 'admin'), [state.users]);
 
-  // Build heatmap data
+  // Build heatmap data using per-user seeded unit progress
   const heatmapData = useMemo(() => {
     return teamMembers.map(user => {
+      const userUnitProgress = getSeededUnitProgressForUser(user.id);
       const packStatuses = IGNITE_PACKS.map(pack =>
-        computePackStatusForUser(pack, unitProgress, state.checkIns, user.id)
+        computePackStatusForUser(pack, userUnitProgress, state.checkIns, user.id)
       );
       return { user, packStatuses };
     });
-  }, [teamMembers, unitProgress, state.checkIns]);
+  }, [teamMembers, state.checkIns]);
 
   // Selected cell details
   const selectedDetail = useMemo(() => {

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { Module, Journey, JourneyStep, ModuleStatus, ModuleProgress, UnitProgress } from '@/types/journey';
 import { modules as seedModules, defaultJourney } from '@/data/journey-seed';
+import { getSeededCurrentUserUnitProgress } from '@/data/demo-seed';
 
 interface JourneyContextValue {
   modules: Module[];
@@ -27,7 +28,7 @@ export function JourneyProvider({ children }: { children: React.ReactNode }) {
   const [modules] = useState<Module[]>(seedModules);
   const [journey, setJourney] = useState<Journey>({ ...defaultJourney });
   const [moduleProgress, setModuleProgress] = useState<Record<string, ModuleProgress>>({});
-  const [unitProgress, setUnitProgress] = useState<Record<string, UnitProgress>>({});
+  const [unitProgress, setUnitProgress] = useState<Record<string, UnitProgress>>(getSeededCurrentUserUnitProgress);
 
   const getModule = useCallback((id: string) => modules.find(m => m.id === id), [modules]);
 
