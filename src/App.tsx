@@ -28,6 +28,7 @@ import OnboardingPage from "./pages/Onboarding";
 import ServiceRequests from "./pages/ServiceRequests";
 import Reports from "./pages/Reports";
 import IgnitePage from "./pages/Ignite";
+import IgniteTeam from "./pages/IgniteTeam";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -64,6 +65,7 @@ const App = () => (
                 <Route path="services" element={<ServiceRequests />} />
                 <Route path="reports" element={<Reports />} />
                 <Route path="ignite" element={<IgnitePage />} />
+                <Route path="ignite-team" element={<IgniteTeam />} />
               </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -64,6 +64,7 @@ const sections: { label: string; items: NavItem[] }[] = [
     items: [
       { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
       { title: 'Ignite', url: '/app/ignite', icon: Flame },
+      { title: 'Team Ignite', url: '/app/ignite-team', icon: Flame, roles: ['admin', 'manager'] },
       { title: 'Reports', url: '/app/reports', icon: FileBarChart, roles: ['admin', 'manager'] },
     ],
   },

@@ -42,6 +42,14 @@ export default function CheckInPage() {
         note,
       },
     });
+    dispatch({
+      type: 'ADD_EVIDENCE',
+      payload: {
+        userId: currentUser.id,
+        type: 'practice_done',
+        content: `Check-in submitted — Week ${currentWeek}, ${selectedActions.length} action(s).`,
+      },
+    });
     setSubmitted(true);
     toast.success('Check-in submitted! Your XP has been updated.');
   };
@@ -123,7 +131,13 @@ export default function CheckInPage() {
                   variant="outline"
                   size="sm"
                   className="h-auto p-1.5 gap-1.5"
-                  onClick={async () => { await copyToClipboard(SBI_TEMPLATE); toast.success('Copied to clipboard'); }}
+                  onClick={async () => {
+                    await copyToClipboard(SBI_TEMPLATE);
+                    toast.success('Copied to clipboard');
+                    if (currentUser) {
+                      dispatch({ type: 'ADD_EVIDENCE', payload: { userId: currentUser.id, type: 'script_used', content: 'Copied: SBI Template' } });
+                    }
+                  }}
                 >
                   <Copy className="h-3.5 w-3.5" />
                   Copy SBI Template
