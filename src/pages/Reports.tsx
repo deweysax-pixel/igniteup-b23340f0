@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
-import { FileDown, Printer, Map, BookOpen, ClipboardCheck, Users, TrendingUp, Activity } from 'lucide-react';
+import { FileDown, Printer, Map, BookOpen, ClipboardCheck, Users, TrendingUp, Activity, Flame } from 'lucide-react';
 import { getLevelColor } from '@/types/demo';
 import type { Level } from '@/types/demo';
 
@@ -218,11 +218,12 @@ export default function Reports() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 print:grid-cols-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 print:grid-cols-5">
         <KPICard icon={BookOpen} label="Modules Completed" value={`${modulesCompleted} / ${totalModules}`} />
         <KPICard icon={ClipboardCheck} label="Units Completed" value={`${unitsCompleted} / ${totalUnits}`} />
         <KPICard icon={Activity} label="Check-ins" value={String(checkInsCompleted)} sub={`${activeStreaks} active streaks`} />
         <KPICard icon={Users} label="Active Users (7d)" value={String(activeUsersCount)} sub={`of ${filteredUsers.length} total`} />
+        <KPICard icon={Flame} label="Ignite Status" value="—" sub="Active / At Risk / Inactive" />
       </div>
 
       {/* ROI Snapshot */}

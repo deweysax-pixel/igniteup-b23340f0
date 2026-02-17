@@ -11,8 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   BookOpen, Play, BarChart3, ArrowRight, CheckCircle2,
-  PartyPopper, Hammer, Clock, Circle, HeadphonesIcon, Ticket,
+  PartyPopper, Hammer, Clock, Circle, HeadphonesIcon, Ticket, Flame,
 } from 'lucide-react';
+import { useIgniteStatus, type IgniteStatus } from '@/pages/Ignite';
 import { toast } from 'sonner';
 import { SupportRequestModal } from '@/components/SupportRequestModal';
 
@@ -42,6 +43,8 @@ export default function JourneyPage() {
   const navigate = useNavigate();
   const { journey, firstIncompleteModule, getModule, completedCount, moduleProgress, updateModuleStatus, unitProgress } = useJourney();
   const { state, currentUser, dispatch } = useDemo();
+  const ignite = useIgniteStatus();
+  const igniteColor: Record<IgniteStatus, string> = { active: 'text-emerald-400 border-emerald-500/30', at_risk: 'text-amber-400 border-amber-500/30', inactive: 'text-red-400 border-red-500/30' };
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<ServiceRequestType>('coaching_session');
   const uniqueModuleIds = [...new Set(journey.steps.map(s => s.moduleId))];
@@ -75,9 +78,19 @@ export default function JourneyPage() {
           <h1 className="text-2xl font-bold tracking-tight">My Journey</h1>
           <p className="text-sm text-muted-foreground mt-1">Your personalized leadership development path</p>
         </div>
-        <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/app/onboarding')}>
-          <Hammer className="h-3.5 w-3.5" /> Rebuild my journey
-        </Button>
+        <div className="flex items-center gap-2">
+          <Badge
+            variant="outline"
+            className={`gap-1.5 cursor-pointer ${igniteColor[ignite.status]}`}
+            onClick={() => navigate('/app/ignite')}
+          >
+            <Flame className="h-3 w-3" />
+            Ignite: {ignite.status === 'at_risk' ? 'At Risk' : ignite.status.charAt(0).toUpperCase() + ignite.status.slice(1)}
+          </Badge>
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/app/onboarding')}>
+            <Hammer className="h-3.5 w-3.5" /> Rebuild my journey
+          </Button>
+        </div>
       </div>
 
       {/* Training Progress */}
