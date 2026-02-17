@@ -14,6 +14,7 @@ import {
   Hammer,
   HeadphonesIcon,
   FileBarChart,
+  Flame,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -62,6 +63,7 @@ const sections: { label: string; items: NavItem[] }[] = [
     label: 'Measure',
     items: [
       { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
+      { title: 'Ignite', url: '/app/ignite', icon: Flame },
       { title: 'Reports', url: '/app/reports', icon: FileBarChart, roles: ['admin', 'manager'] },
     ],
   },
@@ -75,7 +77,7 @@ const sections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
-const PREVIEW_ALLOWED_URLS = ['/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app'];
+const PREVIEW_ALLOWED_URLS = ['/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/ignite', '/app'];
 
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
