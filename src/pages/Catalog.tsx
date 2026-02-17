@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Eye, Clock, Check } from 'lucide-react';
+import { Plus, Eye, Clock, Check, Flame } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Module } from '@/types/journey';
 
-const categories = ['all', 'feedback', 'communication', 'delegation', 'coaching', 'strategy', 'team performance'] as const;
+const categories = ['all', 'feedback', 'communication', 'delegation', 'coaching', 'strategy', 'team performance', 'gen z & the new work code'] as const;
 
 export default function CatalogPage() {
   const navigate = useNavigate();
@@ -69,6 +69,11 @@ export default function CatalogPage() {
                 </div>
                 <CardTitle className="text-base mt-2">{mod.title}</CardTitle>
                 <CardDescription className="text-xs">{mod.shortDescription}</CardDescription>
+                {mod.category === 'gen z & the new work code' && (
+                  <span className="inline-flex items-center gap-1 text-[10px] text-primary mt-1.5 font-medium uppercase tracking-wider">
+                    <Flame className="h-3 w-3" /> Supports Ignite practice signals
+                  </span>
+                )}
               </CardHeader>
               <CardContent className="mt-auto pt-0">
                 <div className="flex gap-2">
