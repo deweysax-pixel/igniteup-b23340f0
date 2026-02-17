@@ -186,4 +186,53 @@ export const moduleContent: Record<string, ModuleContent> = {
       'Embed weeks turn one-time learning into sustained habits.',
     ],
   },
+  // Gen Z & the New Work Code track
+  'gz-1': {
+    outcomes: [
+      'Turn motivation into a weekly system: meaning, mastery, momentum.',
+      'Create progress visibility that strengthens engagement and retention.',
+      'Use simple manager rituals that build energy without burnout.',
+    ],
+    coreLesson: [
+      'The psychological contract has shifted: loyalty is replaced by mutual value exchange.',
+      'Meaning is the strongest motivator — and managers can create it through connection to purpose.',
+      'Micro-progress beats annual reviews: make growth visible every week.',
+      'Recognition works when it names the specific behavior and its impact.',
+      'Sustainable performance requires explicit boundaries, not implicit expectations.',
+      'One engagement ritual per week compounds into a fundamentally different team culture.',
+      'Measure engagement through leading indicators, not lagging surveys.',
+    ],
+  },
+  'gz-2': {
+    outcomes: [
+      'Deliver clear feedback that strengthens trust instead of triggering defensiveness.',
+      'Handle disagreement and pushback with calm structure.',
+      'Create conflict hygiene: rules that make tough conversations easier.',
+    ],
+    coreLesson: [
+      'Psychological safety is not about being comfortable — it is about being safe to take risks.',
+      'Feedback frequency matters more than feedback perfection. Start small, stay consistent.',
+      'SBI (Situation-Behavior-Impact) plus Feedforward shifts conversations from blame to growth.',
+      'Pushback is often a sign of engagement, not resistance. Learn to distinguish the two.',
+      'Conflict hygiene prevents small tensions from becoming cultural debt.',
+      'Scripts reduce cognitive load in high-stakes moments — preparation is not weakness.',
+      'One structured feedback conversation per week transforms a team in 90 days.',
+    ],
+  },
+  'gz-3': {
+    outcomes: [
+      'Shift performance to outcomes, ownership, and decision clarity.',
+      'Create lightweight standards that reduce friction and rework.',
+      'Build hybrid rhythms: async communication, focus, and AI guardrails.',
+    ],
+    coreLesson: [
+      'Outcomes, not hours, define performance in hybrid environments.',
+      'Decision clarity eliminates the "fog" that slows distributed teams.',
+      'Standards boards make expectations visible and reduce rework by up to 40%.',
+      'Async-first communication respects attention and scales better than meetings.',
+      'Focus protocols protect deep work — the scarcest resource in modern teams.',
+      'AI is a force multiplier when used with clear guardrails and team norms.',
+      'A weekly scoreboard check-in takes 15 minutes and saves hours of misalignment.',
+    ],
+  },
 };

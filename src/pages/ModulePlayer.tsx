@@ -5,11 +5,30 @@ import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle, HeadphonesIcon, MessageSquare, Users } from 'lucide-react';
+import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle, HeadphonesIcon, MessageSquare, Users, Copy } from 'lucide-react';
 import { moduleContent } from '@/data/module-content';
 import { toast } from 'sonner';
 import { SupportRequestModal } from '@/components/SupportRequestModal';
 import type { ServiceRequestType } from '@/types/demo';
+
+/* Copy-to-clipboard scripts for Scripts & Templates units */
+const UNIT_SCRIPTS: Record<string, { label: string; script: string }[]> = {
+  'gz1-u6': [
+    { label: 'Purpose Conversation Opener', script: 'I\'d like to understand what gives you the most energy in your work right now. What part of what we\'re doing feels most meaningful to you — and where do you feel disconnected?' },
+    { label: 'Specific Praise Template', script: 'I noticed [specific behavior] during [situation]. The impact was [concrete result]. That\'s exactly the kind of [quality] that makes our team stronger.' },
+    { label: 'Energy Reset Script', script: 'I can see you\'ve been pushing hard. Let\'s look at your week: what can we move, delegate, or drop so you can protect time for [priority]? Sustainable performance is a team standard here.' },
+  ],
+  'gz2-u6': [
+    { label: 'Fast Feedback (SBI)', script: 'During [situation], when you [specific behavior], the impact was [effect on team/outcome]. Going forward, I\'d suggest [feedforward action]. What\'s your take?' },
+    { label: 'Difficult Conversation Opener', script: 'I want to raise something because I respect you and I think it matters. This isn\'t about blame — it\'s about finding a better path forward. Can I share what I observed?' },
+    { label: 'De-escalation Phrase', script: 'I hear you, and I want to understand your perspective fully. Let\'s slow down for a moment — can you walk me through what this looks like from your side?' },
+  ],
+  'gz3-u7': [
+    { label: 'Weekly Scoreboard Check-in', script: 'Let\'s review our 3 key outcomes for this week: [Outcome 1] — status? [Outcome 2] — status? [Outcome 3] — status? What\'s the one thing blocking progress, and who owns the next step?' },
+    { label: 'Async Status Update Template', script: 'Update: [Project/Task]\n• Status: [On track / At risk / Blocked]\n• Key progress: [1 sentence]\n• Next step: [Action + owner + deadline]\n• Need from you: [Specific ask or "None"]' },
+    { label: 'Decision Ownership Template', script: 'Decision: [What we decided]\nOwner: [Name]\nDeadline: [Date]\nContext: [1-2 sentences on why]\nEscalation: If blocked, raise to [Name] by [Date]' },
+  ],
+};
 
 function formatDuration(minutes: number) {
   const h = Math.floor(minutes / 60);
@@ -151,29 +170,65 @@ export default function ModulePlayer() {
                 const uStatus = unitProgress[unit.unitId]?.status;
                 const isUnitCompleted = uStatus === 'completed';
                 const btnLabel = uStatus === 'completed' ? 'Review' : uStatus === 'in_progress' ? 'Continue' : 'Start';
+                const scripts = UNIT_SCRIPTS[unit.unitId];
                 return (
-                  <div key={unit.unitId} className="flex items-center gap-3 p-3 rounded-md bg-secondary/30 hover:bg-secondary/50 transition-colors">
-                    <span className="text-xs font-medium text-primary w-6 shrink-0">{idx + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{unit.title}</p>
-                      <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <Clock className="h-3 w-3" />{unit.durationMinutes}m
-                        <Badge variant="outline" className="capitalize text-xs">{unit.type}</Badge>
-                      </span>
+                  <div key={unit.unitId} className="rounded-md bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                    <div className="flex items-center gap-3 p-3">
+                      <span className="text-xs font-medium text-primary w-6 shrink-0">{idx + 1}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{unit.title}</p>
+                        <span className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Clock className="h-3 w-3" />{unit.durationMinutes}m
+                          <Badge variant="outline" className="capitalize text-xs">{unit.type}</Badge>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {unitStatusBadge(uStatus)}
+                        {!isUnitCompleted && (
+                          <Button size="sm" variant="outline" onClick={() => handleUnitAction(unit.unitId)}>
+                            {btnLabel}
+                          </Button>
+                        )}
+                        {uStatus === 'in_progress' && (
+                          <Button size="sm" onClick={() => handleUnitComplete(unit.unitId)}>
+                            <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Done
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      {unitStatusBadge(uStatus)}
-                      {!isUnitCompleted && (
-                        <Button size="sm" variant="outline" onClick={() => handleUnitAction(unit.unitId)}>
-                          {btnLabel}
-                        </Button>
-                      )}
-                      {uStatus === 'in_progress' && (
-                        <Button size="sm" onClick={() => handleUnitComplete(unit.unitId)}>
-                          <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Done
-                        </Button>
-                      )}
-                    </div>
+                    {scripts && scripts.length > 0 && (
+                      <div className="px-3 pb-3 pt-0 space-y-2 border-t border-border/30 mt-1 mx-3">
+                        <p className="text-xs font-medium text-muted-foreground pt-2">Copy-to-clipboard scripts:</p>
+                        {scripts.map((s, si) => (
+                          <div key={si} className="flex items-start gap-2 p-2 rounded bg-background/50 text-xs">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-foreground">{s.label}</p>
+                              <p className="text-muted-foreground mt-0.5 line-clamp-2">{s.script}</p>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="shrink-0 h-7 gap-1 text-xs"
+                              onClick={async () => {
+                                await navigator.clipboard.writeText(s.script);
+                                toast.success('Copied to clipboard');
+                                dispatch({
+                                  type: 'ADD_EVIDENCE',
+                                  payload: {
+                                    userId: state.currentUserId,
+                                    type: 'script_used',
+                                    moduleId: id,
+                                    content: `Copied: ${s.label}`,
+                                  },
+                                });
+                              }}
+                            >
+                              <Copy className="h-3 w-3" /> Copy
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })}
