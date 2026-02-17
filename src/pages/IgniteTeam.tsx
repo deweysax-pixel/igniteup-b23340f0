@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { Flame, Map, Copy, BookOpen, ArrowRight } from 'lucide-react';
+import { Flame, Map, Copy, BookOpen, ArrowRight, ShieldCheck, AlertTriangle, XCircle, Users } from 'lucide-react';
 import { toast } from 'sonner';
 import type { EvidenceItem } from '@/types/demo';
 
@@ -32,6 +32,31 @@ export default function IgniteTeam() {
       return { user, packStatuses };
     });
   }, [teamMembers, state.checkIns]);
+
+  // Executive summary: count statuses across all cells + per-user dominant status
+  const summary = useMemo(() => {
+    const cellCounts: Record<IgniteStatus, number> = { active: 0, at_risk: 0, inactive: 0 };
+    const userOverall: Record<IgniteStatus, number> = { active: 0, at_risk: 0, inactive: 0 };
+
+    for (const { packStatuses } of heatmapData) {
+      const userCounts: Record<IgniteStatus, number> = { active: 0, at_risk: 0, inactive: 0 };
+      for (const ps of packStatuses) {
+        cellCounts[ps.status]++;
+        userCounts[ps.status]++;
+      }
+      // Dominant status: if any inactive and no active → inactive; if any at_risk → at_risk; else active
+      if (userCounts.active >= userCounts.at_risk && userCounts.active >= userCounts.inactive) {
+        userOverall.active++;
+      } else if (userCounts.inactive > userCounts.at_risk) {
+        userOverall.inactive++;
+      } else {
+        userOverall.at_risk++;
+      }
+    }
+    const totalCells = cellCounts.active + cellCounts.at_risk + cellCounts.inactive;
+    const activeRate = totalCells > 0 ? Math.round((cellCounts.active / totalCells) * 100) : 0;
+    return { cellCounts, userOverall, activeRate };
+  }, [heatmapData]);
 
   // Selected cell details
   const selectedDetail = useMemo(() => {
@@ -70,6 +95,37 @@ export default function IgniteTeam() {
           <Flame className="h-3.5 w-3.5" /> My Ignite
         </Button>
       </div>
+
+      {/* Executive Summary */}
+      <div className="grid gap-4 sm:grid-cols-4">
+        <Card className="border-border/50">
+          <CardContent className="pt-5 flex items-center gap-3">
+            <Users className="h-5 w-5 text-primary shrink-0" />
+            <div>
+              <p className="text-2xl font-bold">{teamMembers.length}</p>
+              <p className="text-xs text-muted-foreground">Team members</p>
+            </div>
+          </CardContent>
+        </Card>
+        {([
+          { status: 'active' as IgniteStatus, icon: ShieldCheck, color: 'text-emerald-400' },
+          { status: 'at_risk' as IgniteStatus, icon: AlertTriangle, color: 'text-amber-400' },
+          { status: 'inactive' as IgniteStatus, icon: XCircle, color: 'text-red-400' },
+        ]).map(({ status: s, icon: Icon, color }) => (
+          <Card key={s} className="border-border/50">
+            <CardContent className="pt-5 flex items-center gap-3">
+              <Icon className={`h-5 w-5 ${color} shrink-0`} />
+              <div>
+                <p className="text-2xl font-bold">{summary.userOverall[s]}</p>
+                <p className="text-xs text-muted-foreground capitalize">{s === 'at_risk' ? 'At Risk' : s}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Pack-level active rate: <span className="font-semibold text-foreground">{summary.activeRate}%</span> ({summary.cellCounts.active} of {summary.cellCounts.active + summary.cellCounts.at_risk + summary.cellCounts.inactive} pack slots)
+      </p>
 
       {/* Heatmap table */}
       <Card>
