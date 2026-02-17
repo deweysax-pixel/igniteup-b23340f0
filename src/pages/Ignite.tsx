@@ -1,18 +1,95 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
 import { useDemo } from '@/contexts/DemoContext';
+import { modules as seedModules } from '@/data/journey-seed';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Flame, ShieldCheck, AlertTriangle, XCircle,
   BookOpen, ClipboardCheck, BarChart3, ArrowRight,
-  Repeat, Eye, Zap,
+  Repeat, Eye, Zap, Filter,
 } from 'lucide-react';
 
 export type IgniteStatus = 'active' | 'at_risk' | 'inactive';
 
+/* ── Pack definitions ── */
+export interface IgnitePack {
+  packId: string;
+  title: string;
+  linkedModuleIds: string[];
+  windowDays: number;
+}
+
+export const IGNITE_PACKS: IgnitePack[] = [
+  { packId: 'ip-1', title: 'Ignite: Trust & Safety', linkedModuleIds: ['tp-1'], windowDays: 14 },
+  { packId: 'ip-2', title: 'Ignite: Productive Disagreement', linkedModuleIds: ['tp-2'], windowDays: 14 },
+  { packId: 'ip-3', title: 'Ignite: Decision Clarity', linkedModuleIds: ['tp-3'], windowDays: 14 },
+  { packId: 'ip-4', title: 'Ignite: Peer Accountability', linkedModuleIds: ['tp-4'], windowDays: 14 },
+  { packId: 'ip-5', title: 'Ignite: Results OS', linkedModuleIds: ['tp-5'], windowDays: 14 },
+];
+
+/* ── Per-pack status computation ── */
+export interface PackStatusResult {
+  pack: IgnitePack;
+  status: IgniteStatus;
+  recentUnits: number;
+  recentCheckIns: number;
+  whyLine: string;
+}
+
+function computePackStatus(
+  pack: IgnitePack,
+  unitProgress: Record<string, { status: string; completedAt?: string }>,
+  checkIns: { userId: string; createdAt: string }[],
+  currentUserId: string,
+): PackStatusResult {
+  const now = Date.now();
+  const windowMs = pack.windowDays * 24 * 60 * 60 * 1000;
+
+  // Get all unit IDs belonging to linked modules
+  const linkedUnitIds = new Set<string>();
+  for (const modId of pack.linkedModuleIds) {
+    const mod = seedModules.find(m => m.id === modId);
+    if (mod?.units) {
+      for (const u of mod.units) linkedUnitIds.add(u.unitId);
+    }
+  }
+
+  const recentUnits = [...linkedUnitIds].filter(uid => {
+    const p = unitProgress[uid];
+    return p?.status === 'completed' && p.completedAt && (now - new Date(p.completedAt).getTime()) <= windowMs;
+  }).length;
+
+  const recentCheckIns = checkIns.filter(
+    ci => ci.userId === currentUserId && (now - new Date(ci.createdAt).getTime()) <= windowMs
+  ).length;
+
+  const hasUnit = recentUnits >= 1;
+  const hasCheckIn = recentCheckIns >= 1;
+
+  let status: IgniteStatus;
+  let whyLine: string;
+
+  if (hasUnit && hasCheckIn) {
+    status = 'active';
+    whyLine = `${recentUnits} unit${recentUnits > 1 ? 's' : ''} completed + ${recentCheckIns} check-in${recentCheckIns > 1 ? 's' : ''} in last ${pack.windowDays} days.`;
+  } else if (hasUnit) {
+    status = 'at_risk';
+    whyLine = `${recentUnits} unit${recentUnits > 1 ? 's' : ''} completed, missing check-in.`;
+  } else if (hasCheckIn) {
+    status = 'at_risk';
+    whyLine = `${recentCheckIns} check-in${recentCheckIns > 1 ? 's' : ''} submitted, missing unit completion.`;
+  } else {
+    status = 'inactive';
+    whyLine = 'No recent unit completions or check-ins.';
+  }
+
+  return { pack, status, recentUnits, recentCheckIns, whyLine };
+}
+
+/* ── Global Ignite status (kept for backward compat) ── */
 export function useIgniteStatus() {
   const { unitProgress, moduleProgress } = useJourney();
   const { state } = useDemo();
@@ -21,19 +98,16 @@ export function useIgniteStatus() {
     const now = Date.now();
     const window14d = 14 * 24 * 60 * 60 * 1000;
 
-    // Units completed in last 14 days
     const recentUnits = Object.values(unitProgress).filter(
       u => u.status === 'completed' && u.completedAt && (now - new Date(u.completedAt).getTime()) <= window14d
     ).length;
 
-    // Also count module-level completions (for modules without units)
     const recentModules = Object.values(moduleProgress).filter(
       m => m.status === 'completed' && m.completedAt && (now - new Date(m.completedAt).getTime()) <= window14d
     ).length;
 
     const totalRecentCompletions = recentUnits + recentModules;
 
-    // Check-ins in last 14 days
     const recentCheckIns = state.checkIns.filter(
       ci => ci.userId === state.currentUserId && (now - new Date(ci.createdAt).getTime()) <= window14d
     ).length;
@@ -50,6 +124,18 @@ export function useIgniteStatus() {
   }, [unitProgress, moduleProgress, state.checkIns, state.currentUserId]);
 }
 
+/* ── Per-pack statuses hook ── */
+export function usePackStatuses(): PackStatusResult[] {
+  const { unitProgress } = useJourney();
+  const { state } = useDemo();
+
+  return useMemo(
+    () => IGNITE_PACKS.map(pack => computePackStatus(pack, unitProgress, state.checkIns, state.currentUserId)),
+    [unitProgress, state.checkIns, state.currentUserId],
+  );
+}
+
+/* ── Status UI config ── */
 const STATUS_CONFIG: Record<IgniteStatus, { label: string; icon: React.ElementType; color: string; bg: string; why: string }> = {
   active: {
     label: 'Active',
@@ -80,20 +166,19 @@ const PILLARS = [
   { icon: Zap, title: 'Signals', desc: 'Unit completions + check-ins = evidence. Simple, transparent, always current.' },
 ];
 
-const PACKS = [
-  { title: 'Ignite: Trust & Safety', moduleId: 'tp-1' },
-  { title: 'Ignite: Productive Disagreement', moduleId: 'tp-2' },
-  { title: 'Ignite: Decision Clarity', moduleId: 'tp-3' },
-  { title: 'Ignite: Peer Accountability', moduleId: 'tp-4' },
-  { title: 'Ignite: Results OS', moduleId: 'tp-5' },
-];
+type FilterValue = 'all' | IgniteStatus;
 
 export default function IgnitePage() {
   const navigate = useNavigate();
   const { status, recentUnits, recentCheckIns } = useIgniteStatus();
+  const packStatuses = usePackStatuses();
   const { firstIncompleteModule } = useJourney();
+  const [filter, setFilter] = useState<FilterValue>('all');
+
   const cfg = STATUS_CONFIG[status];
   const StatusIcon = cfg.icon;
+
+  const filteredPacks = filter === 'all' ? packStatuses : packStatuses.filter(p => p.status === filter);
 
   const handleNextUnit = () => {
     if (firstIncompleteModule) {
@@ -157,7 +242,7 @@ export default function IgnitePage() {
         </div>
       </section>
 
-      {/* Your Ignite Status */}
+      {/* Your Global Ignite Status */}
       <Card className={`border ${cfg.bg}`}>
         <CardHeader className="pb-3">
           <CardDescription className="text-xs uppercase tracking-wider text-primary">Your Ignite Status</CardDescription>
@@ -206,25 +291,63 @@ export default function IgnitePage() {
         </CardContent>
       </Card>
 
-      {/* Ignite Packs */}
-      <section className="space-y-3">
-        <h2 className="text-base font-semibold uppercase tracking-wider text-muted-foreground">Ignite Packs</h2>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {PACKS.map(pack => (
-            <Card key={pack.moduleId} className="border-border/50">
-              <CardContent className="pt-5 space-y-2">
-                <div className="flex items-center gap-2">
-                  <Flame className="h-4 w-4 text-primary" />
-                  <p className="font-semibold text-sm">{pack.title}</p>
-                </div>
-                <p className="text-xs text-muted-foreground">Criteria: 1 unit + 1 practice in 14 days</p>
-                <p className="text-xs text-muted-foreground">Evidence: unit completion + check-in</p>
-                <Button size="sm" variant="outline" className="gap-1.5 mt-1" onClick={() => navigate(`/app/modules/${pack.moduleId}`)}>
-                  View related module <ArrowRight className="h-3 w-3" />
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+      {/* Ignite Packs — live per-pack statuses */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold uppercase tracking-wider text-muted-foreground">Ignite Packs</h2>
+          <div className="flex items-center gap-1.5">
+            <Filter className="h-3.5 w-3.5 text-muted-foreground" />
+            {(['all', 'active', 'at_risk', 'inactive'] as FilterValue[]).map(f => (
+              <Button
+                key={f}
+                size="sm"
+                variant={filter === f ? 'default' : 'ghost'}
+                className="h-7 px-2.5 text-xs capitalize"
+                onClick={() => setFilter(f)}
+              >
+                {f === 'at_risk' ? 'At Risk' : f === 'all' ? 'All' : f.charAt(0).toUpperCase() + f.slice(1)}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <p className="text-xs text-muted-foreground italic">
+          Packs stay Active through continued practice — no exams, no hours watched.
+        </p>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredPacks.map(({ pack, status: pStatus, whyLine }) => {
+            const pCfg = STATUS_CONFIG[pStatus];
+            const PIcon = pCfg.icon;
+            return (
+              <Card key={pack.packId} className={`border ${pCfg.bg}`}>
+                <CardContent className="pt-5 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <Flame className="h-4 w-4 text-primary shrink-0" />
+                      <p className="font-semibold text-sm truncate">{pack.title}</p>
+                    </div>
+                    <Badge variant="outline" className={`shrink-0 gap-1 text-xs ${pCfg.color} border-current/30`}>
+                      <PIcon className="h-3 w-3" />
+                      {pCfg.label}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{whyLine}</p>
+                  <div className="flex gap-2 pt-1">
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate(`/app/modules/${pack.linkedModuleIds[0]}`)}>
+                      <BookOpen className="h-3 w-3" /> Continue learning
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate('/app/checkin')}>
+                      <ClipboardCheck className="h-3 w-3" /> Do a check-in
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
+          {filteredPacks.length === 0 && (
+            <p className="text-sm text-muted-foreground col-span-full text-center py-6">No packs match this filter.</p>
+          )}
         </div>
       </section>
     </div>
