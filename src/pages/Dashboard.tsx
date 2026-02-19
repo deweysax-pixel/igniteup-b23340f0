@@ -1,17 +1,20 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getLevelColor } from '@/types/demo';
-import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen } from 'lucide-react';
+import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen, PlayCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { TeamAttentionCard } from '@/components/TeamAttentionCard';
+import { WeeklyReviewModal } from '@/components/WeeklyReviewModal';
 
 export default function Dashboard() {
   const { state, currentUser } = useDemo();
   const navigate = useNavigate();
+  const [reviewOpen, setReviewOpen] = useState(false);
   const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
   const activeChallenge = state.challenges.find(c => c.status === 'active');
 
@@ -42,10 +45,18 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
-        {activeChallenge && (
-          <p className="text-sm text-muted-foreground mt-1">{activeChallenge.title}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+          {activeChallenge && (
+            <p className="text-sm text-muted-foreground mt-1">{activeChallenge.title}</p>
+          )}
+        </div>
+        {isManager && (
+          <Button className="gap-2 shrink-0" onClick={() => setReviewOpen(true)}>
+            <PlayCircle className="h-4 w-4" />
+            Run weekly review (10 min)
+          </Button>
         )}
       </div>
 
@@ -147,6 +158,10 @@ export default function Dashboard() {
           ))}
         </CardContent>
       </Card>
+
+      {isManager && (
+        <WeeklyReviewModal open={reviewOpen} onOpenChange={setReviewOpen} />
+      )}
     </div>
   );
 }
