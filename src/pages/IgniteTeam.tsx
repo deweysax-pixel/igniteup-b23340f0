@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { IGNITE_PACKS, computePackStatusForUser, STATUS_CONFIG, type IgniteStatus } from '@/pages/Ignite';
+import { getWeekRange } from '@/lib/week-utils';
 import { getSeededUnitProgressForUser } from '@/data/demo-seed';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -142,6 +143,7 @@ export default function IgniteTeam() {
             Team Ignite Heatmap
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Pack-level certification status across your team.</p>
+          <p className="text-xs text-muted-foreground">{getWeekRange().label}</p>
         </div>
         <Button variant="outline" size="sm" className="gap-1.5" onClick={() => navigate('/app/ignite')}>
           <Flame className="h-3.5 w-3.5" /> My Ignite

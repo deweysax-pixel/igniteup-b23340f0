@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { TeamAttentionCard } from '@/components/TeamAttentionCard';
 import { WeeklyReviewModal } from '@/components/WeeklyReviewModal';
+import { getWeekRange } from '@/lib/week-utils';
 
 export default function Dashboard() {
   const { state, currentUser } = useDemo();
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const [reviewOpen, setReviewOpen] = useState(false);
   const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
   const activeChallenge = state.challenges.find(c => c.status === 'active');
+  const weekLabel = getWeekRange().label;
 
   // KPI calculations
   const activeUsers = state.users.filter(u => u.role !== 'admin');
@@ -48,6 +50,7 @@ export default function Dashboard() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-xs text-muted-foreground mt-0.5">{weekLabel}</p>
           {activeChallenge && (
             <p className="text-sm text-muted-foreground mt-1">{activeChallenge.title}</p>
           )}

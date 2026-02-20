@@ -1,17 +1,20 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getWeekRange, getLastWeekRange } from '@/lib/week-utils';
 import { useDemo } from '@/contexts/DemoContext';
 import { useJourney } from '@/contexts/JourneyContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
-import { FileDown, Printer, Map, BookOpen, ClipboardCheck, Users, TrendingUp, Activity, Flame } from 'lucide-react';
+import { FileDown, Printer, Map, BookOpen, ClipboardCheck, Users, TrendingUp, Activity, Flame, ArrowUp, ArrowDown } from 'lucide-react';
 import { getLevelColor } from '@/types/demo';
 import type { Level } from '@/types/demo';
+import { IGNITE_PACKS, computePackStatusForUser } from '@/pages/Ignite';
+import { getSeededUnitProgressForUser } from '@/data/demo-seed';
 
 function KPICard({ icon: Icon, label, value, sub }: { icon: React.ElementType; label: string; value: string; sub?: string }) {
   return (
@@ -31,6 +34,92 @@ function KPICard({ icon: Icon, label, value, sub }: { icon: React.ElementType; l
     </Card>
   );
 }
+function DeltaBadge({ current, previous, suffix = '' }: { current: number; previous: number | null; suffix?: string }) {
+  if (previous === null) return <span className="text-xs text-muted-foreground">—</span>;
+  const delta = current - previous;
+  if (delta === 0) return <span className="text-xs text-muted-foreground">No change</span>;
+  const isUp = delta > 0;
+  return (
+    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${isUp ? 'text-green-400' : 'text-red-400'}`}>
+      {isUp ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
+      {Math.abs(delta)}{suffix}
+    </span>
+  );
+}
+
+function ExecutiveSummary({ users, checkIns }: { users: { id: string }[]; checkIns: { userId: string; createdAt: string }[] }) {
+  const thisWeek = getWeekRange();
+  const lastWeek = getLastWeekRange();
+
+  // Active rate (members with no at_risk/inactive packs)
+  const computeActiveCount = () => {
+    return users.filter(user => {
+      const unitProg = getSeededUnitProgressForUser(user.id);
+      const packStatuses = IGNITE_PACKS.map(pack =>
+        computePackStatusForUser(pack, unitProg, checkIns, user.id)
+      );
+      return packStatuses.every(ps => ps.status === 'active');
+    }).length;
+  };
+
+  const activeCount = computeActiveCount();
+  const activeRate = users.length > 0 ? Math.round((activeCount / users.length) * 100) : 0;
+  const dueCount = users.length - activeCount;
+
+  // Approximate last week: we can't recompute statuses for last week without historical data,
+  // so use check-in activity as a proxy
+  const checkInsThisWeek = checkIns.filter(ci => {
+    const d = new Date(ci.createdAt).getTime();
+    return d >= thisWeek.start.getTime() && d <= thisWeek.end.getTime();
+  });
+  const checkInsLastWeek = checkIns.filter(ci => {
+    const d = new Date(ci.createdAt).getTime();
+    return d >= lastWeek.start.getTime() && d <= lastWeek.end.getTime();
+  });
+
+  const ciThisWeekUsers = new Set(checkInsThisWeek.map(ci => ci.userId));
+  const ciLastWeekUsers = new Set(checkInsLastWeek.map(ci => ci.userId));
+
+  // Approximate active rate delta from check-in participation change
+  const lastWeekActiveRate = users.length > 0 ? Math.round((ciLastWeekUsers.size / users.length) * 100) : null;
+  const lastWeekDue = ciLastWeekUsers.size > 0 ? users.length - ciLastWeekUsers.size : null;
+
+  return (
+    <div className="space-y-2">
+      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Executive summary</h3>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card className="border-primary/20">
+          <CardContent className="pt-5">
+            <p className="text-xs text-muted-foreground">Active rate</p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-bold">{activeRate}%</span>
+              <DeltaBadge current={activeRate} previous={lastWeekActiveRate} suffix="%" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/20">
+          <CardContent className="pt-5">
+            <p className="text-xs text-muted-foreground">Due</p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-bold">{dueCount}</span>
+              <DeltaBadge current={dueCount} previous={lastWeekDue} />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/20">
+          <CardContent className="pt-5">
+            <p className="text-xs text-muted-foreground">Check-ins (7 days)</p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-bold">{ciThisWeekUsers.size}/{users.length}</span>
+              <DeltaBadge current={ciThisWeekUsers.size} previous={ciLastWeekUsers.size > 0 ? ciLastWeekUsers.size : null} />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      <p className="text-xs text-muted-foreground">Deltas compare this week vs last week.</p>
+    </div>
+  );
+}
 
 export default function Reports() {
   const { state } = useDemo();
@@ -38,6 +127,8 @@ export default function Reports() {
   const navigate = useNavigate();
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
   const [dateRange, setDateRange] = useState<string>('whole');
+  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
+  const activeUsers = state.users.filter(u => u.role !== 'admin');
 
   const filteredUsers = useMemo(() => {
     if (selectedTeam === 'all') return state.users;
@@ -216,6 +307,9 @@ export default function Reports() {
           </SelectContent>
         </Select>
       </div>
+
+      {/* Executive Summary — Manager only */}
+      {isManager && <ExecutiveSummary users={activeUsers} checkIns={state.checkIns} />}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 print:grid-cols-5">
