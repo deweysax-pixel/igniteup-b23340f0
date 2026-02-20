@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getLevelColor } from '@/types/demo';
-import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen, PlayCircle } from 'lucide-react';
+import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen, PlayCircle, Grid3X3, FileBarChart } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { TeamAttentionCard } from '@/components/TeamAttentionCard';
@@ -53,12 +53,29 @@ export default function Dashboard() {
           )}
         </div>
         {isManager && (
-          <Button className="gap-2 shrink-0" onClick={() => setReviewOpen(true)}>
-            <PlayCircle className="h-4 w-4" />
-            Run weekly review (10 min)
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button className="gap-2" onClick={() => setReviewOpen(true)}>
+              <PlayCircle className="h-4 w-4" />
+              Run weekly review (10 min)
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={() => navigate('/app/ignite-team?filter=due')}>
+              <Grid3X3 className="h-4 w-4" />
+              Open Ignite heatmap
+            </Button>
+          </div>
         )}
       </div>
+
+      {isManager && (
+        <div className="flex items-center">
+          <button
+            onClick={() => navigate('/app/reports')}
+            className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
+          >
+            View what changed since last week →
+          </button>
+        </div>
+      )}
 
       {/* Team attention — Manager/Admin only */}
       {isManager && <TeamAttentionCard />}
@@ -77,6 +94,11 @@ export default function Dashboard() {
             <span className="font-medium">Tip:</span>
             <span className="text-muted-foreground">Keep it under 2 minutes.</span>
           </div>
+          {isManager && (
+            <p className="text-xs text-muted-foreground italic">
+              Suggested move: pick 1 member who's Due and run 1 feedback conversation.
+            </p>
+          )}
           <div className="flex flex-wrap gap-2 pt-1">
             <Button size="sm" variant="default" className="gap-2" onClick={() => navigate('/app/playbooks')}>
               <BookOpen className="h-3.5 w-3.5" />
@@ -86,6 +108,12 @@ export default function Dashboard() {
               <Copy className="h-3.5 w-3.5" />
               Copy SBI Template
             </Button>
+            {isManager && (
+              <Button size="sm" variant="secondary" className="gap-2" onClick={() => navigate('/app/ignite-team?filter=due')}>
+                <Users className="h-3.5 w-3.5" />
+                Pick a Due member
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>

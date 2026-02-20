@@ -78,12 +78,50 @@ const sections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
+const managerSections: { label: string; items: NavItem[] }[] = [
+  {
+    label: 'Pilot',
+    items: [
+      { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
+      { title: 'Ignite Heatmap', url: '/app/ignite-team', icon: Flame },
+      { title: 'Reports', url: '/app/reports', icon: FileBarChart },
+    ],
+  },
+  {
+    label: 'Drive',
+    items: [
+      { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
+      { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'Team', url: '/app/team', icon: Users },
+    ],
+  },
+  {
+    label: 'Me',
+    items: [
+      { title: 'My Journey', url: '/app/journey', icon: Map },
+      { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck },
+      { title: 'Ignite (Personal)', url: '/app/ignite', icon: Flame },
+      { title: 'Catalog', url: '/app/catalog', icon: Library },
+      { title: 'Builder', url: '/app/builder', icon: Hammer },
+    ],
+  },
+  {
+    label: 'Admin',
+    items: [
+      { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
+      { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin'] },
+      { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
+    ],
+  },
+];
+
 const PREVIEW_ALLOWED_URLS = ['/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/ignite', '/app'];
 
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
   const { isPreviewMode } = usePreview();
   const location = useLocation();
+  const isManagerRole = state.currentRole === 'manager' || state.currentRole === 'admin';
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -95,7 +133,7 @@ export function AppSidebar() {
       </div>
 
       <SidebarContent>
-        {sections.map(section => {
+        {(isManagerRole ? managerSections : sections).map(section => {
           let visibleItems = section.items.filter(
             item => !item.roles || (item.roles as readonly string[]).includes(state.currentRole)
           );
