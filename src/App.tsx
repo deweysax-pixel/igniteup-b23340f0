@@ -29,6 +29,7 @@ import ServiceRequests from "./pages/ServiceRequests";
 import Reports from "./pages/Reports";
 import IgnitePage from "./pages/Ignite";
 import IgniteTeam from "./pages/IgniteTeam";
+import TodayPage from "./pages/Today";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -66,6 +67,7 @@ const App = () => (
                 <Route path="reports" element={<Reports />} />
                 <Route path="ignite" element={<IgnitePage />} />
                 <Route path="ignite-team" element={<IgniteTeam />} />
+                <Route path="today" element={<TodayPage />} />
               </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
