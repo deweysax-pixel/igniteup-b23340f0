@@ -30,6 +30,7 @@ import Reports from "./pages/Reports";
 import IgnitePage from "./pages/Ignite";
 import IgniteTeam from "./pages/IgniteTeam";
 import TodayPage from "./pages/Today";
+import PricingPage from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="/preview/journey" element={<PreviewJourney />} />
                 <Route path="/preview/sandbox" element={<PreviewSandbox />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/pricing" element={<PricingPage />} />
               <Route path="/app" element={<AppLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="challenges" element={<Challenges />} />
