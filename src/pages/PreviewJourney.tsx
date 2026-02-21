@@ -3,7 +3,7 @@ import { usePreview } from '@/contexts/PreviewContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowRight, Rocket, Play, BookOpen, Target, Clock, Timer } from 'lucide-react';
+import { ArrowRight, Play, BookOpen, Target, Clock, Timer } from 'lucide-react';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const challengeLabels: Record<string, string> = {
@@ -105,8 +105,8 @@ export default function PreviewJourney() {
             <Button size="lg" variant="outline" className="gap-2" onClick={handleOpenDemo}>
               <Play className="h-4 w-4" /> Open the interactive demo
             </Button>
-            <Button size="lg" variant="outline" className="gap-2" onClick={handleUseInWorkspace}>
-              <Rocket className="h-4 w-4" /> Use this journey in my workspace
+            <Button size="lg" variant="outline" className="gap-2" onClick={() => navigate('/pricing')}>
+              See pricing
             </Button>
           </div>
         </div>

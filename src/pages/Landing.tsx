@@ -10,9 +10,14 @@ export default function Landing() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border">
         <Link to="/"><img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain cursor-pointer" /></Link>
-        <Link to="/login">
-          <Button variant="outline" size="sm">Sign In</Button>
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link to="/pricing">
+            <Button variant="ghost" size="sm">Pricing</Button>
+          </Link>
+          <Link to="/login">
+            <Button variant="outline" size="sm">Sign In</Button>
+          </Link>
+        </div>
       </header>
 
       {/* Hero */}
@@ -57,9 +62,9 @@ export default function Landing() {
                 Take the 90-second Fit Check
               </Button>
             </Link>
-            <Link to="/login">
+            <Link to="/pricing">
               <Button size="lg" variant="outline" className="text-base px-8">
-                Start Your Journey
+                See pricing
               </Button>
             </Link>
           </div>
