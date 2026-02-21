@@ -15,6 +15,7 @@ import {
   HeadphonesIcon,
   FileBarChart,
   Flame,
+  Sun,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -35,10 +36,13 @@ import { Button } from '@/components/ui/button';
 
 type NavItem = { title: string; url: string; icon: React.ElementType; roles?: readonly string[] };
 
+const todayItem: NavItem = { title: 'Today', url: '/app/today', icon: Sun };
+
 const sections: { label: string; items: NavItem[] }[] = [
   {
     label: 'Journey',
     items: [
+      todayItem,
       { title: 'My Journey', url: '/app/journey', icon: Map },
       { title: 'Catalog', url: '/app/catalog', icon: Library },
       { title: 'Build Journey', url: '/app/builder', icon: Hammer },
@@ -80,6 +84,10 @@ const sections: { label: string; items: NavItem[] }[] = [
 
 const managerSections: { label: string; items: NavItem[] }[] = [
   {
+    label: '',
+    items: [todayItem],
+  },
+  {
     label: 'Pilot',
     items: [
       { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
@@ -115,7 +123,7 @@ const managerSections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
-const PREVIEW_ALLOWED_URLS = ['/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/ignite', '/app'];
+const PREVIEW_ALLOWED_URLS = ['/app/today', '/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/ignite', '/app'];
 
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
@@ -142,10 +150,12 @@ export function AppSidebar() {
           }
           if (visibleItems.length === 0) return null;
           return (
-            <SidebarGroup key={section.label}>
-              <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
-                {section.label}
-              </SidebarGroupLabel>
+            <SidebarGroup key={section.label || '_top'}>
+              {section.label && (
+                <SidebarGroupLabel className="text-muted-foreground text-xs uppercase tracking-wider">
+                  {section.label}
+                </SidebarGroupLabel>
+              )}
               <SidebarGroupContent>
                 <SidebarMenu>
                   {visibleItems.map(item => (
