@@ -7,80 +7,99 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from 'sonner';
 import {
-  Check, Sparkles, ArrowRight, Copy, CheckCircle2,
-  Briefcase, Users, Building2, Plus,
-  MessageSquare, Lightbulb, GraduationCap,
-  Map, Flame, ClipboardCheck,
+  Check, ArrowRight, Copy, CheckCircle2,
+  Users, Building2, Handshake,
+  MessageSquare, Lightbulb, GraduationCap, Puzzle,
 } from 'lucide-react';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 /* ── Plan data ── */
 const plans = [
   {
-    id: 'starter',
-    title: 'Starter',
-    audience: 'Individuals',
-    icon: Briefcase,
+    id: 'team',
+    title: 'TEAM',
+    icon: Users,
+    tagline: 'For one team that wants stronger habits fast.',
     features: [
-      'Human Skills OS (Today cockpit)',
-      'Self-built journeys (2–24 weeks)',
-      '3h+ modules with units',
-      'Playbooks & templates',
-      'Practice engine (check-ins, streaks)',
-      'Ignite live certifications',
+      'Today (Human Skills OS): what to do now, every day',
+      'Journeys (2–24 weeks): build a clear path',
+      '3h+ modules, split into units: easy to follow',
+      'Playbooks + copy scripts: ready-to-use',
+      'Practice + 60s check-ins: keep momentum',
+      'Ignite status (Active / Due): based on real action',
+      'Manager cockpit: Weekly Review + action heatmap + nudges',
+      'ROI barometer + essential reports',
     ],
+    bestFor: 'Best for: 1 manager, 1 team, one clear rollout.',
   },
   {
-    id: 'team',
-    title: 'Team',
-    audience: 'SMBs',
-    icon: Users,
+    id: 'business',
+    title: 'BUSINESS',
+    icon: Building2,
     highlighted: true,
+    tagline: 'For several teams — with consolidated reporting.',
+    includesLabel: 'Everything in TEAM, plus:',
     features: [
-      'Everything in Starter, plus:',
-      'Team heatmap + weekly review ritual',
-      'Leaderboards & team challenges',
-      'ROI barometer + reports',
-      'Manager dashboard & nudges',
-      'Ignite pack renewals at team level',
-      'Priority support',
+      'Multi-teams / multi-cohorts: deploy to multiple groups',
+      'Journey templates: standardize what works',
+      'Consolidated reporting: company view + team view',
+      'Exports (CSV / print): share internally',
+      'Common cadence: simple governance across teams',
     ],
+    bestFor: 'Best for: HR/L&D rolling out across multiple teams.',
   },
   {
     id: 'enterprise',
-    title: 'Enterprise',
-    audience: 'Scale',
-    icon: Building2,
+    title: 'ENTERPRISE (SUCCESS PARTNERSHIP)',
+    icon: Handshake,
+    tagline: 'For guaranteed adoption and ROI — with hands-on support.',
+    includesLabel: 'Everything in BUSINESS, plus:',
     features: [
-      'Everything in Team, plus:',
-      'Custom journey builder',
-      'Multi-team / org-wide rollout',
-      'Advanced analytics & exports',
-      'SSO & admin controls',
-      'Dedicated success manager',
-      'Custom content & branding',
-      'SLA & compliance',
+      'Success Manager (monthly): monthly steering, adoption review, and next actions',
+      '90-day rollout plan (one-time): rollout steps + manager kit',
+      'Quarterly Executive Review: leadership-ready summary and next plan',
     ],
+    bestFor: 'Best for: organizations that want results, not just a tool.',
   },
 ];
 
 const addons = [
-  { icon: MessageSquare, title: 'Coaching credits', desc: '1-on-1 sessions with certified coaches' },
-  { icon: Users, title: 'Team workshops', desc: 'Facilitated team-building sessions' },
-  { icon: Lightbulb, title: 'Expert Q&A', desc: 'Access to leadership subject-matter experts' },
+  { icon: MessageSquare, title: 'Coaching Credits (monthly pool)', desc: 'A monthly pool of coaching sessions to unlock tough situations.' },
+  { icon: GraduationCap, title: 'Team Workshops', desc: 'Live workshops (kick-off, feedback, accountability, team performance).' },
+  { icon: Lightbulb, title: 'Expert Q&A (monthly)', desc: "Monthly 'Ask an expert' session + async Q&A support." },
+  { icon: Puzzle, title: 'Custom Module / Playbook', desc: 'We adapt content to your context (your cases, your language, your reality).' },
+];
+
+const faqs = [
+  {
+    q: 'How does billing work?',
+    a: 'Team / Business: per user / month. Enterprise: per user / month + a Success Partnership retainer.',
+  },
+  {
+    q: 'What is Ignite?',
+    a: 'Ignite is a live status of real-world capability — not a diploma. Active stays active only through real practice signals.',
+  },
+  {
+    q: "What's included in every plan?",
+    a: 'The full secure platform, journeys, modules, practice, Ignite, and core reporting. Plans differ by scale and support.',
+  },
 ];
 
 const challengeOptions = [
-  'Team alignment & meetings',
-  'Accountability & follow-through',
-  'Hard conversations & trust',
-  'Motivation & recognition',
-  'Stepping into a bigger role',
+  "My team isn't aligned",
+  'We avoid hard conversations',
+  'Meetings waste time',
+  'Accountability is weak',
+  'Trust feels fragile',
+  "I'm overwhelmed and need focus",
+  "I'm stepping into a bigger role",
+  'Motivation & recognition are low',
 ];
 
-const roleDemoOptions = ['HR / L&D Lead', 'Manager', 'Director / VP', 'C-Suite', 'Consultant', 'Other'];
+const roleOptions = ['HR / L&D Lead', 'Manager', 'Director / VP', 'C-Suite', 'Consultant', 'Other'];
 const teamSizeOptions = ['1–10', '11–50', '51–200', '201–1000', '1000+'];
 
 /* ── Request Demo Modal ── */
@@ -90,7 +109,7 @@ function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange:
     name: '', email: '', company: '', role: '', teamSize: '', challenge: '', notes: '',
   });
 
-  const isValid = form.name.trim() && form.email.trim() && form.company.trim();
+  const isValid = form.name.trim() && form.email.trim() && form.company.trim() && form.role && form.teamSize && form.challenge;
 
   const handleSubmit = () => {
     if (!isValid) return;
@@ -102,9 +121,9 @@ function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange:
       `Name: ${form.name}`,
       `Email: ${form.email}`,
       `Company: ${form.company}`,
-      form.role && `Role: ${form.role}`,
-      form.teamSize && `Team size: ${form.teamSize}`,
-      form.challenge && `Challenge: ${form.challenge}`,
+      `Role: ${form.role}`,
+      `Team size: ${form.teamSize}`,
+      `Challenge: ${form.challenge}`,
       form.notes && `Notes: ${form.notes}`,
     ].filter(Boolean).join('\n');
     navigator.clipboard.writeText(lines);
@@ -133,19 +152,19 @@ function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange:
               <Input placeholder="Work email *" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} />
               <Input placeholder="Company *" value={form.company} onChange={e => setForm(p => ({ ...p, company: e.target.value }))} />
               <Select value={form.role} onValueChange={v => setForm(p => ({ ...p, role: v }))}>
-                <SelectTrigger><SelectValue placeholder="Role" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Role *" /></SelectTrigger>
                 <SelectContent>
-                  {roleDemoOptions.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                  {roleOptions.map(r => <SelectItem key={r} value={r}>{r}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={form.teamSize} onValueChange={v => setForm(p => ({ ...p, teamSize: v }))}>
-                <SelectTrigger><SelectValue placeholder="Team size" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Team size *" /></SelectTrigger>
                 <SelectContent>
                   {teamSizeOptions.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                 </SelectContent>
               </Select>
               <Select value={form.challenge} onValueChange={v => setForm(p => ({ ...p, challenge: v }))}>
-                <SelectTrigger><SelectValue placeholder="Biggest challenge" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Biggest challenge *" /></SelectTrigger>
                 <SelectContent>
                   {challengeOptions.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
@@ -200,17 +219,19 @@ export default function PricingPage() {
               Pricing
             </Badge>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Plans that scale with your team
+              Choose the level of support you need
             </h1>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              From solo leaders to enterprise rollouts — pick the plan that fits your ambition.
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              All plans include the same secure platform. The difference is scale and support.
             </p>
+            <p className="text-xs text-muted-foreground">Billing: per user / month (monthly or annual).</p>
           </div>
 
           {/* Plan cards */}
           <div className="grid gap-6 md:grid-cols-3">
             {plans.map(plan => {
               const Icon = plan.icon;
+              const isEnterprise = plan.id === 'enterprise';
               return (
                 <Card
                   key={plan.id}
@@ -226,29 +247,31 @@ export default function PricingPage() {
                       <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center">
                         <Icon className="h-4.5 w-4.5 text-primary" />
                       </div>
-                      <div>
-                        <CardTitle className="text-lg">{plan.title}</CardTitle>
-                        <p className="text-xs text-muted-foreground">{plan.audience}</p>
-                      </div>
+                      <CardTitle className="text-lg">{plan.title}</CardTitle>
                     </div>
-                    <p className="text-2xl font-bold pt-3">Custom</p>
-                    <p className="text-xs text-muted-foreground">Tailored to your needs</p>
+                    <p className="text-sm text-muted-foreground pt-1">{plan.tagline}</p>
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
-                    <ul className="space-y-2.5 flex-1">
-                      {plan.features.map(f => (
-                        <li key={f} className="flex items-start gap-2 text-sm">
-                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                          <span className="text-muted-foreground">{f}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="flex-1">
+                      {'includesLabel' in plan && plan.includesLabel && (
+                        <p className="text-xs font-medium text-muted-foreground mb-2">{plan.includesLabel}</p>
+                      )}
+                      <ul className="space-y-2">
+                        {plan.features.map(f => (
+                          <li key={f} className="flex items-start gap-2 text-sm">
+                            <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                            <span className="text-muted-foreground">{f}</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="text-xs font-medium text-primary mt-4">{plan.bestFor}</p>
+                    </div>
                     <div className="space-y-2 pt-6">
                       <Button className="w-full gap-2" onClick={() => setDemoOpen(true)}>
                         Request a demo <ArrowRight className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" className="w-full gap-2" onClick={() => navigate('/fit-check')}>
-                        Open demo
+                      <Button variant="outline" className="w-full gap-2" onClick={() => isEnterprise ? setDemoOpen(true) : navigate('/fit-check')}>
+                        {isEnterprise ? 'Talk to us' : 'Open demo'}
                       </Button>
                     </div>
                   </CardContent>
@@ -259,11 +282,10 @@ export default function PricingPage() {
 
           {/* Add-ons */}
           <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-semibold tracking-tight">Add-ons</h2>
-              <p className="text-sm text-muted-foreground">Extend any plan with premium services.</p>
+            <div className="text-center">
+              <h2 className="text-xl font-semibold tracking-tight">Add-ons (Boosters)</h2>
             </div>
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               {addons.map(a => (
                 <div key={a.title} className="flex items-start gap-3 p-4 rounded-lg border border-border bg-card">
                   <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -278,26 +300,17 @@ export default function PricingPage() {
             </div>
           </div>
 
-          {/* Trust section */}
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-semibold tracking-tight flex items-center justify-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                What you get in 30 days
-              </h2>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3">
-              {[
-                { icon: Map, text: 'Clear journey + weekly actions' },
-                { icon: Flame, text: 'Visible signals (Ignite + check-ins)' },
-                { icon: ClipboardCheck, text: 'Manager-ready reporting' },
-              ].map(item => (
-                <div key={item.text} className="flex items-center gap-3 p-4 rounded-lg border border-primary/20 bg-primary/5">
-                  <item.icon className="h-5 w-5 text-primary shrink-0" />
-                  <p className="text-sm font-medium">{item.text}</p>
-                </div>
+          {/* FAQ */}
+          <div className="space-y-4 max-w-2xl mx-auto">
+            <h2 className="text-xl font-semibold tracking-tight text-center">FAQ</h2>
+            <Accordion type="single" collapsible className="w-full">
+              {faqs.map((faq, i) => (
+                <AccordionItem key={i} value={`faq-${i}`}>
+                  <AccordionTrigger className="text-sm">{faq.q}</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground">{faq.a}</AccordionContent>
+                </AccordionItem>
               ))}
-            </div>
+            </Accordion>
           </div>
 
           {/* Final CTA */}
