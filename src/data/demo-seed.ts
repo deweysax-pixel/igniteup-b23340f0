@@ -222,5 +222,8 @@ export function createInitialState(role: Role = 'manager'): DemoState {
     coachingCredits: 3,
     currentUserId: roleUserMap[role],
     currentRole: role,
+    workspace: null,
+    workspaceInvites: [],
+    journeyAssignments: [],
   };
 }

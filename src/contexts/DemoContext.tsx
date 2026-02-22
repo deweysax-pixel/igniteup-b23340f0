@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType, EvidenceItem, EvidenceType } from '@/types/demo';
+import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType, EvidenceItem, EvidenceType, WorkspaceInfo, WorkspaceInvite, JourneyAssignment } from '@/types/demo';
 import { getLevel } from '@/types/demo';
 import { createInitialState } from '@/data/demo-seed';
 
@@ -11,7 +11,10 @@ type DemoAction =
   | { type: 'ADD_SERVICE_REQUEST'; payload: Omit<ServiceRequest, 'id' | 'createdAt' | 'status'> }
   | { type: 'UPDATE_REQUEST_STATUS'; payload: { id: string; status: ServiceRequest['status'] } }
   | { type: 'USE_COACHING_CREDIT' }
-  | { type: 'ADD_EVIDENCE'; payload: Omit<EvidenceItem, 'id' | 'createdAt'> };
+  | { type: 'ADD_EVIDENCE'; payload: Omit<EvidenceItem, 'id' | 'createdAt'> }
+  | { type: 'SAVE_WORKSPACE'; payload: WorkspaceInfo }
+  | { type: 'ADD_INVITE'; payload: { name: string; email: string } }
+  | { type: 'ASSIGN_JOURNEY'; payload: { journeyTitle: string; memberIds: string[] } };
 
 function recalculateUserXP(state: DemoState, userId: string): DemoState {
   const userCheckIns = state.checkIns.filter(ci => ci.userId === userId);
@@ -106,6 +109,30 @@ function demoReducer(state: DemoState, action: DemoAction): DemoState {
         createdAt: new Date().toISOString(),
       };
       return { ...state, evidenceLog: [...state.evidenceLog, newEvidence] };
+    }
+
+    case 'SAVE_WORKSPACE':
+      return { ...state, workspace: action.payload };
+
+    case 'ADD_INVITE': {
+      const invite: WorkspaceInvite = {
+        id: `inv-${Date.now()}`,
+        name: action.payload.name,
+        email: action.payload.email,
+        role: 'participant',
+        status: 'pending',
+      };
+      return { ...state, workspaceInvites: [...state.workspaceInvites, invite] };
+    }
+
+    case 'ASSIGN_JOURNEY': {
+      const assignment: JourneyAssignment = {
+        id: `ja-${Date.now()}`,
+        journeyTitle: action.payload.journeyTitle,
+        memberIds: action.payload.memberIds,
+        assignedAt: new Date().toISOString(),
+      };
+      return { ...state, journeyAssignments: [...state.journeyAssignments, assignment] };
     }
 
     default:

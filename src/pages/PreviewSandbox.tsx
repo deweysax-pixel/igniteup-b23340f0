@@ -227,8 +227,12 @@ export default function PreviewSandbox() {
               Back to my recommended journey
             </Button>
           </div>
-
-          <div className="text-center">
+          <div className="text-center space-y-2">
+            <p className="text-xs text-muted-foreground">
+              <button onClick={() => navigate('/pricing')} className="hover:text-foreground transition-colors underline underline-offset-2">
+                See pricing →
+              </button>
+            </p>
             <button className="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1" onClick={() => navigate('/fit-check')}>
               <RotateCcw className="h-3 w-3" /> Start over
             </button>

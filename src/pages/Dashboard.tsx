@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getLevelColor } from '@/types/demo';
-import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen, PlayCircle, Grid3X3, FileBarChart } from 'lucide-react';
+import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen, PlayCircle, Grid3X3, FileBarChart, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { TeamAttentionCard } from '@/components/TeamAttentionCard';
@@ -64,6 +64,10 @@ export default function Dashboard() {
             <Button variant="outline" className="gap-2" onClick={() => navigate('/app/ignite-team?filter=due')}>
               <Grid3X3 className="h-4 w-4" />
               Open Ignite heatmap
+            </Button>
+            <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate('/app/workspace')}>
+              <Building2 className="h-4 w-4" />
+              Activate workspace
             </Button>
           </div>
         )}

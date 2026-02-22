@@ -16,6 +16,7 @@ import {
   FileBarChart,
   Flame,
   Sun,
+  Building2,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -116,6 +117,7 @@ const managerSections: { label: string; items: NavItem[] }[] = [
   {
     label: 'Admin',
     items: [
+      { title: 'Workspace', url: '/app/workspace', icon: Building2, roles: ['admin', 'manager'] },
       { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
       { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin'] },
       { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
