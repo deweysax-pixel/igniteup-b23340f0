@@ -68,6 +68,11 @@ export default function Landing() {
               </Button>
             </Link>
           </div>
+          <p className="text-xs text-muted-foreground">
+            <Link to="/pricing" className="hover:text-foreground transition-colors underline underline-offset-2">
+              Prefer details? See pricing →
+            </Link>
+          </p>
         </div>
 
         {/* How it works */}

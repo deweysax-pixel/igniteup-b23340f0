@@ -105,10 +105,12 @@ export default function PreviewJourney() {
             <Button size="lg" variant="outline" className="gap-2" onClick={handleOpenDemo}>
               <Play className="h-4 w-4" /> Open the interactive demo
             </Button>
-            <Button size="lg" variant="outline" className="gap-2" onClick={() => navigate('/pricing')}>
-              See pricing
-            </Button>
           </div>
+          <p className="text-xs text-muted-foreground text-center">
+            <button onClick={() => navigate('/pricing')} className="hover:text-foreground transition-colors underline underline-offset-2">
+              See pricing →
+            </button>
+          </p>
         </div>
       </main>
     </div>

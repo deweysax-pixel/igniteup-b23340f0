@@ -111,6 +111,27 @@ export interface EvidenceItem {
   content: string;
 }
 
+export interface WorkspaceInvite {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+  status: 'pending';
+}
+
+export interface JourneyAssignment {
+  id: string;
+  journeyTitle: string;
+  memberIds: string[];
+  assignedAt: string;
+}
+
+export interface WorkspaceInfo {
+  name: string;
+  industry: string;
+  teamSize: string;
+}
+
 export interface DemoState {
   organization: Organization;
   users: User[];
@@ -123,6 +144,9 @@ export interface DemoState {
   coachingCredits: number;
   currentUserId: string;
   currentRole: Role;
+  workspace: WorkspaceInfo | null;
+  workspaceInvites: WorkspaceInvite[];
+  journeyAssignments: JourneyAssignment[];
 }
 
 export function getLevel(xp: number): Level {
