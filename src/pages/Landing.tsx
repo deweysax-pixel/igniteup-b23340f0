@@ -56,15 +56,10 @@ export default function Landing() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mt-4">
+          <div className="flex justify-center mt-4">
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-8">
                 Take the 90-second Fit Check
-              </Button>
-            </Link>
-            <Link to="/pricing">
-              <Button size="lg" variant="outline" className="text-base px-8">
-                See pricing
               </Button>
             </Link>
           </div>
