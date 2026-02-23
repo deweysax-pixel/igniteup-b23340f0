@@ -16,6 +16,7 @@ import {
 import { useIgniteStatus, type IgniteStatus } from '@/pages/Ignite';
 import { toast } from 'sonner';
 import { SupportRequestModal } from '@/components/SupportRequestModal';
+import { GlossaryTip } from '@/components/GlossaryTip';
 
 
 function statusLabel(status: string | undefined) {
@@ -85,7 +86,7 @@ export default function JourneyPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">My Journey</h1>
+          <h1 className="text-2xl font-bold tracking-tight">My Journey <GlossaryTip term="Journey" /></h1>
           <p className="text-sm text-muted-foreground mt-1">Your personalized leadership development path</p>
         </div>
         <div className="flex items-center gap-2">
@@ -145,7 +146,7 @@ export default function JourneyPage() {
           {nextMod && (
             <Card className="border-primary/20">
               <CardHeader className="pb-3">
-                <CardDescription className="text-xs uppercase tracking-wider text-primary">Next Module</CardDescription>
+                <CardDescription className="text-xs uppercase tracking-wider text-primary">Next Module <GlossaryTip term="Module" /></CardDescription>
                 <CardTitle className="text-lg">{nextMod.title}</CardTitle>
                 <div className="flex items-center gap-3 pt-1">
                   <span className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -169,7 +170,7 @@ export default function JourneyPage() {
                 {/* Next unit callout for macro-modules */}
                 {hasUnits && nextUnit && (
                   <div className="rounded-md border border-primary/20 bg-accent/30 p-3 space-y-2">
-                    <p className="text-xs font-medium text-primary uppercase tracking-wider">Next Unit</p>
+                    <p className="text-xs font-medium text-primary uppercase tracking-wider">Next Unit <GlossaryTip term="Unit" /></p>
                     <p className="text-sm font-medium">{nextUnit.title}</p>
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="h-3 w-3" />{nextUnit.durationMinutes} min
@@ -207,8 +208,8 @@ export default function JourneyPage() {
               </CardHeader>
               <CardContent className="space-y-3">
                 <p className="text-sm text-muted-foreground">Complete your weekly actions and track your streak.</p>
-                <Button size="sm" className="gap-1.5" onClick={() => navigate('/app/checkin')}>
-                  Do Check-in
+                 <Button size="sm" className="gap-1.5" onClick={() => navigate('/app/checkin')}>
+                   Do Check-in <GlossaryTip term="Check-in" />
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Button>
               </CardContent>

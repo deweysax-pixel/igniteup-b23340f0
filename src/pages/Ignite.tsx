@@ -15,6 +15,7 @@ import {
   Copy, MessageSquare, Activity,
 } from 'lucide-react';
 import type { EvidenceType } from '@/types/demo';
+import { GlossaryTip } from '@/components/GlossaryTip';
 
 export type IgniteStatus = 'active' | 'at_risk' | 'inactive';
 
@@ -219,7 +220,7 @@ export default function IgnitePage() {
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <Flame className="h-7 w-7 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">Ignite</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Ignite <GlossaryTip term="Ignite" /></h1>
         </div>
         <p className="text-lg font-medium text-foreground/90">
           Ignite isn't a certificate of knowledge. It's a live status of real-world capability.
