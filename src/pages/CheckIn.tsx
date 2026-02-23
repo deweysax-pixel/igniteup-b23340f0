@@ -113,9 +113,10 @@ export default function CheckInPage() {
             <Textarea
               placeholder="Any notes about your week? (optional)"
               value={note}
-              onChange={e => setNote(e.target.value)}
+              onChange={e => setNote(e.target.value.slice(0, 500))}
               className="resize-none"
               rows={3}
+              maxLength={500}
             />
           </div>
 

@@ -55,6 +55,8 @@ export default function Workspace() {
 
   const handleAddInvite = () => {
     if (!inviteName.trim() || !inviteEmail.trim()) { toast.error('Name and email are required'); return; }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inviteEmail.trim())) { toast.error('Please enter a valid email address'); return; }
     dispatch({ type: 'ADD_INVITE', payload: { name: inviteName.trim(), email: inviteEmail.trim() } });
     setInviteName('');
     setInviteEmail('');
@@ -107,11 +109,11 @@ export default function Workspace() {
         <CardContent className="space-y-4">
           <div className="space-y-1.5">
             <Label>Workspace name *</Label>
-            <Input value={wsName} onChange={e => setWsName(e.target.value)} placeholder="e.g. Acme Leadership" />
+            <Input value={wsName} onChange={e => setWsName(e.target.value.slice(0, 100))} placeholder="e.g. Acme Leadership" maxLength={100} />
           </div>
           <div className="space-y-1.5">
             <Label>Industry (optional)</Label>
-            <Input value={wsIndustry} onChange={e => setWsIndustry(e.target.value)} placeholder="e.g. Technology" />
+            <Input value={wsIndustry} onChange={e => setWsIndustry(e.target.value.slice(0, 100))} placeholder="e.g. Technology" maxLength={100} />
           </div>
           <div className="space-y-1.5">
             <Label>Team size</Label>
@@ -136,8 +138,8 @@ export default function Workspace() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex gap-2">
-            <Input className="flex-1" placeholder="Name" value={inviteName} onChange={e => setInviteName(e.target.value)} />
-            <Input className="flex-1" placeholder="Work email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value)} />
+            <Input className="flex-1" placeholder="Name" value={inviteName} onChange={e => setInviteName(e.target.value.slice(0, 100))} maxLength={100} />
+            <Input className="flex-1" placeholder="Work email" value={inviteEmail} onChange={e => setInviteEmail(e.target.value.slice(0, 255))} maxLength={255} />
             <Button variant="outline" size="icon" onClick={handleAddInvite}><UserPlus className="h-4 w-4" /></Button>
           </div>
 

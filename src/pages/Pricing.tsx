@@ -144,7 +144,8 @@ function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange:
     name: '', email: '', company: '', role: '', teamSize: '', challenge: '', notes: '',
   });
 
-  const isValid = form.name.trim() && form.email.trim() && form.company.trim() && form.role && form.teamSize && form.challenge;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValid = form.name.trim() && form.email.trim() && emailRegex.test(form.email.trim()) && form.company.trim() && form.role && form.teamSize && form.challenge;
 
   const handleSubmit = () => {
     if (!isValid) return;
@@ -183,9 +184,9 @@ function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange:
               <DialogDescription>Tell us about your team and we'll reach out.</DialogDescription>
             </DialogHeader>
             <div className="space-y-3 pt-2">
-              <Input placeholder="Full name *" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
-              <Input placeholder="Work email *" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} />
-              <Input placeholder="Company *" value={form.company} onChange={e => setForm(p => ({ ...p, company: e.target.value }))} />
+              <Input placeholder="Full name *" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value.slice(0, 100) }))} maxLength={100} />
+              <Input placeholder="Work email *" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value.slice(0, 255) }))} maxLength={255} />
+              <Input placeholder="Company *" value={form.company} onChange={e => setForm(p => ({ ...p, company: e.target.value.slice(0, 100) }))} maxLength={100} />
               <Select value={form.role} onValueChange={v => setForm(p => ({ ...p, role: v }))}>
                 <SelectTrigger><SelectValue placeholder="Role *" /></SelectTrigger>
                 <SelectContent>
@@ -204,7 +205,7 @@ function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange:
                   {challengeOptions.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                 </SelectContent>
               </Select>
-              <Textarea placeholder="Notes (optional)" value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} rows={2} className="resize-none" />
+              <Textarea placeholder="Notes (optional)" value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value.slice(0, 500) }))} rows={2} className="resize-none" maxLength={500} />
               <Button className="w-full gap-2" disabled={!isValid} onClick={handleSubmit}>
                 Submit request <ArrowRight className="h-4 w-4" />
               </Button>
