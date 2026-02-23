@@ -9,6 +9,7 @@ import { useIgniteStatus, usePackStatuses, STATUS_CONFIG } from '@/pages/Ignite'
 import type { IgniteStatus } from '@/pages/Ignite';
 import { Flame, ClipboardCheck, BookOpen, Compass, Sparkles, ArrowRight, ShieldCheck, AlertTriangle, Package } from 'lucide-react';
 import { getWeekRange } from '@/lib/week-utils';
+import { GlossaryTip } from '@/components/GlossaryTip';
 
 type RuleId = 'no_journey' | 'ignite_renewal' | 'low_signal' | 'momentum';
 
@@ -136,7 +137,7 @@ export default function TodayPage() {
       {/* Header + branding */}
       <div>
         <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-bold tracking-tight">Today</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Today <GlossaryTip term="Check-in" /></h2>
           <span className="text-xs text-muted-foreground">{weekLabel}</span>
         </div>
         <Badge variant="outline" className="border-primary/40 text-primary text-xs tracking-widest uppercase px-2 py-0.5 mt-1.5">

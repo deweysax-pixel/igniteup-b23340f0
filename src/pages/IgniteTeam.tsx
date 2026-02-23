@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Flame, Copy, BookOpen, ShieldCheck, AlertTriangle, XCircle, Users, CheckSquare, Square, LayoutList } from 'lucide-react';
 import { toast } from 'sonner';
+import { GlossaryTip } from '@/components/GlossaryTip';
 
 const NUDGE_MESSAGE = "Quick nudge: to keep your Ignite pack Active, complete one unit in the pack and submit one check-in this week. It takes ~5 minutes.";
 const BULK_NUDGE_MESSAGE = "Hi — quick reminder: to keep your Ignite pack Active, please complete one unit and submit your 60s check-in this week. It takes ~5 minutes. Reply if you need help.";
@@ -140,7 +141,7 @@ export default function IgniteTeam() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
             <Flame className="h-6 w-6 text-primary" />
-            Team Ignite Heatmap
+            Team Ignite Heatmap <GlossaryTip term="Ignite" /> <GlossaryTip term="Due" />
           </h1>
           <p className="text-sm text-muted-foreground mt-1">Pack-level certification status across your team.</p>
           <p className="text-xs text-muted-foreground">{getWeekRange().label}</p>
