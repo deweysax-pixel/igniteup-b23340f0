@@ -126,6 +126,23 @@ export interface JourneyAssignment {
   assignedAt: string;
 }
 
+export type DemoRequestStatus = 'new' | 'contacted' | 'qualified' | 'closed';
+
+export interface DemoRequest {
+  id: string;
+  createdAt: string;
+  fullName: string;
+  workEmail: string;
+  company: string;
+  role: string;
+  teamSize: string;
+  biggestChallenge: string;
+  notes: string;
+  source: string;
+  status: DemoRequestStatus;
+  internalNotes: string;
+}
+
 export interface WorkspaceInfo {
   name: string;
   industry: string;
@@ -147,6 +164,7 @@ export interface DemoState {
   workspace: WorkspaceInfo | null;
   workspaceInvites: WorkspaceInvite[];
   journeyAssignments: JourneyAssignment[];
+  demoRequests: DemoRequest[];
 }
 
 export function getLevel(xp: number): Level {

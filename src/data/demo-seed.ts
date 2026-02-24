@@ -225,5 +225,6 @@ export function createInitialState(role: Role = 'manager'): DemoState {
     workspace: null,
     workspaceInvites: [],
     journeyAssignments: [],
+    demoRequests: [],
   };
 }

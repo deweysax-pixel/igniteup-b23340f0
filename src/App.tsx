@@ -32,6 +32,7 @@ import IgniteTeam from "./pages/IgniteTeam";
 import TodayPage from "./pages/Today";
 import PricingPage from "./pages/Pricing";
 import WorkspacePage from "./pages/Workspace";
+import LeadsPage from "./pages/Leads";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -72,6 +73,7 @@ const App = () => (
                 <Route path="ignite-team" element={<IgniteTeam />} />
                 <Route path="today" element={<TodayPage />} />
                 <Route path="workspace" element={<WorkspacePage />} />
+                <Route path="leads" element={<LeadsPage />} />
               </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
