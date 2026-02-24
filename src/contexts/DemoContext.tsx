@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useCallback } from 'react';
-import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType, EvidenceItem, EvidenceType, WorkspaceInfo, WorkspaceInvite, JourneyAssignment } from '@/types/demo';
+import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType, EvidenceItem, EvidenceType, WorkspaceInfo, WorkspaceInvite, JourneyAssignment, DemoRequest, DemoRequestStatus } from '@/types/demo';
 import { getLevel } from '@/types/demo';
 import { createInitialState } from '@/data/demo-seed';
 
@@ -14,7 +14,9 @@ type DemoAction =
   | { type: 'ADD_EVIDENCE'; payload: Omit<EvidenceItem, 'id' | 'createdAt'> }
   | { type: 'SAVE_WORKSPACE'; payload: WorkspaceInfo }
   | { type: 'ADD_INVITE'; payload: { name: string; email: string } }
-  | { type: 'ASSIGN_JOURNEY'; payload: { journeyTitle: string; memberIds: string[] } };
+  | { type: 'ASSIGN_JOURNEY'; payload: { journeyTitle: string; memberIds: string[] } }
+  | { type: 'ADD_DEMO_REQUEST'; payload: Omit<DemoRequest, 'id' | 'createdAt' | 'status' | 'internalNotes'> }
+  | { type: 'UPDATE_DEMO_REQUEST'; payload: { id: string; status?: DemoRequestStatus; internalNotes?: string } };
 
 function recalculateUserXP(state: DemoState, userId: string): DemoState {
   const userCheckIns = state.checkIns.filter(ci => ci.userId === userId);
@@ -134,6 +136,27 @@ function demoReducer(state: DemoState, action: DemoAction): DemoState {
       };
       return { ...state, journeyAssignments: [...state.journeyAssignments, assignment] };
     }
+
+    case 'ADD_DEMO_REQUEST': {
+      const req: DemoRequest = {
+        ...action.payload,
+        id: `dr-${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        status: 'new',
+        internalNotes: '',
+      };
+      return { ...state, demoRequests: [...state.demoRequests, req] };
+    }
+
+    case 'UPDATE_DEMO_REQUEST':
+      return {
+        ...state,
+        demoRequests: state.demoRequests.map(r =>
+          r.id === action.payload.id
+            ? { ...r, ...(action.payload.status !== undefined && { status: action.payload.status }), ...(action.payload.internalNotes !== undefined && { internalNotes: action.payload.internalNotes }) }
+            : r
+        ),
+      };
 
     default:
       return state;

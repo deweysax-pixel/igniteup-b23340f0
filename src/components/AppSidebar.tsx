@@ -17,6 +17,7 @@ import {
   Flame,
   Sun,
   Building2,
+  Contact,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -94,6 +95,7 @@ const managerSections: { label: string; items: NavItem[] }[] = [
       { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
       { title: 'Ignite Heatmap', url: '/app/ignite-team', icon: Flame },
       { title: 'Reports', url: '/app/reports', icon: FileBarChart },
+      { title: 'Leads', url: '/app/leads', icon: Contact, roles: ['admin', 'manager'] },
     ],
   },
   {

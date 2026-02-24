@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDemo } from '@/contexts/DemoContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -139,6 +140,7 @@ const teamSizeOptions = ['1–10', '11–50', '51–200', '201–1000', '1000+']
 
 /* ── Request Demo Modal ── */
 function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange: (v: boolean) => void }) {
+  const { dispatch } = useDemo();
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', company: '', role: '', teamSize: '', challenge: '', notes: '',
@@ -149,6 +151,19 @@ function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpenChange:
 
   const handleSubmit = () => {
     if (!isValid) return;
+    dispatch({
+      type: 'ADD_DEMO_REQUEST',
+      payload: {
+        fullName: form.name.trim(),
+        workEmail: form.email.trim(),
+        company: form.company.trim(),
+        role: form.role,
+        teamSize: form.teamSize,
+        biggestChallenge: form.challenge,
+        notes: form.notes.trim(),
+        source: 'pricing',
+      },
+    });
     setSubmitted(true);
   };
 
