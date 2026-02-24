@@ -409,11 +409,14 @@ export default function PricingPage() {
                   </div>
                   <p className="text-xs font-medium text-primary">Best for: {detail.bestFor}</p>
                   <div className="flex gap-2 pt-1">
-                    <Button className="flex-1 gap-2" size="sm" onClick={() => { setAddonDetail(null); setDemoOpen(true); }}>
-                      Request a demo <ArrowRight className="h-3.5 w-3.5" />
-                    </Button>
+                    <div className="flex-1 space-y-2 pt-1">
+                      <Button className="w-full gap-2" size="sm" onClick={() => { setAddonDetail(null); setDemoOpen(true); }}>
+                        Request a demo <ArrowRight className="h-3.5 w-3.5" />
+                      </Button>
+                      <p className="text-[10px] text-muted-foreground text-center">We’ll reply within 24–48h.</p>
+                    </div>
                     <Button variant="outline" size="sm" onClick={() => setAddonDetail(null)}>
-                      Close
+                      Not now
                     </Button>
                   </div>
                 </div>
