@@ -6,11 +6,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DemoProvider } from "@/contexts/DemoContext";
 import { JourneyProvider } from "@/contexts/JourneyContext";
 import { PreviewProvider } from "@/contexts/PreviewContext";
+import { AuthProvider } from "@/hooks/useAuth";
 import Landing from "./pages/Landing";
 import FitCheck from "./pages/FitCheck";
 import PreviewSandbox from "./pages/PreviewSandbox";
 import PreviewJourney from "./pages/PreviewJourney";
 import Login from "./pages/Login";
+import AuthLogin from "./pages/AuthLogin";
+import AuthSignup from "./pages/AuthSignup";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import AppLayout from "./components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Challenges from "./pages/Challenges";
@@ -40,47 +45,60 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <PreviewProvider>
-        <DemoProvider>
-          <JourneyProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Landing />} />
-                <Route path="/fit-check" element={<FitCheck />} />
-                <Route path="/preview/journey" element={<PreviewJourney />} />
-                <Route path="/preview/sandbox" element={<PreviewSandbox />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/pricing" element={<PricingPage />} />
-              <Route path="/app" element={<AppLayout />}>
-                <Route index element={<Dashboard />} />
-                <Route path="challenges" element={<Challenges />} />
-                <Route path="checkin" element={<CheckInPage />} />
-                <Route path="team" element={<TeamLeaderboard />} />
-                <Route path="barometer" element={<Barometer />} />
-                <Route path="playbooks" element={<Playbooks />} />
-                <Route path="admin" element={<Admin />} />
-                <Route path="demo" element={<DemoScript />} />
-                <Route path="journey" element={<JourneyPage />} />
-                <Route path="catalog" element={<CatalogPage />} />
-                <Route path="builder" element={<BuilderPage />} />
-                <Route path="modules/:id" element={<ModulePlayer />} />
-                <Route path="onboarding" element={<OnboardingPage />} />
-                <Route path="services" element={<ServiceRequests />} />
-                <Route path="reports" element={<Reports />} />
-                <Route path="ignite" element={<IgnitePage />} />
-                <Route path="ignite-team" element={<IgniteTeam />} />
-                <Route path="today" element={<TodayPage />} />
-                <Route path="workspace" element={<WorkspacePage />} />
-                <Route path="leads" element={<LeadsPage />} />
-              </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </JourneyProvider>
-        </DemoProvider>
-      </PreviewProvider>
+      <AuthProvider>
+        <PreviewProvider>
+          <DemoProvider>
+            <JourneyProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  {/* Public routes */}
+                  <Route path="/" element={<Landing />} />
+                  <Route path="/fit-check" element={<FitCheck />} />
+                  <Route path="/preview/journey" element={<PreviewJourney />} />
+                  <Route path="/preview/sandbox" element={<PreviewSandbox />} />
+                  <Route path="/pricing" element={<PricingPage />} />
+
+                  {/* Auth routes */}
+                  <Route path="/auth" element={<AuthLogin />} />
+                  <Route path="/signup" element={<AuthSignup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+
+                  {/* Demo login (role picker) */}
+                  <Route path="/login" element={<Login />} />
+
+                  {/* App routes (demo-context driven, no auth gate for demo) */}
+                  <Route path="/app" element={<AppLayout />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="challenges" element={<Challenges />} />
+                    <Route path="checkin" element={<CheckInPage />} />
+                    <Route path="team" element={<TeamLeaderboard />} />
+                    <Route path="barometer" element={<Barometer />} />
+                    <Route path="playbooks" element={<Playbooks />} />
+                    <Route path="admin" element={<Admin />} />
+                    <Route path="demo" element={<DemoScript />} />
+                    <Route path="journey" element={<JourneyPage />} />
+                    <Route path="catalog" element={<CatalogPage />} />
+                    <Route path="builder" element={<BuilderPage />} />
+                    <Route path="modules/:id" element={<ModulePlayer />} />
+                    <Route path="onboarding" element={<OnboardingPage />} />
+                    <Route path="services" element={<ServiceRequests />} />
+                    <Route path="reports" element={<Reports />} />
+                    <Route path="ignite" element={<IgnitePage />} />
+                    <Route path="ignite-team" element={<IgniteTeam />} />
+                    <Route path="today" element={<TodayPage />} />
+                    <Route path="workspace" element={<WorkspacePage />} />
+                    <Route path="leads" element={<LeadsPage />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </JourneyProvider>
+          </DemoProvider>
+        </PreviewProvider>
+      </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
