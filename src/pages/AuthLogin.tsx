@@ -61,11 +61,9 @@ export default function AuthLogin() {
               <p className="text-xs text-muted-foreground">
                 No account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>
               </p>
-              {(import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMO === 'true') && (
-                <p className="text-xs text-muted-foreground">
-                  Or <Link to="/login" className="text-primary hover:underline">try the demo</Link>
-                </p>
-              )}
+              <p className="text-xs text-muted-foreground">
+                Or <Link to="/login" className="text-primary hover:underline">try the demo</Link>
+              </p>
             </div>
           </CardContent>
         </Card>
