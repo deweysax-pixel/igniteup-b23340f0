@@ -22,6 +22,7 @@ import {
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
 import { usePreview } from '@/contexts/PreviewContext';
+import { useAuth } from '@/hooks/useAuth';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 import {
   Sidebar,
@@ -132,22 +133,26 @@ const PREVIEW_ALLOWED_URLS = ['/app/today', '/app/journey', '/app/catalog', '/ap
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
   const { isPreviewMode } = usePreview();
+  const { user, role: authRole, profile } = useAuth();
   const location = useLocation();
-  const isManagerRole = state.currentRole === 'manager' || state.currentRole === 'admin';
+
+  const isAuthenticated = !!user;
+  const displayRole = isAuthenticated ? (authRole ?? 'user') : state.currentRole;
+  const isManagerRole = displayRole === 'manager' || displayRole === 'admin';
 
   return (
     <Sidebar className="border-r border-sidebar-border">
       <div className="p-4 border-b border-sidebar-border">
         <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain cursor-pointer" /></a>
         <p className="text-xs text-muted-foreground mt-1 capitalize">
-          Role: {state.currentRole}
+          Role: {displayRole}
         </p>
       </div>
 
       <SidebarContent>
         {(isManagerRole ? managerSections : sections).map(section => {
           let visibleItems = section.items.filter(
-            item => !item.roles || (item.roles as readonly string[]).includes(state.currentRole)
+            item => !item.roles || (item.roles as readonly string[]).includes(displayRole)
           );
           if (isPreviewMode) {
             visibleItems = visibleItems.filter(item => PREVIEW_ALLOWED_URLS.includes(item.url));
@@ -184,17 +189,19 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-          onClick={resetDemo}
-        >
-          <RotateCcw className="h-4 w-4" />
-          Reset Demo
-        </Button>
-      </SidebarFooter>
+      {!isAuthenticated && (
+        <SidebarFooter className="p-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            onClick={resetDemo}
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset Demo
+          </Button>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }
