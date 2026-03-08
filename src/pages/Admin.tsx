@@ -1,4 +1,5 @@
 import { useDemo } from '@/contexts/DemoContext';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,10 @@ import { toast } from 'sonner';
 
 export default function Admin() {
   const { state } = useDemo();
+  const { user, organizationName } = useAuth();
+  const isAuthenticated = !!user;
+
+  const orgName = isAuthenticated ? (organizationName ?? 'Your Organization') : state.organization.name;
 
   const teamsData = state.teams.map(team => {
     const members = state.users.filter(u => team.memberIds.includes(u.id));
@@ -19,7 +24,7 @@ export default function Admin() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Admin</h2>
-          <p className="text-sm text-muted-foreground mt-1">{state.organization.name}</p>
+          <p className="text-sm text-muted-foreground mt-1">{orgName}</p>
         </div>
         <Button variant="outline" onClick={() => toast.info('Simulated export — demo feature.')}>
           Export Data
