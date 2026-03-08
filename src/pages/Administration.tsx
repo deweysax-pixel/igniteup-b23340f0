@@ -156,9 +156,9 @@ function InternalAccountsTab() {
 function DemoAccessTab() {
   const [environments] = useState<DemoEnvironment[]>(seedDemoEnvironments);
 
-  const handleCopyLink = (route: string) => {
+  const handleCopyUrl = (route: string) => {
     navigator.clipboard.writeText(`${window.location.origin}${route}`);
-    toast.success('Demo access link copied to clipboard.');
+    toast.success('Demo login URL copied to clipboard.');
   };
 
   return (
