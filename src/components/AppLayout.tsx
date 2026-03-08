@@ -18,6 +18,7 @@ const PREVIEW_ALLOWED_PATHS = ['/app', '/app/journey', '/app/catalog', '/app/pla
 export default function AppLayout() {
   const { currentUser } = useDemo();
   const { isPreviewMode, setPreviewMode } = usePreview();
+  const { user: authUser, profile, role: authRole } = useAuth();
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const [commandOpen, setCommandOpen] = useState(false);
