@@ -83,7 +83,7 @@ function AuthenticatedDashboard() {
               <Grid3X3 className="h-4 w-4" />
               Open Ignite heatmap
             </Button>
-            {isAdmin && !isDemoSession && (
+            {isAdmin && (
               <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate('/app/workspace')}>
                 <Building2 className="h-4 w-4" />
                 Activate workspace
