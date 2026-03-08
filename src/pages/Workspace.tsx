@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Building2, UserPlus, Map as MapIcon, Copy, Send, ArrowLeft, Users, AlertTriangle } from 'lucide-react';
+import { Building2, UserPlus, Map as MapIcon, Copy, Send, ArrowLeft, Users, AlertTriangle, XCircle, RefreshCw, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { modules } from '@/data/journey-seed';
 import type { Role } from '@/types/demo';
