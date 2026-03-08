@@ -97,14 +97,31 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
 
   const loadData = async () => {
     if (!orgId) return;
-    const [{ data: invData }, { data: teamData }, { data: memberData }] = await Promise.all([
-      supabase.from('invitations').select('id, email, role, status, token, created_at, expires_at').eq('organization_id', orgId).order('created_at', { ascending: false }),
+    const [{ data: invData }, { data: teamData }, { data: profileData }, { data: roleData }, { data: tmData }] = await Promise.all([
+      supabase.from('invitations').select('id, email, role, status, token, created_at, expires_at, team_id').eq('organization_id', orgId).order('created_at', { ascending: false }),
       supabase.from('teams').select('id, name').eq('organization_id', orgId),
       supabase.from('profiles').select('id, full_name').eq('organization_id', orgId),
+      supabase.from('user_roles').select('user_id, role'),
+      supabase.from('team_members').select('user_id, team_id'),
     ]);
     setInvitations((invData as DbInvitation[]) ?? []);
-    setTeams((teamData as DbTeam[]) ?? []);
-    setMembers((memberData as DbMember[]) ?? []);
+    const teamsArr = (teamData as DbTeam[]) ?? [];
+    setTeams(teamsArr);
+
+    const teamMap = new Map(teamsArr.map(t => [t.id, t.name]));
+    const roleMap = new Map((roleData ?? []).map((r: any) => [r.user_id, r.role]));
+    const userTeamMap = new Map<string, string>();
+    for (const tm of (tmData ?? []) as any[]) {
+      const name = teamMap.get(tm.team_id);
+      if (name) userTeamMap.set(tm.user_id, name);
+    }
+
+    setMembers((profileData ?? []).map((p: any) => ({
+      id: p.id,
+      full_name: p.full_name,
+      roleName: roleMap.get(p.id) ?? null,
+      teamName: userTeamMap.get(p.id) ?? null,
+    })));
   };
 
   const sendInvite = async () => {
