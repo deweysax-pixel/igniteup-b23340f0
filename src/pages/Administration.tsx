@@ -195,8 +195,8 @@ function DemoAccessTab() {
                 <Badge variant="outline">{env.environment}</Badge>
               </div>
               <div>
-                <p className="text-muted-foreground text-xs mb-0.5">Demo Account</p>
-                <span className="font-medium font-mono text-xs">{env.accountEmail}</span>
+                <p className="text-muted-foreground text-xs mb-0.5">Demo Login</p>
+                <span className="font-medium text-xs">{env.loginIdentifier}</span>
               </div>
               <div>
                 <p className="text-muted-foreground text-xs mb-0.5">Perspectives</p>
