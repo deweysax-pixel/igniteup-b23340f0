@@ -22,6 +22,7 @@ import {
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
 import { usePreview } from '@/contexts/PreviewContext';
+import { useAuth } from '@/hooks/useAuth';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 import {
   Sidebar,
