@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Shield, Play, UserCog, KeyRound, Plus, RotateCcw, Power, Trash2 } from 'lucide-react';
+import { Shield, Play, UserCog, KeyRound, Plus, RotateCcw, Power, Trash2, ExternalLink, Copy, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 
 /* ──────────────────────────────────────────────
