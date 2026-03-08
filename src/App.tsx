@@ -101,6 +101,7 @@ const App = () => (
                     <Route path="today" element={<TodayPage />} />
                     <Route path="workspace" element={<ProtectedRoute allowedRoles={['admin']}><WorkspacePage /></ProtectedRoute>} />
                     <Route path="leads" element={<ProtectedRoute allowedRoles={['admin']}><LeadsPage /></ProtectedRoute>} />
+                    <Route path="administration" element={<ProtectedRoute allowedRoles={['admin']}><Administration /></ProtectedRoute>} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
