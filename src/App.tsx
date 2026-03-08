@@ -96,7 +96,7 @@ const App = () => (
                     <Route path="ignite" element={<IgnitePage />} />
                     <Route path="ignite-team" element={<IgniteTeam />} />
                     <Route path="today" element={<TodayPage />} />
-                    <Route path="workspace" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><WorkspacePage /></ProtectedRoute>} />
+                    <Route path="workspace" element={<ProtectedRoute allowedRoles={['admin']}><WorkspacePage /></ProtectedRoute>} />
                     <Route path="leads" element={<LeadsPage />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />

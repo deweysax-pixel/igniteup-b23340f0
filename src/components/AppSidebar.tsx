@@ -121,7 +121,7 @@ const managerSections: { label: string; items: NavItem[] }[] = [
   {
     label: 'Admin',
     items: [
-      { title: 'Workspace', url: '/app/workspace', icon: Building2, roles: ['admin', 'manager'] },
+      { title: 'Workspace', url: '/app/workspace', icon: Building2, roles: ['admin'] },
       { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
       { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin'] },
       { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
