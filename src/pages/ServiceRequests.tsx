@@ -278,5 +278,6 @@ function DemoServiceRequests() {
 
 export default function ServiceRequests() {
   const { user } = useAuth();
-  return user ? <AuthenticatedServiceRequests /> : <DemoServiceRequests />;
+  const { isDemoSession } = useDemo();
+  return (isDemoSession || !user) ? <DemoServiceRequests /> : <AuthenticatedServiceRequests />;
 }
