@@ -82,6 +82,7 @@ const App = () => (
                     <Route path="challenges" element={<Challenges />} />
                     <Route path="checkin" element={<CheckInPage />} />
                     <Route path="team" element={<TeamLeaderboard />} />
+                    <Route path="teams" element={<ProtectedRoute allowedRoles={['admin']}><AdminTeams /></ProtectedRoute>} />
                     <Route path="barometer" element={<Barometer />} />
                     <Route path="playbooks" element={<Playbooks />} />
                     <Route path="admin" element={<ProtectedRoute allowedRoles={['admin']}><Admin /></ProtectedRoute>} />
