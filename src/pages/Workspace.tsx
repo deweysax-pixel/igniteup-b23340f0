@@ -407,7 +407,7 @@ function DemoWorkspace({ state, dispatch, navigate }: { state: any; dispatch: an
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Map className="h-4 w-4 text-primary" /> Assign a journey
+            <MapIcon className="h-4 w-4 text-primary" /> Assign a journey
           </CardTitle>
           <CardDescription className="text-xs">Select a track and assign it to team members.</CardDescription>
         </CardHeader>
