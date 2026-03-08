@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Target,
@@ -18,6 +18,7 @@ import {
   Sun,
   Building2,
   Contact,
+  LogOut,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
@@ -189,8 +190,22 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
-      {!isAuthenticated && (
-        <SidebarFooter className="p-4">
+      <SidebarFooter className="p-4">
+        {isAuthenticated ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            onClick={async () => {
+              const { signOut } = await import('@/integrations/supabase/client').then(m => ({ signOut: () => m.supabase.auth.signOut() }));
+              await signOut();
+              window.location.href = '/';
+            }}
+          >
+            <LogOut className="h-4 w-4" />
+            Sign out
+          </Button>
+        ) : (
           <Button
             variant="ghost"
             size="sm"
@@ -200,8 +215,8 @@ export function AppSidebar() {
             <RotateCcw className="h-4 w-4" />
             Reset Demo
           </Button>
-        </SidebarFooter>
-      )}
+        )}
+      </SidebarFooter>
     </Sidebar>
   );
 }
