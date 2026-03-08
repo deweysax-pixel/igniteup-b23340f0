@@ -1,4 +1,4 @@
-export type Role = 'admin' | 'manager' | 'participant';
+export type Role = 'admin' | 'sponsor' | 'manager' | 'participant';
 
 export type Level = 'Bronze' | 'Silver' | 'Gold' | 'Platinum';
 

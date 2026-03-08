@@ -168,11 +168,11 @@ function DemoTeamLeaderboard() {
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<'xp' | 'streak'>('xp');
 
-  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
+  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin' || state.currentRole === 'sponsor';
 
-  const activeUsers = state.users.filter(u => u.role !== 'admin');
+  const activeUsers = state.users.filter(u => u.role !== 'admin' && u.role !== 'sponsor');
   const currentUser = state.users.find(u => u.id === state.currentUserId);
-  const visibleUsers = state.currentRole === 'admin'
+  const visibleUsers = state.currentRole === 'admin' || state.currentRole === 'sponsor'
     ? activeUsers
     : activeUsers.filter(u => u.teamId === currentUser?.teamId);
   const teamName = state.teams.find(t => t.id === currentUser?.teamId)?.name;

@@ -17,13 +17,16 @@ import {
 import { useState } from 'react';
 
 const demoSteps = [
-  'Open the Landing page and present the IgniteUp value proposition',
-  'Click "Explore the Demo" and select the Manager role',
-  'Walk through the Dashboard KPIs and Top 5 Leaderboard',
-  'Navigate to Challenges and review the active challenge actions',
-  'Submit a Check-in for Week 4 and observe XP update',
-  'Open the ROI Barometer, submit scores, and show the aggregate chart',
-  'Switch to Admin role via Login to showcase the Admin overview',
+  '1. Open the Landing page → present the IgniteUp value proposition',
+  '2. Click "Explore the Demo" → select Manager role',
+  '3. Dashboard → walk through KPIs, team health, leaderboard',
+  '4. Challenges → show active challenge with weekly actions',
+  '5. Check-in → submit Week 4, watch XP update live',
+  '6. Ignite Heatmap → show team engagement by training pack',
+  '7. Reports → highlight participation rates and trends',
+  '8. Switch to Admin role → show org-wide Dashboard and Teams monitoring',
+  '9. Service Requests → show coaching/workshop requests pipeline',
+  '10. Switch to Sponsor role → show executive oversight view',
 ];
 
 const quickLinks = [
@@ -32,6 +35,7 @@ const quickLinks = [
   { label: 'Check-in', to: '/app/checkin', icon: ClipboardCheck },
   { label: 'Team', to: '/app/team', icon: Users },
   { label: 'ROI Barometer', to: '/app/barometer', icon: BarChart3 },
+  { label: 'Reports', to: '/app/reports', icon: BarChart3 },
   { label: 'Admin', to: '/app/admin', icon: Shield },
 ];
 

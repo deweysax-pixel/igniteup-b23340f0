@@ -1,4 +1,4 @@
-import type { Organization, User, Team, Challenge, CheckIn, BarometerResponse, DemoState, Role } from '@/types/demo';
+import type { Organization, User, Team, Challenge, CheckIn, BarometerResponse, DemoState, Role, ServiceRequest } from '@/types/demo';
 import type { UnitProgress } from '@/types/journey';
 
 const organization: Organization = {
@@ -7,20 +7,25 @@ const organization: Organization = {
 };
 
 const users: User[] = [
+  // Admin
   { id: 'u1', name: 'Claire Dubois', role: 'admin', teamId: 't1', level: 'Gold', xp: 320, streak: 4 },
+  // Sponsor — executive visibility, no team assignment
+  { id: 'u14', name: 'Philippe Renard', role: 'sponsor', teamId: 't1', level: 'Silver', xp: 0, streak: 0 },
+  // Managers
   { id: 'u2', name: 'Marc Leroy', role: 'manager', teamId: 't1', level: 'Silver', xp: 180, streak: 3 },
+  { id: 'u5', name: 'Emma Petit', role: 'manager', teamId: 't2', level: 'Gold', xp: 290, streak: 4 },
+  // Team Alpha — collaborators
   { id: 'u3', name: 'Sophie Martin', role: 'participant', teamId: 't1', level: 'Silver', xp: 150, streak: 2 },
   { id: 'u4', name: 'Lucas Bernard', role: 'participant', teamId: 't1', level: 'Bronze', xp: 80, streak: 1 },
-  { id: 'u5', name: 'Emma Petit', role: 'manager', teamId: 't2', level: 'Gold', xp: 290, streak: 4 },
+  { id: 'u9', name: 'Camille Roux', role: 'participant', teamId: 't1', level: 'Gold', xp: 260, streak: 3 },
+  { id: 'u10', name: 'Antoine Blanc', role: 'participant', teamId: 't1', level: 'Silver', xp: 140, streak: 2 },
+  { id: 'u13', name: 'Manon Gauthier', role: 'participant', teamId: 't1', level: 'Bronze', xp: 40, streak: 0 },
+  // Team Beta — collaborators
   { id: 'u6', name: 'Thomas Moreau', role: 'participant', teamId: 't2', level: 'Silver', xp: 200, streak: 3 },
   { id: 'u7', name: 'Julie Fournier', role: 'participant', teamId: 't2', level: 'Bronze', xp: 60, streak: 0 },
   { id: 'u8', name: 'Nicolas Girard', role: 'participant', teamId: 't2', level: 'Silver', xp: 120, streak: 2 },
-  // New users
-  { id: 'u9', name: 'Camille Roux', role: 'participant', teamId: 't1', level: 'Gold', xp: 260, streak: 3 },
-  { id: 'u10', name: 'Antoine Blanc', role: 'participant', teamId: 't1', level: 'Silver', xp: 140, streak: 2 },
   { id: 'u11', name: 'Léa Mercier', role: 'participant', teamId: 't2', level: 'Silver', xp: 170, streak: 3 },
   { id: 'u12', name: 'Hugo Faure', role: 'participant', teamId: 't2', level: 'Bronze', xp: 90, streak: 1 },
-  { id: 'u13', name: 'Manon Gauthier', role: 'participant', teamId: 't1', level: 'Bronze', xp: 40, streak: 0 },
 ];
 
 const teams: Team[] = [
@@ -31,7 +36,7 @@ const teams: Team[] = [
 const challenges: Challenge[] = [
   {
     id: 'ch-1',
-    title: 'Challenge of the Month: Weekly Feedback',
+    title: 'Agile Leadership Sprint — February',
     description: 'Build 4 key agile leadership habits over 4 weeks. Complete the proposed actions each week and track your progress.',
     startDate: '2026-02-01',
     endDate: '2026-02-28',
@@ -46,7 +51,7 @@ const challenges: Challenge[] = [
   {
     id: 'ch-2',
     title: 'Impactful Communication — March 2026',
-    description: 'Master executive communication techniques to increase your influence.',
+    description: 'Master executive communication techniques to increase your influence and drive alignment across teams.',
     startDate: '2026-03-01',
     endDate: '2026-03-28',
     status: 'upcoming',
@@ -55,6 +60,37 @@ const challenges: Challenge[] = [
       { id: 'a6', label: 'Practice active listening in a meeting', points: 10 },
       { id: 'a7', label: 'Write a clear summary message', points: 15 },
     ],
+  },
+];
+
+/*
+ * Pre-seeded service requests for a realistic admin view.
+ */
+const serviceRequests: ServiceRequest[] = [
+  {
+    id: 'sr-seed-1',
+    createdAt: '2026-02-10T09:30:00Z',
+    requesterName: 'Lucas Bernard',
+    requesterEmail: 'lucas.bernard@horizongroup.com',
+    role: 'participant',
+    team: 'Team Alpha',
+    requestType: 'coaching_session',
+    moduleTitle: 'Giving Feedback Under Pressure',
+    message: 'I struggle with giving feedback to senior colleagues. Would appreciate a 1-on-1 coaching session to practice.',
+    status: 'scheduled',
+    preferredTimeframe: 'Next week',
+  },
+  {
+    id: 'sr-seed-2',
+    createdAt: '2026-02-14T14:15:00Z',
+    requesterName: 'Marc Leroy',
+    requesterEmail: 'marc.leroy@horizongroup.com',
+    role: 'manager',
+    team: 'Team Alpha',
+    requestType: 'team_workshop',
+    moduleTitle: 'Delegation & Trust',
+    message: 'My team is struggling with delegation. Can we schedule a workshop to work through the framework together?',
+    status: 'in_review',
   },
 ];
 
@@ -124,7 +160,7 @@ function generateBarometerResponses(): BarometerResponse[] {
   const responses: BarometerResponse[] = [];
   let counter = 1;
 
-  for (const user of users.filter(u => u.role !== 'admin')) {
+  for (const user of users.filter(u => u.role !== 'admin' && u.role !== 'sponsor')) {
     for (let week = 1; week <= 3; week++) {
       responses.push({
         id: `br-${counter++}`,
@@ -209,7 +245,12 @@ export function getSeededCurrentUserUnitProgress(): Record<string, UnitProgress>
 }
 
 export function createInitialState(role: Role = 'manager'): DemoState {
-  const roleUserMap = { admin: 'u1', manager: 'u2', participant: 'u3' };
+  const roleUserMap: Record<Role, string> = {
+    admin: 'u1',
+    sponsor: 'u14',
+    manager: 'u2',
+    participant: 'u3',
+  };
   return {
     organization,
     users: [...users],
@@ -217,7 +258,7 @@ export function createInitialState(role: Role = 'manager'): DemoState {
     challenges: [...challenges],
     checkIns: generateCheckIns(),
     barometerResponses: generateBarometerResponses(),
-    serviceRequests: [],
+    serviceRequests: [...serviceRequests],
     evidenceLog: [],
     coachingCredits: 3,
     currentUserId: roleUserMap[role],
