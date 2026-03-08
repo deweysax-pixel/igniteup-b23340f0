@@ -31,7 +31,7 @@ interface DemoEnvironment {
   id: string;
   name: string;
   environment: string;
-  accountEmail: string;
+  loginIdentifier: string;
   accessType: 'demo-account';
   status: 'active' | 'disabled';
   perspectives: string[];
