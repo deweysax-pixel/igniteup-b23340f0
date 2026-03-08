@@ -9,6 +9,7 @@ import {
   Shield,
   Play,
   RotateCcw,
+  Settings2,
   Map as MapIcon,
   Library,
   Hammer,
