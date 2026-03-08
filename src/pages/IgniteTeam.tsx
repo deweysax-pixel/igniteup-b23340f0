@@ -20,7 +20,7 @@ const BULK_NUDGE_MESSAGE = "Hi — quick reminder: to keep your Ignite pack Acti
 
 type SelectedCell = { userId: string; packId: string };
 
-export default function IgniteTeam() {
+function DemoIgniteTeam() {
   const { state } = useDemo();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -35,7 +35,7 @@ export default function IgniteTeam() {
 
   // Panel state
   const [selectedCell, setSelectedCell] = useState<SelectedCell | null>(null);
-  const [nudgedCells, setNudgedCells] = useState<Set<string>>(new Set()); // "userId:packId"
+  const [nudgedCells, setNudgedCells] = useState<Set<string>>(new Set());
   const [assignOpen, setAssignOpen] = useState(false);
 
   // Bulk mode
