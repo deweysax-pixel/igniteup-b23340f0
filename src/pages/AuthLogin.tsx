@@ -58,9 +58,6 @@ export default function AuthLogin() {
             </form>
             <div className="mt-4 text-center space-y-2">
               <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
-              <p className="text-xs text-muted-foreground">
-                No account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>
-              </p>
             </div>
           </CardContent>
         </Card>
