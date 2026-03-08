@@ -1,21 +1,58 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import igniteupLogo from '@/assets/igniteup-logo.png';
+
+interface InviteInfo {
+  email: string;
+  role: string;
+  organization_name: string;
+}
 
 export default function AuthSignup() {
   const { signUp } = useAuth();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const inviteToken = searchParams.get('invite');
+
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [inviteInfo, setInviteInfo] = useState<InviteInfo | null>(null);
+  const [inviteLoading, setInviteLoading] = useState(!!inviteToken);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!inviteToken) return;
+
+    const fetchInvite = async () => {
+      const { data, error } = await supabase
+        .from('invitations')
+        .select('email, role, organizations(name)')
+        .eq('token', inviteToken)
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      if (error || !data) {
+        setInviteError('This invitation link is invalid or has expired.');
+      } else {
+        const orgName = (data as any).organizations?.name ?? 'Unknown';
+        setInviteInfo({ email: data.email, role: data.role, organization_name: orgName });
+        setEmail(data.email);
+      }
+      setInviteLoading(false);
+    };
+    fetchInvite();
+  }, [inviteToken]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,8 +60,12 @@ export default function AuthSignup() {
       toast({ title: 'Password too short', description: 'Use at least 6 characters.', variant: 'destructive' });
       return;
     }
+    if (!inviteToken) {
+      toast({ title: 'Invitation required', description: 'You need a valid invitation link to sign up.', variant: 'destructive' });
+      return;
+    }
     setLoading(true);
-    const { error } = await signUp(email, password, fullName);
+    const { error } = await signUp(email, password, fullName, inviteToken);
     setLoading(false);
     if (error) {
       toast({ title: 'Sign up failed', description: error.message, variant: 'destructive' });
@@ -49,6 +90,32 @@ export default function AuthSignup() {
     );
   }
 
+  if (inviteLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Verifying invitation…</div>
+      </div>
+    );
+  }
+
+  if (inviteError || !inviteToken) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Invitation Required</CardTitle>
+            <CardDescription>
+              {inviteError || 'IgniteUp is invitation-only. Ask your organization admin for an invite link.'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link to="/auth"><Button variant="outline" className="w-full">Back to Sign In</Button></Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-6 animate-fade-in">
@@ -60,7 +127,10 @@ export default function AuthSignup() {
         <Card>
           <CardHeader className="pb-4">
             <CardTitle className="text-lg">Sign Up</CardTitle>
-            <CardDescription>Start your IgniteUp journey</CardDescription>
+            <CardDescription>
+              You're joining <strong>{inviteInfo?.organization_name}</strong> as{' '}
+              <Badge variant="secondary" className="capitalize">{inviteInfo?.role}</Badge>
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -70,7 +140,7 @@ export default function AuthSignup() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@company.com" value={email} onChange={e => setEmail(e.target.value)} required />
+                <Input id="email" type="email" value={email} disabled className="bg-muted" />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
