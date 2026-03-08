@@ -408,10 +408,13 @@ function DemoDashboard() {
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { state } = useDemo();
+  const { state, isDemoSession } = useDemo();
   
-  // Sponsor gets dedicated executive dashboard (demo mode only for now)
-  if (!user && state.currentRole === 'sponsor') {
+  // Demo session always uses demo data, even if real auth exists
+  const useDemo_ = isDemoSession || !user;
+  
+  // Sponsor gets dedicated executive dashboard
+  if (useDemo_ && state.currentRole === 'sponsor') {
     const SponsorDashboard = lazy(() => import('./SponsorDashboard'));
     return (
       <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
@@ -420,5 +423,5 @@ export default function Dashboard() {
     );
   }
   
-  return user ? <AuthenticatedDashboard /> : <DemoDashboard />;
+  return useDemo_ ? <DemoDashboard /> : <AuthenticatedDashboard />;
 }
