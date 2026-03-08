@@ -6,13 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { PasswordInput } from '@/components/PasswordInput';
 import { Label } from '@/components/ui/label';
-import { Shield, Users, User, Eye, Lock } from 'lucide-react';
+import { Shield, Users, User, Eye, Lock, Loader2 } from 'lucide-react';
 import type { Role } from '@/types/demo';
 import igniteupLogo from '@/assets/igniteup-logo.png';
-
-/* ── Demo credential ────────────────────────── */
-const DEMO_EMAIL = 'demo@igniteup.io';
-const DEMO_PASSWORD = 'HorizonDemo2026!';
+import { supabase } from '@/integrations/supabase/client';
 
 const searchParams = new URLSearchParams(window.location.search);
 const showAdmin = searchParams.get('internal') === '1';
@@ -31,14 +28,27 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.toLowerCase().trim() === DEMO_EMAIL && password === DEMO_PASSWORD) {
-      setAuthenticated(true);
-      setError('');
-    } else {
-      setError('Invalid demo credentials');
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('demo-auth?action=login', {
+        body: { login: email, password },
+      });
+
+      if (fnError || data?.error) {
+        setError(data?.error || 'Login failed');
+      } else if (data?.ok) {
+        setAuthenticated(true);
+      }
+    } catch {
+      setError('Unable to reach authentication service');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +75,7 @@ export default function Login() {
             <CardContent className="pt-6">
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="demo-email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</Label>
+                  <Label htmlFor="demo-email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Demo Login</Label>
                   <Input
                     id="demo-email"
                     type="email"
@@ -87,7 +97,10 @@ export default function Login() {
                   />
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" className="w-full">Sign In</Button>
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Sign In
+                </Button>
               </form>
             </CardContent>
           </Card>
