@@ -9,7 +9,7 @@ import {
   Shield,
   Play,
   RotateCcw,
-  Map,
+  Map as MapIcon,
   Library,
   Hammer,
   HeadphonesIcon,
