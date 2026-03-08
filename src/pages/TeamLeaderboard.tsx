@@ -1,11 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useTeamData } from '@/hooks/useTeamData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getLevelColor } from '@/types/demo';
-import { Flame, Copy, AlertTriangle, ClipboardCheck, ExternalLink } from 'lucide-react';
+import { Flame, Copy, AlertTriangle, ClipboardCheck, ExternalLink, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { IGNITE_PACKS, computePackStatusForUser, STATUS_CONFIG, type IgniteStatus } from '@/pages/Ignite';
 import { getSeededUnitProgressForUser } from '@/data/demo-seed';
@@ -13,7 +15,155 @@ import { getWeekRange } from '@/lib/week-utils';
 
 const CHECK_IN_NUDGE = "Quick reminder: please submit your 60s check-in this week — it keeps your progress visible. Reply if you need support.";
 
-export default function TeamLeaderboard() {
+/* ── Authenticated team page (real DB data) ── */
+function AuthenticatedTeamLeaderboard() {
+  const navigate = useNavigate();
+  const { role } = useAuth();
+  const { members, teams, checkIns, loading } = useTeamData();
+  const [sortBy, setSortBy] = useState<'xp' | 'streak'>('xp');
+  const weekLabel = getWeekRange().label;
+  const isManager = role === 'manager' || role === 'admin';
+  const teamName = teams.map(t => t.name).join(', ');
+
+  const sorted = useMemo(() => {
+    return [...members].sort((a, b) =>
+      sortBy === 'xp' ? b.xp - a.xp : b.streak - a.streak
+    );
+  }, [members, sortBy]);
+
+  // Missing check-ins (no check-in in last 7 days)
+  const missingCheckIns = useMemo(() => {
+    if (!isManager) return [];
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    return members.filter(m => {
+      const recent = checkIns.some(
+        ci => ci.userId === m.id && new Date(ci.createdAt).getTime() >= sevenDaysAgo
+      );
+      return !recent;
+    }).slice(0, 3);
+  }, [isManager, members, checkIns]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Team</h2>
+        <p className="text-xs text-muted-foreground mt-0.5">{weekLabel}</p>
+        {teamName && <p className="text-sm text-muted-foreground mt-1">{teamName}</p>}
+      </div>
+
+      {/* Team Health cards — Manager only */}
+      {isManager && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Missing check-ins */}
+          <Card className="border-primary/20">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                <ClipboardCheck className="h-4 w-4 text-primary" />
+                Missing check-ins
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {missingCheckIns.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Everyone checked in this week.</p>
+              ) : (
+                <>
+                  {missingCheckIns.map(m => (
+                    <div key={m.id} className="flex items-center justify-between">
+                      <span className="text-sm">{m.fullName}</span>
+                      <Badge variant="outline" className="text-xs text-muted-foreground">No check-in</Badge>
+                    </div>
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full gap-2 mt-1"
+                    onClick={() => {
+                      navigator.clipboard.writeText(CHECK_IN_NUDGE);
+                      toast.success('Copied');
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    Copy nudge
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* View toggle */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-muted-foreground">View:</span>
+        <div className="flex rounded-md border border-border overflow-hidden">
+          <button
+            className={`px-3 py-1 text-xs font-medium transition-colors ${sortBy === 'xp' ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:text-foreground'}`}
+            onClick={() => setSortBy('xp')}
+          >
+            XP
+          </button>
+          <button
+            className={`px-3 py-1 text-xs font-medium transition-colors ${sortBy === 'streak' ? 'bg-primary text-primary-foreground' : 'bg-background text-muted-foreground hover:text-foreground'}`}
+            onClick={() => setSortBy('streak')}
+          >
+            Streak
+          </button>
+        </div>
+      </div>
+
+      {/* Leaderboard */}
+      <Card>
+        <CardContent className="pt-6 space-y-1">
+          {sorted.length === 0 ? (
+            <p className="text-sm text-muted-foreground text-center py-8">No team members yet.</p>
+          ) : (
+            sorted.map((member, i) => (
+              <div
+                key={member.id}
+                className={`flex items-center justify-between py-3 px-3 rounded-md ${i === 0 ? 'bg-accent/50' : ''}`}
+              >
+                <div className="flex items-center gap-4">
+                  <span className={`text-lg font-bold w-8 text-center ${i === 0 ? 'text-primary' : 'text-muted-foreground'}`}>
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="text-sm font-medium">{member.fullName}</p>
+                    <p className="text-xs text-muted-foreground capitalize">{member.role}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {member.streak > 0 && (
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Flame className="h-3 w-3" />
+                      {member.streak}
+                    </div>
+                  )}
+                  <Badge variant="outline" className={`${getLevelColor(member.level)} border-current text-xs`}>
+                    {member.level}
+                  </Badge>
+                  <span className="text-sm font-medium w-16 text-right">
+                    {sortBy === 'xp' ? `${member.xp} XP` : `${member.streak} wk`}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* ── Demo team page (seed data, unchanged) ── */
+function DemoTeamLeaderboard() {
   const { state } = useDemo();
   const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<'xp' | 'streak'>('xp');
@@ -224,4 +374,9 @@ export default function TeamLeaderboard() {
       </Card>
     </div>
   );
+}
+
+export default function TeamLeaderboard() {
+  const { user } = useAuth();
+  return user ? <AuthenticatedTeamLeaderboard /> : <DemoTeamLeaderboard />;
 }
