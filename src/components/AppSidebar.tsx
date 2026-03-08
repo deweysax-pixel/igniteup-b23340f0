@@ -207,13 +207,6 @@ export function AppSidebar() {
             size="sm"
             className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
             onClick={async () => {
-              const { signOut } = await import('@/hooks/useAuth').then(m => {
-                // We need the raw supabase signOut + hard redirect
-                return { signOut: async () => {
-                  const { supabase } = await import('@/integrations/supabase/client');
-                  await supabase.auth.signOut();
-                }};
-              });
               await signOut();
               window.location.href = '/auth';
             }}
