@@ -133,8 +133,12 @@ const PREVIEW_ALLOWED_URLS = ['/app/today', '/app/journey', '/app/catalog', '/ap
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
   const { isPreviewMode } = usePreview();
+  const { user, role: authRole, profile } = useAuth();
   const location = useLocation();
-  const isManagerRole = state.currentRole === 'manager' || state.currentRole === 'admin';
+
+  const isAuthenticated = !!user;
+  const displayRole = isAuthenticated ? (authRole ?? 'user') : state.currentRole;
+  const isManagerRole = displayRole === 'manager' || displayRole === 'admin';
 
   return (
     <Sidebar className="border-r border-sidebar-border">
