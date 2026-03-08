@@ -138,6 +138,7 @@ const sponsorSections: { label: string; items: NavItem[] }[] = [
     label: 'Overview',
     items: [
       { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
+      { title: 'ROI Barometer', url: '/app/barometer', icon: BarChart3 },
       { title: 'Reports', url: '/app/reports', icon: FileBarChart },
       { title: 'Ignite Heatmap', url: '/app/ignite-team', icon: Flame },
     ],
