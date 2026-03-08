@@ -192,7 +192,7 @@ export function AppSidebar() {
       </div>
 
       <SidebarContent>
-        {(isAdminRole ? adminSections : isManagerRole ? managerSections : sections).map(section => {
+        {(isAdminRole ? adminSections : isSponsorRole ? sponsorSections : isManagerRole ? managerSections : sections).map(section => {
           let visibleItems = section.items.filter(
             item => !item.roles || (item.roles as readonly string[]).includes(displayRole)
           );
