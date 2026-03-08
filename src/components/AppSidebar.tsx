@@ -189,17 +189,19 @@ export function AppSidebar() {
         })}
       </SidebarContent>
 
-      <SidebarFooter className="p-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
-          onClick={resetDemo}
-        >
-          <RotateCcw className="h-4 w-4" />
-          Reset Demo
-        </Button>
-      </SidebarFooter>
+      {!isAuthenticated && (
+        <SidebarFooter className="p-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            onClick={resetDemo}
+          >
+            <RotateCcw className="h-4 w-4" />
+            Reset Demo
+          </Button>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }
