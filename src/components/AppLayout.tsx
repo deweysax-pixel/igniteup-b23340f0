@@ -80,6 +80,7 @@ export default function AppLayout() {
         </div>
       </div>
       <CommandCenter open={commandOpen} onOpenChange={setCommandOpen} />
+      <DemoPerspectiveSwitcher />
     </SidebarProvider>
   );
 }

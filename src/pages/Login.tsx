@@ -30,9 +30,9 @@ export default function Login() {
       <div className="w-full max-w-lg space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
            <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto cursor-pointer" /></a>
-           <span className="block text-lg font-medium text-muted-foreground mt-2">Demo</span>
+           <span className="block text-lg font-medium text-muted-foreground mt-2">Demo · Horizon Group</span>
           <p className="text-sm text-muted-foreground">
-            Choose a role to explore the platform
+            Choose a perspective to explore the platform
           </p>
         </div>
 
