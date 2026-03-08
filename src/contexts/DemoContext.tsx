@@ -7,6 +7,8 @@ type DemoAction =
   | { type: 'CHECK_IN'; payload: { userId: string; challengeId: string; weekNumber: number; completedActionIds: string[]; note: string } }
   | { type: 'SUBMIT_BAROMETER'; payload: { userId: string; challengeId: string; weekNumber: number; scores: { confidence: number; engagement: number; clarity: number } } }
   | { type: 'SWITCH_ROLE'; payload: Role }
+  | { type: 'ACTIVATE_DEMO_SESSION' }
+  | { type: 'END_DEMO_SESSION' }
   | { type: 'RESET_DEMO' }
   | { type: 'ADD_SERVICE_REQUEST'; payload: Omit<ServiceRequest, 'id' | 'createdAt' | 'status'> }
   | { type: 'UPDATE_REQUEST_STATUS'; payload: { id: string; status: ServiceRequest['status'] } }
