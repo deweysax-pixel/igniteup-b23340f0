@@ -54,6 +54,7 @@ export default function Login() {
 
   const handleSelect = (role: Role) => {
     switchRole(role);
+    activateDemoSession();
     navigate(role === 'manager' || role === 'admin' || role === 'sponsor' ? '/app' : '/app/journey');
   };
 
