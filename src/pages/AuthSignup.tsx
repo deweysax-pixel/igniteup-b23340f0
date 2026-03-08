@@ -36,19 +36,17 @@ export default function AuthSignup() {
     if (!inviteToken) return;
 
     const fetchInvite = async () => {
-      const { data, error } = await supabase
-        .from('invitations')
-        .select('email, role, organizations(name)')
-        .eq('token', inviteToken)
-        .eq('status', 'pending')
-        .maybeSingle();
+      // Use security-definer RPC so anonymous users can validate the token
+      const { data, error } = await supabase.rpc('get_invite_info', {
+        _token: inviteToken,
+      } as any);
 
       if (error || !data) {
         setInviteError('This invitation link is invalid or has expired.');
       } else {
-        const orgName = (data as any).organizations?.name ?? 'Unknown';
-        setInviteInfo({ email: data.email, role: data.role, organization_name: orgName });
-        setEmail(data.email);
+        const info = data as unknown as InviteInfo;
+        setInviteInfo(info);
+        setEmail(info.email);
       }
       setInviteLoading(false);
     };
