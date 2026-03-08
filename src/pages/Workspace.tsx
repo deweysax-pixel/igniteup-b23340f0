@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Building2, UserPlus, Map as MapIcon, Copy, Send, ArrowLeft, Users, AlertTriangle } from 'lucide-react';
+import { Building2, UserPlus, Map as MapIcon, Copy, Send, ArrowLeft, Users, AlertTriangle, XCircle, RefreshCw, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { modules } from '@/data/journey-seed';
 import type { Role } from '@/types/demo';
@@ -154,12 +154,34 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
     toast.success('Invite link copied!');
   };
 
+  const cancelInvite = async (invId: string) => {
+    const { error } = await supabase.from('invitations').update({ status: 'cancelled' } as any).eq('id', invId);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Invitation cancelled');
+    loadData();
+  };
+
+  const resendInvite = async (inv: DbInvitation) => {
+    // Reset expiry to 7 days from now
+    const newExpiry = new Date(Date.now() + 7 * 86400000).toISOString();
+    const { error } = await supabase.from('invitations').update({ expires_at: newExpiry, status: 'pending' } as any).eq('id', inv.id);
+    if (error) { toast.error(error.message); return; }
+    copyInviteLink(inv.token);
+    toast.success('Invite renewed & link copied');
+    loadData();
+  };
+
+  const removeMember = async (memberId: string, memberName: string) => {
+    if (!confirm(`Remove ${memberName || 'this member'} from the organization? This will revoke their access.`)) return;
+    const { error } = await supabase.rpc('remove_org_member', { _admin_id: userId, _member_id: memberId } as any);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`${memberName || 'Member'} removed`);
+    loadData();
+  };
+
   const pendingInvites = invitations.filter(i => i.status === 'pending');
   const acceptedInvites = invitations.filter(i => i.status === 'accepted');
-
-  const toggleMember = (id: string) => {
-    setSelectedMembers(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]);
-  };
+  const cancelledInvites = invitations.filter(i => i.status === 'cancelled');
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
@@ -223,22 +245,38 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Sent</TableHead>
-                    <TableHead className="w-[60px]">Link</TableHead>
+                    <TableHead className="w-[100px] text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pendingInvites.map(inv => (
-                    <TableRow key={inv.id}>
-                      <TableCell className="text-sm">{inv.email}</TableCell>
-                      <TableCell><Badge variant="outline" className="capitalize text-xs">{inv.role}</Badge></TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{new Date(inv.created_at).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Button size="icon" variant="ghost" onClick={() => copyInviteLink(inv.token)} title="Copy invite link">
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {pendingInvites.map(inv => {
+                    const isExpired = new Date(inv.expires_at) < new Date();
+                    return (
+                      <TableRow key={inv.id}>
+                        <TableCell className="text-sm">
+                          {inv.email}
+                          {isExpired && <Badge variant="destructive" className="text-[10px] ml-2">Expired</Badge>}
+                        </TableCell>
+                        <TableCell><Badge variant="outline" className="capitalize text-xs">{inv.role}</Badge></TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{new Date(inv.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" onClick={() => copyInviteLink(inv.token)} title="Copy invite link">
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                            {isExpired && (
+                              <Button size="icon" variant="ghost" onClick={() => resendInvite(inv)} title="Renew & copy link">
+                                <RefreshCw className="h-4 w-4 text-primary" />
+                              </Button>
+                            )}
+                            <Button size="icon" variant="ghost" onClick={() => cancelInvite(inv.id)} title="Cancel invitation">
+                              <XCircle className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -257,12 +295,13 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
           {members.length === 0 ? (
             <p className="text-sm text-muted-foreground">No members yet. Invite your first team member above.</p>
           ) : (
-            <Table>
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Team</TableHead>
+                  <TableHead className="w-[60px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -276,6 +315,13 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
                       <Badge variant="outline" className="capitalize text-xs">{m.roleName ?? 'no role'}</Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{m.teamName ?? 'No team'}</TableCell>
+                    <TableCell>
+                      {m.id !== userId && (
+                        <Button size="icon" variant="ghost" onClick={() => removeMember(m.id, m.full_name || '')} title="Remove member">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
