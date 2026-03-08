@@ -2,12 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Users, User } from 'lucide-react';
+import { Shield, Users, User, Eye } from 'lucide-react';
 import type { Role } from '@/types/demo';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const roles: { role: Role; label: string; description: string; icon: React.ElementType }[] = [
   { role: 'admin', label: 'Administrator', description: 'Full organizational view, challenge management, and data export.', icon: Shield },
+  { role: 'sponsor', label: 'Sponsor', description: 'Executive oversight with high-level KPIs, ROI tracking, and program health.', icon: Eye },
   { role: 'manager', label: 'Manager', description: 'Lead your team, track rankings, and validate weekly actions.', icon: Users },
   { role: 'participant', label: 'Participant', description: 'Complete challenge actions, track your progress and your team\'s.', icon: User },
 ];
@@ -18,7 +19,7 @@ export default function Login() {
 
   const handleSelect = (role: Role) => {
     switchRole(role);
-    navigate(role === 'manager' || role === 'admin' ? '/app' : '/app/journey');
+    navigate(role === 'manager' || role === 'admin' || role === 'sponsor' ? '/app' : '/app/journey');
   };
 
   return (
