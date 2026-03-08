@@ -144,7 +144,7 @@ const PREVIEW_ALLOWED_URLS = ['/app/today', '/app/journey', '/app/catalog', '/ap
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
   const { isPreviewMode } = usePreview();
-  const { user, role: authRole, profile } = useAuth();
+  const { user, role: authRole, profile, signOut } = useAuth();
   const location = useLocation();
 
   const isAuthenticated = !!user;
