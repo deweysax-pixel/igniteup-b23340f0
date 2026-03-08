@@ -142,6 +142,36 @@ export type Database = {
           },
         ]
       }
+      demo_accounts: {
+        Row: {
+          created_at: string
+          demo_environment: string
+          enabled: boolean
+          id: string
+          last_used_at: string | null
+          login: string
+          password_hash: string
+        }
+        Insert: {
+          created_at?: string
+          demo_environment?: string
+          enabled?: boolean
+          id?: string
+          last_used_at?: string | null
+          login: string
+          password_hash: string
+        }
+        Update: {
+          created_at?: string
+          demo_environment?: string
+          enabled?: boolean
+          id?: string
+          last_used_at?: string | null
+          login?: string
+          password_hash?: string
+        }
+        Relationships: []
+      }
       feedback_entries: {
         Row: {
           challenge_id: string | null
