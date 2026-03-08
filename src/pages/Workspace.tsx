@@ -42,6 +42,8 @@ interface DbTeam {
 interface DbMember {
   id: string;
   full_name: string | null;
+  roleName: string | null;
+  teamName: string | null;
 }
 
 export default function Workspace() {
