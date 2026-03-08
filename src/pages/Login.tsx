@@ -10,7 +10,9 @@ import { Shield, Users, User, Eye, Lock } from 'lucide-react';
 import type { Role } from '@/types/demo';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
-const DEMO_CODE = 'igniteup-demo-2026';
+/* ── Demo credential ────────────────────────── */
+const DEMO_EMAIL = 'demo@igniteup.io';
+const DEMO_PASSWORD = 'HorizonDemo2026!';
 
 const searchParams = new URLSearchParams(window.location.search);
 const showAdmin = searchParams.get('internal') === '1';
@@ -26,16 +28,17 @@ export default function Login() {
   const { switchRole } = useDemo();
   const navigate = useNavigate();
   const [authenticated, setAuthenticated] = useState(false);
-  const [code, setCode] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleUnlock = (e: React.FormEvent) => {
+  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (code === DEMO_CODE) {
+    if (email.toLowerCase().trim() === DEMO_EMAIL && password === DEMO_PASSWORD) {
       setAuthenticated(true);
       setError('');
     } else {
-      setError('Invalid demo access code');
+      setError('Invalid demo credentials');
     }
   };
 
@@ -55,23 +58,41 @@ export default function Login() {
               <span className="text-xs font-medium text-primary">Private Demo</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-              Access the IgniteUp demo environment to explore the platform firsthand.
+              Sign in with your demo account to explore the IgniteUp platform.
             </p>
           </div>
           <Card className="border-border/50 shadow-lg">
             <CardContent className="pt-6">
-              <form onSubmit={handleUnlock} className="space-y-4">
+              <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="demo-code" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Access Code</Label>
-                  <PasswordInput id="demo-code" placeholder="Enter your access code" value={code} onChange={e => setCode(e.target.value)} required />
+                  <Label htmlFor="demo-email" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Email</Label>
+                  <Input
+                    id="demo-email"
+                    type="email"
+                    placeholder="demo@igniteup.io"
+                    value={email}
+                    onChange={e => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="demo-password" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Password</Label>
+                  <PasswordInput
+                    id="demo-password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" className="w-full">Enter Demo</Button>
+                <Button type="submit" className="w-full">Sign In</Button>
               </form>
             </CardContent>
           </Card>
           <p className="text-center text-xs text-muted-foreground">
-            Don't have an access code?{' '}
+            Don't have demo access?{' '}
             <a href="/pricing" className="text-primary hover:underline">Request a demo</a>
           </p>
         </div>
