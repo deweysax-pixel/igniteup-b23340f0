@@ -8,6 +8,7 @@ import { PreviewBanner } from '@/components/PreviewBanner';
 import { PreviewGate } from '@/components/PreviewGate';
 import { CommandCenter } from '@/components/CommandCenter';
 import { SearchJump } from '@/components/SearchJump';
+import { DemoPerspectiveSwitcher } from '@/components/DemoPerspectiveSwitcher';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
