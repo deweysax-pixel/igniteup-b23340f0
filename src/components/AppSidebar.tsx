@@ -110,7 +110,7 @@ const adminSections: { label: string; items: NavItem[] }[] = [
     items: [
       { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
       { title: 'Challenges', url: '/app/challenges', icon: Target },
-      { title: 'Team', url: '/app/team', icon: Users },
+      { title: 'Teams', url: '/app/teams', icon: Users },
     ],
   },
   {
