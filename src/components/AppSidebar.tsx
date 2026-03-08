@@ -91,7 +91,7 @@ const sections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
-const managerSections: { label: string; items: NavItem[] }[] = [
+const adminSections: { label: string; items: NavItem[] }[] = [
   {
     label: '',
     items: [todayItem],
@@ -114,15 +114,6 @@ const managerSections: { label: string; items: NavItem[] }[] = [
     ],
   },
   {
-    label: 'Me',
-    items: [
-      { title: 'My Journey', url: '/app/journey', icon: Map },
-      { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck },
-      { title: 'Ignite (Personal)', url: '/app/ignite', icon: Flame },
-      { title: 'Catalog', url: '/app/catalog', icon: Library },
-    ],
-  },
-  {
     label: 'Support',
     items: [
       { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin', 'manager'] },
@@ -134,6 +125,44 @@ const managerSections: { label: string; items: NavItem[] }[] = [
       { title: 'Workspace', url: '/app/workspace', icon: Building2, roles: ['admin'] },
       { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
       { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
+    ],
+  },
+];
+
+const managerSections: { label: string; items: NavItem[] }[] = [
+  {
+    label: '',
+    items: [todayItem],
+  },
+  {
+    label: 'Pilot',
+    items: [
+      { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
+      { title: 'Ignite Heatmap', url: '/app/ignite-team', icon: Flame },
+      { title: 'Reports', url: '/app/reports', icon: FileBarChart },
+    ],
+  },
+  {
+    label: 'Drive',
+    items: [
+      { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
+      { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'Team', url: '/app/team', icon: Users },
+    ],
+  },
+  {
+    label: 'Me',
+    items: [
+      { title: 'My Journey', url: '/app/journey', icon: MapIcon },
+      { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck },
+      { title: 'Ignite (Personal)', url: '/app/ignite', icon: Flame },
+      { title: 'Catalog', url: '/app/catalog', icon: Library },
+    ],
+  },
+  {
+    label: 'Support',
+    items: [
+      { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin', 'manager'] },
     ],
   },
 ];
