@@ -22,7 +22,7 @@ function AuthenticatedTeamLeaderboard() {
   const { members, teams, checkIns, loading } = useTeamData();
   const [sortBy, setSortBy] = useState<'xp' | 'streak'>('xp');
   const weekLabel = getWeekRange().label;
-  const isManager = role === 'manager' || role === 'admin';
+  const isManager = role === 'manager';
   const teamName = teams.map(t => t.name).join(', ');
 
   const sorted = useMemo(() => {
