@@ -21,7 +21,7 @@ type TeamSummary = {
   status: 'healthy' | 'attention' | 'critical';
 };
 
-export default function AdminTeams() {
+function AuthenticatedAdminTeams() {
   const navigate = useNavigate();
   const { role } = useAuth();
   const { members, teams, checkIns, loading } = useTeamData();

@@ -714,5 +714,6 @@ function AuthenticatedIgniteTeam() {
 
 export default function IgniteTeam() {
   const { user } = useAuth();
-  return user ? <AuthenticatedIgniteTeam /> : <DemoIgniteTeam />;
+  const { isDemoSession } = useDemo();
+  return (isDemoSession || !user) ? <DemoIgniteTeam /> : <AuthenticatedIgniteTeam />;
 }
