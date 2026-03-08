@@ -415,25 +415,25 @@ export default function IgnitePage() {
             const pCfg = STATUS_CONFIG[pStatus];
             const PIcon = pCfg.icon;
             return (
-              <Card key={pack.packId} className={`border ${pCfg.bg}`}>
-                <CardContent className="pt-5 space-y-3">
+              <Card key={pack.packId} className={`border ${pCfg.bg} overflow-hidden`}>
+                <CardContent className="pt-5 pb-4 px-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
+                    <div className="flex items-center gap-2 min-w-0 overflow-hidden">
                       <Flame className="h-4 w-4 text-primary shrink-0" />
                       <p className="font-semibold text-sm truncate">{pack.title}</p>
                     </div>
-                    <Badge variant="outline" className={`shrink-0 gap-1 text-xs ${pCfg.color} border-current/30`}>
+                    <Badge variant="outline" className={`shrink-0 gap-1 text-xs whitespace-nowrap ${pCfg.color} border-current/30`}>
                       <PIcon className="h-3 w-3" />
                       {pCfg.label}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">{whyLine}</p>
-                  <div className="flex gap-2 pt-1">
-                    <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate(`/app/modules/${pack.linkedModuleIds[0]}`)}>
-                      <BookOpen className="h-3 w-3" /> Continue learning
+                  <p className="text-xs text-muted-foreground line-clamp-2">{whyLine}</p>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8 px-2.5" onClick={() => navigate(`/app/modules/${pack.linkedModuleIds[0]}`)}>
+                      <BookOpen className="h-3 w-3 shrink-0" /> <span className="truncate">Continue</span>
                     </Button>
-                    <Button size="sm" variant="outline" className="gap-1.5 text-xs" onClick={() => navigate('/app/checkin')}>
-                      <ClipboardCheck className="h-3 w-3" /> Do a check-in
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs h-8 px-2.5" onClick={() => navigate('/app/checkin')}>
+                      <ClipboardCheck className="h-3 w-3 shrink-0" /> <span className="truncate">Check-in</span>
                     </Button>
                   </div>
                 </CardContent>
