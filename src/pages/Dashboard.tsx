@@ -142,7 +142,7 @@ function AuthenticatedDashboard() {
         </CardContent>
       </Card>
 
-      {/* KPI Cards — team-scoped */}
+      {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -151,7 +151,7 @@ function AuthenticatedDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{participationRate}%</div>
-            <p className="text-xs text-muted-foreground">{members.length} team member{members.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-muted-foreground">{members.length} {isAdmin ? 'member' : 'team member'}{members.length !== 1 ? 's' : ''}</p>
           </CardContent>
         </Card>
         <Card>
@@ -174,7 +174,7 @@ function AuthenticatedDashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Team Size</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">{isAdmin ? 'Org Members' : 'Team Size'}</CardTitle>
             <Trophy className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>

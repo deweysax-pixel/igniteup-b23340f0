@@ -37,9 +37,13 @@ const quickLinks = [
 
 export default function DemoScript() {
   const { state } = useDemo();
+  const { user, role: authRole } = useAuth();
   const [checked, setChecked] = useState<boolean[]>(new Array(demoSteps.length).fill(false));
 
-  if (state.currentRole !== 'admin') {
+  // Allow access if authenticated admin OR demo admin
+  const isAdmin = user ? authRole === 'admin' : state.currentRole === 'admin';
+
+  if (!isAdmin) {
     return (
       <div className="animate-fade-in flex flex-col items-center justify-center py-20 space-y-4">
         <Lock className="h-12 w-12 text-muted-foreground" />
