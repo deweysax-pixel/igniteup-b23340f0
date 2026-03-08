@@ -52,14 +52,25 @@ export default function AppLayout() {
                 <Zap className="h-3.5 w-3.5 text-primary" />
                 Do now
               </Button>
-              {currentUser && (
+              {authUser ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">
+                    {profile?.full_name || authUser.email}
+                  </span>
+                  {authRole && (
+                    <Badge variant="outline" className="text-xs capitalize">
+                      {authRole}
+                    </Badge>
+                  )}
+                </div>
+              ) : currentUser ? (
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground">{currentUser.name}</span>
-                  <Badge variant="outline" className={`${getLevelColor(currentUser.level)} border-current text-xs`}>
+                  <Badge variant="outline" className="text-xs">
                     {currentUser.level} · {currentUser.xp} XP
                   </Badge>
                 </div>
-              )}
+              ) : null}
             </div>
           </header>
           <main className="flex-1 p-6 overflow-auto">
