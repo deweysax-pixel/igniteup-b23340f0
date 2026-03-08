@@ -108,8 +108,8 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
     const teamsArr = (teamData as DbTeam[]) ?? [];
     setTeams(teamsArr);
 
-    const teamMap = new Map(teamsArr.map(t => [t.id, t.name]));
-    const roleMap = new Map((roleData ?? []).map((r: any) => [r.user_id, r.role]));
+    const teamMap = new Map<string, string>(teamsArr.map(t => [t.id, t.name] as [string, string]));
+    const roleMap = new Map<string, string>((roleData ?? []).map((r: any) => [r.user_id, r.role] as [string, string]));
     const userTeamMap = new Map<string, string>();
     for (const tm of (tmData ?? []) as any[]) {
       const name = teamMap.get(tm.team_id);
