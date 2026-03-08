@@ -40,6 +40,7 @@ import TodayPage from "./pages/Today";
 import PricingPage from "./pages/Pricing";
 import WorkspacePage from "./pages/Workspace";
 import LeadsPage from "./pages/Leads";
+import Bootstrap from "./pages/Bootstrap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,7 @@ const App = () => (
                   <Route path="/preview/journey" element={<PreviewJourney />} />
                   <Route path="/preview/sandbox" element={<PreviewSandbox />} />
                   <Route path="/pricing" element={<PricingPage />} />
+                  <Route path="/bootstrap" element={<Bootstrap />} />
 
                   {/* Auth routes */}
                   <Route path="/auth" element={<AuthLogin />} />

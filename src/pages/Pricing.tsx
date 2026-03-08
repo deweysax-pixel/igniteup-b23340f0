@@ -257,7 +257,7 @@ export default function PricingPage() {
           <Link to="/fit-check">
             <Button variant="ghost" size="sm">Fit Check</Button>
           </Link>
-          <Link to="/login">
+          <Link to="/auth">
             <Button variant="outline" size="sm">Sign In</Button>
           </Link>
         </div>

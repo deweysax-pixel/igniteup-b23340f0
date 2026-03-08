@@ -14,7 +14,7 @@ export default function Landing() {
           <Link to="/pricing">
             <Button variant="ghost" size="sm">Pricing</Button>
           </Link>
-          <Link to="/login">
+          <Link to="/auth">
             <Button variant="outline" size="sm">Sign In</Button>
           </Link>
         </div>
