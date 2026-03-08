@@ -41,6 +41,7 @@ import PricingPage from "./pages/Pricing";
 import WorkspacePage from "./pages/Workspace";
 import LeadsPage from "./pages/Leads";
 import AdminTeams from "./pages/AdminTeams";
+import Administration from "./pages/Administration";
 import Bootstrap from "./pages/Bootstrap";
 import NotFound from "./pages/NotFound";
 
