@@ -31,7 +31,8 @@ interface DemoEnvironment {
   id: string;
   name: string;
   environment: string;
-  accessType: 'password-protected';
+  accountEmail: string;
+  accessType: 'demo-account';
   status: 'active' | 'disabled';
   perspectives: string[];
   lastUsed: string | null;
@@ -61,7 +62,8 @@ const seedDemoEnvironments: DemoEnvironment[] = [
     id: '1',
     name: 'Horizon Group Demo',
     environment: 'Horizon Group',
-    accessType: 'password-protected',
+    accountEmail: 'demo@igniteup.io',
+    accessType: 'demo-account',
     status: 'active',
     perspectives: ['Sponsor', 'Manager', 'Collaborator'],
     lastUsed: '2026-03-07',
