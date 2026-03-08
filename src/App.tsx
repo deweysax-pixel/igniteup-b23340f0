@@ -40,6 +40,7 @@ import TodayPage from "./pages/Today";
 import PricingPage from "./pages/Pricing";
 import WorkspacePage from "./pages/Workspace";
 import LeadsPage from "./pages/Leads";
+import Bootstrap from "./pages/Bootstrap";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
