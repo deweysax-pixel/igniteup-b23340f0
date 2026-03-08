@@ -110,12 +110,16 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email.trim())) { toast.error('Please enter a valid email'); return; }
     setSending(true);
-    const { error } = await supabase.from('invitations').insert({
+    const insertData: Record<string, unknown> = {
       email: email.trim().toLowerCase(),
       organization_id: orgId,
       role,
       invited_by: userId,
-    });
+    };
+    if (teamId && teamId !== 'none') {
+      insertData.team_id = teamId;
+    }
+    const { error } = await supabase.from('invitations').insert(insertData as any);
     setSending(false);
     if (error) { toast.error(error.message); return; }
     toast.success(`Invitation sent to ${email}`);
