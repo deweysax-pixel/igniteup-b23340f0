@@ -295,12 +295,13 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
           {members.length === 0 ? (
             <p className="text-sm text-muted-foreground">No members yet. Invite your first team member above.</p>
           ) : (
-            <Table>
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Team</TableHead>
+                  <TableHead className="w-[60px]"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -314,6 +315,13 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
                       <Badge variant="outline" className="capitalize text-xs">{m.roleName ?? 'no role'}</Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">{m.teamName ?? 'No team'}</TableCell>
+                    <TableCell>
+                      {m.id !== userId && (
+                        <Button size="icon" variant="ghost" onClick={() => removeMember(m.id, m.full_name || '')} title="Remove member">
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
