@@ -31,7 +31,7 @@ interface DemoEnvironment {
   id: string;
   name: string;
   environment: string;
-  accountEmail: string;
+  loginIdentifier: string;
   accessType: 'demo-account';
   status: 'active' | 'disabled';
   perspectives: string[];
@@ -62,7 +62,7 @@ const seedDemoEnvironments: DemoEnvironment[] = [
     id: '1',
     name: 'Horizon Group Demo',
     environment: 'Horizon Group',
-    accountEmail: 'demo@igniteup.io',
+    loginIdentifier: 'demo@igniteup.io',
     accessType: 'demo-account',
     status: 'active',
     perspectives: ['Sponsor', 'Manager', 'Collaborator'],
@@ -156,9 +156,9 @@ function InternalAccountsTab() {
 function DemoAccessTab() {
   const [environments] = useState<DemoEnvironment[]>(seedDemoEnvironments);
 
-  const handleCopyLink = (route: string) => {
+  const handleCopyUrl = (route: string) => {
     navigator.clipboard.writeText(`${window.location.origin}${route}`);
-    toast.success('Demo access link copied to clipboard.');
+    toast.success('Demo login URL copied to clipboard.');
   };
 
   return (
@@ -170,10 +170,6 @@ function DemoAccessTab() {
             Manage private demo environments — isolated from real client data and accounts.
           </p>
         </div>
-        <Button size="sm" variant="outline" className="gap-1.5" onClick={() => toast.info('Additional demo environments will be available in a future update.')}>
-          <Plus className="h-3.5 w-3.5" />
-          Create Demo Environment
-        </Button>
       </div>
 
       {environments.map(env => (
@@ -199,8 +195,8 @@ function DemoAccessTab() {
                 <Badge variant="outline">{env.environment}</Badge>
               </div>
               <div>
-                <p className="text-muted-foreground text-xs mb-0.5">Demo Account</p>
-                <span className="font-medium font-mono text-xs">{env.accountEmail}</span>
+                <p className="text-muted-foreground text-xs mb-0.5">Demo Login</p>
+                <span className="font-medium text-xs">{env.loginIdentifier}</span>
               </div>
               <div>
                 <p className="text-muted-foreground text-xs mb-0.5">Perspectives</p>
@@ -231,10 +227,10 @@ function DemoAccessTab() {
                 size="sm"
                 variant="outline"
                 className="gap-1.5"
-                onClick={() => handleCopyLink(env.accessRoute)}
+                onClick={() => handleCopyUrl(env.accessRoute)}
               >
                 <Copy className="h-3.5 w-3.5" />
-                Copy Link
+                Copy Demo URL
               </Button>
               <Button
                 size="sm"
