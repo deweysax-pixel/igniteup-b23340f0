@@ -2,6 +2,7 @@ import { Outlet, useLocation, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useDemo } from '@/contexts/DemoContext';
 import { usePreview } from '@/contexts/PreviewContext';
+import { useAuth } from '@/hooks/useAuth';
 import { AppSidebar } from '@/components/AppSidebar';
 import { PreviewBanner } from '@/components/PreviewBanner';
 import { PreviewGate } from '@/components/PreviewGate';
@@ -11,7 +12,6 @@ import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
-import { getLevelColor } from '@/types/demo';
 
 const PREVIEW_ALLOWED_PATHS = ['/app', '/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/onboarding'];
 
