@@ -188,7 +188,7 @@ function DemoAccessTab() {
               </div>
             </div>
             <CardDescription className="mt-1">
-              Password-protected private demo with in-app perspective switching.
+              Private demo account with in-app perspective switching.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -199,11 +199,8 @@ function DemoAccessTab() {
                 <Badge variant="outline">{env.environment}</Badge>
               </div>
               <div>
-                <p className="text-muted-foreground text-xs mb-0.5">Access Type</p>
-                <div className="flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="font-medium">Password-protected</span>
-                </div>
+                <p className="text-muted-foreground text-xs mb-0.5">Demo Account</p>
+                <span className="font-medium font-mono text-xs">{env.accountEmail}</span>
               </div>
               <div>
                 <p className="text-muted-foreground text-xs mb-0.5">Perspectives</p>
@@ -243,16 +240,16 @@ function DemoAccessTab() {
                 size="sm"
                 variant="outline"
                 className="gap-1.5"
-                onClick={() => toast.info('Access code reset will be available once demo environments are DB-backed.')}
+                onClick={() => toast.info('Password reset will be available once demo accounts are DB-backed.')}
               >
                 <KeyRound className="h-3.5 w-3.5" />
-                Reset Access Code
+                Reset Password
               </Button>
               <Button
                 size="sm"
                 variant="ghost"
                 className="gap-1.5 text-destructive hover:text-destructive"
-                onClick={() => toast.info('Disable will be available once demo environments are DB-backed.')}
+                onClick={() => toast.info('Disable will be available once demo accounts are DB-backed.')}
               >
                 <Power className="h-3.5 w-3.5" />
                 Disable
@@ -274,11 +271,11 @@ function DemoAccessTab() {
         <CardContent className="p-4 flex items-start gap-3">
           <Play className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
           <div className="text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">Single access, multiple perspectives</p>
+            <p className="font-medium text-foreground">Private demo account, multiple perspectives</p>
             <p className="mt-1">
-              Each demo environment uses one private access code. Once inside, users switch
-              between Sponsor, Manager, and Collaborator perspectives without re-authenticating.
-              Demo data is fully sandboxed from real client organizations.
+              Each demo environment uses a dedicated demo account with email and password.
+              Once signed in, users switch between Sponsor, Manager, and Collaborator perspectives
+              without re-authenticating. Demo data is fully sandboxed from real client organizations.
             </p>
           </div>
         </CardContent>
