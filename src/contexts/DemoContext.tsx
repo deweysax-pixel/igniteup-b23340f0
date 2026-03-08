@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useState } from 'react';
 import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType, EvidenceItem, EvidenceType, WorkspaceInfo, WorkspaceInvite, JourneyAssignment, DemoRequest, DemoRequestStatus } from '@/types/demo';
 import { getLevel } from '@/types/demo';
 import { createInitialState } from '@/data/demo-seed';
@@ -7,6 +7,8 @@ type DemoAction =
   | { type: 'CHECK_IN'; payload: { userId: string; challengeId: string; weekNumber: number; completedActionIds: string[]; note: string } }
   | { type: 'SUBMIT_BAROMETER'; payload: { userId: string; challengeId: string; weekNumber: number; scores: { confidence: number; engagement: number; clarity: number } } }
   | { type: 'SWITCH_ROLE'; payload: Role }
+  | { type: 'ACTIVATE_DEMO_SESSION' }
+  | { type: 'END_DEMO_SESSION' }
   | { type: 'RESET_DEMO' }
   | { type: 'ADD_SERVICE_REQUEST'; payload: Omit<ServiceRequest, 'id' | 'createdAt' | 'status'> }
   | { type: 'UPDATE_REQUEST_STATUS'; payload: { id: string; status: ServiceRequest['status'] } }
@@ -79,6 +81,12 @@ function demoReducer(state: DemoState, action: DemoAction): DemoState {
 
     case 'SWITCH_ROLE':
       return createInitialState(action.payload);
+
+    case 'ACTIVATE_DEMO_SESSION':
+      return state;
+
+    case 'END_DEMO_SESSION':
+      return state;
 
     case 'RESET_DEMO':
       return createInitialState(state.currentRole);
@@ -167,7 +175,10 @@ interface DemoContextValue {
   state: DemoState;
   dispatch: React.Dispatch<DemoAction>;
   currentUser: DemoState['users'][0] | undefined;
+  isDemoSession: boolean;
   switchRole: (role: Role) => void;
+  activateDemoSession: () => void;
+  endDemoSession: () => void;
   resetDemo: () => void;
 }
 
@@ -175,13 +186,16 @@ const DemoContext = createContext<DemoContextValue | null>(null);
 
 export function DemoProvider({ children, initialRole = 'manager' }: { children: React.ReactNode; initialRole?: Role }) {
   const [state, dispatch] = useReducer(demoReducer, initialRole, createInitialState);
+  const [isDemoSession, setIsDemoSession] = useState(false);
 
   const currentUser = state.users.find(u => u.id === state.currentUserId);
   const switchRole = useCallback((role: Role) => dispatch({ type: 'SWITCH_ROLE', payload: role }), []);
+  const activateDemoSession = useCallback(() => setIsDemoSession(true), []);
+  const endDemoSession = useCallback(() => setIsDemoSession(false), []);
   const resetDemo = useCallback(() => dispatch({ type: 'RESET_DEMO' }), []);
 
   return (
-    <DemoContext.Provider value={{ state, dispatch, currentUser, switchRole, resetDemo }}>
+    <DemoContext.Provider value={{ state, dispatch, currentUser, isDemoSession, switchRole, activateDemoSession, endDemoSession, resetDemo }}>
       {children}
     </DemoContext.Provider>
   );

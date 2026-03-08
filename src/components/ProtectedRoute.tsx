@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth, AppRole } from '@/hooks/useAuth';
+import { useDemo } from '@/contexts/DemoContext';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -8,6 +9,12 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) {
   const { user, role, loading } = useAuth();
+  const { isDemoSession } = useDemo();
+
+  // Demo session bypasses real auth checks entirely
+  if (isDemoSession) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (

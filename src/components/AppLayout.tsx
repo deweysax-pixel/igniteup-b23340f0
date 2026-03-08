@@ -17,7 +17,7 @@ import { Zap } from 'lucide-react';
 const PREVIEW_ALLOWED_PATHS = ['/app', '/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/onboarding'];
 
 export default function AppLayout() {
-  const { currentUser } = useDemo();
+  const { currentUser, isDemoSession } = useDemo();
   const { isPreviewMode, setPreviewMode } = usePreview();
   const { user: authUser, profile, role: authRole } = useAuth();
   const [searchParams] = useSearchParams();
@@ -53,7 +53,14 @@ export default function AppLayout() {
                 <Zap className="h-3.5 w-3.5 text-primary" />
                 Do now
               </Button>
-              {authUser ? (
+              {isDemoSession && currentUser ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">{currentUser.name}</span>
+                  <Badge variant="outline" className="text-xs">
+                    {currentUser.level} · {currentUser.xp} XP
+                  </Badge>
+                </div>
+              ) : authUser ? (
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground">
                     {profile?.full_name || authUser.email}

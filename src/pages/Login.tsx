@@ -22,7 +22,7 @@ const roles: { role: Role; label: string; description: string; icon: React.Eleme
 ];
 
 export default function Login() {
-  const { switchRole } = useDemo();
+  const { switchRole, activateDemoSession } = useDemo();
   const navigate = useNavigate();
   const [authenticated, setAuthenticated] = useState(false);
   const [email, setEmail] = useState('');
@@ -54,6 +54,7 @@ export default function Login() {
 
   const handleSelect = (role: Role) => {
     switchRole(role);
+    activateDemoSession();
     navigate(role === 'manager' || role === 'admin' || role === 'sponsor' ? '/app' : '/app/journey');
   };
 

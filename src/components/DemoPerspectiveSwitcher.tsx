@@ -1,5 +1,4 @@
 import { useDemo } from '@/contexts/DemoContext';
-import { useAuth } from '@/hooks/useAuth';
 import { Eye, Users, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
@@ -12,11 +11,10 @@ const perspectives: { role: Role; label: string; icon: React.ElementType }[] = [
 ];
 
 export function DemoPerspectiveSwitcher() {
-  const { user: authUser } = useAuth();
-  const { state, switchRole } = useDemo();
+  const { state, isDemoSession, switchRole } = useDemo();
 
-  // Only show in demo mode (no real auth user)
-  if (authUser) return null;
+  // Only show when demo session is active
+  if (!isDemoSession) return null;
 
   const current = perspectives.find(p => p.role === state.currentRole) ?? perspectives[0];
   const CurrentIcon = current.icon;
