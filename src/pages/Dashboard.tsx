@@ -71,7 +71,7 @@ function AuthenticatedDashboard() {
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
           <p className="text-xs text-muted-foreground mt-0.5">{weekLabel}</p>
-          {teamName && <p className="text-sm text-muted-foreground mt-1">{teamName}</p>}
+          {teamName && <p className="text-sm text-muted-foreground mt-1">{isAdmin ? 'Organization-wide' : teamName}</p>}
         </div>
         {isManagerOrAdmin && (
           <div className="flex items-center gap-2 shrink-0">
