@@ -9,6 +9,7 @@ import {
   Shield,
   Play,
   RotateCcw,
+  Settings2,
   Map as MapIcon,
   Library,
   Hammer,
@@ -123,6 +124,7 @@ const adminSections: { label: string; items: NavItem[] }[] = [
     label: 'Admin',
     items: [
       { title: 'Workspace', url: '/app/workspace', icon: Building2, roles: ['admin'] },
+      { title: 'Administration', url: '/app/administration', icon: Settings2, roles: ['admin'] },
       { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
       { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
     ],
