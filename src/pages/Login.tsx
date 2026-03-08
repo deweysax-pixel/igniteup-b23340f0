@@ -47,27 +47,33 @@ export default function Login() {
   if (!authenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="w-full max-w-sm space-y-6 animate-fade-in">
-          <div className="text-center space-y-2">
+        <div className="w-full max-w-sm space-y-8 animate-fade-in">
+          <div className="text-center space-y-3">
             <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto cursor-pointer" /></a>
-            <p className="text-sm text-muted-foreground">Private demo access</p>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5">
+              <Lock className="h-3.5 w-3.5 text-primary" />
+              <span className="text-xs font-medium text-primary">Private Demo</span>
+            </div>
+            <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+              Access the IgniteUp demo environment to explore the platform firsthand.
+            </p>
           </div>
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg flex items-center gap-2"><Lock className="h-4 w-4" /> Demo Access</CardTitle>
-              <CardDescription>Enter the demo access code to continue</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <Card className="border-border/50 shadow-lg">
+            <CardContent className="pt-6">
               <form onSubmit={handleUnlock} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="demo-code">Access code</Label>
-                  <PasswordInput id="demo-code" placeholder="Enter access code" value={code} onChange={e => setCode(e.target.value)} required />
+                  <Label htmlFor="demo-code" className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Access Code</Label>
+                  <PasswordInput id="demo-code" placeholder="Enter your access code" value={code} onChange={e => setCode(e.target.value)} required />
                 </div>
                 {error && <p className="text-sm text-destructive">{error}</p>}
-                <Button type="submit" className="w-full">Unlock Demo</Button>
+                <Button type="submit" className="w-full">Enter Demo</Button>
               </form>
             </CardContent>
           </Card>
+          <p className="text-center text-xs text-muted-foreground">
+            Don't have an access code?{' '}
+            <a href="/pricing" className="text-primary hover:underline">Request a demo</a>
+          </p>
         </div>
       </div>
     );
