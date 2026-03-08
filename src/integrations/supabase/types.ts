@@ -148,6 +148,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      needs_bootstrap: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "manager" | "collaborator" | "sponsor"
