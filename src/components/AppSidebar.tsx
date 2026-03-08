@@ -18,6 +18,7 @@ import {
   Sun,
   Building2,
   Contact,
+  LogOut,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useDemo } from '@/contexts/DemoContext';
