@@ -77,10 +77,15 @@ const sections: { label: string; items: NavItem[] }[] = [
     ],
   },
   {
+    label: 'Support',
+    items: [
+      { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin', 'manager'] },
+    ],
+  },
+  {
     label: 'Admin',
     items: [
       { title: 'Admin', url: '/app/admin', icon: Shield, roles: ['admin'] },
-      { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin'] },
       { title: 'Demo Script', url: '/app/demo', icon: Play, roles: ['admin'] },
     ],
   },
