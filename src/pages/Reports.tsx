@@ -49,7 +49,7 @@ function DeltaBadge({ current, previous, suffix = '' }: { current: number; previ
   );
 }
 
-/* ── Authenticated Reports (DB-backed, team-scoped) ── */
+/* ── Authenticated Reports (DB-backed, org-wide for admin, team-scoped for manager) ── */
 function AuthenticatedReports() {
   const navigate = useNavigate();
   const { user, role } = useAuth();
