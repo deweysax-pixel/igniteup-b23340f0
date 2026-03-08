@@ -363,6 +363,47 @@ export type Database = {
           },
         ]
       }
+      service_requests: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          module_title: string | null
+          organization_id: string
+          request_type: string
+          requester_id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          module_title?: string | null
+          organization_id: string
+          request_type?: string
+          requester_id: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          module_title?: string | null
+          organization_id?: string
+          request_type?: string
+          requester_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "service_requests_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       team_members: {
         Row: {
           id: string
@@ -462,6 +503,10 @@ export type Database = {
         Returns: boolean
       }
       needs_bootstrap: { Args: never; Returns: boolean }
+      shares_team_with: {
+        Args: { _target_id: string; _viewer_id: string }
+        Returns: boolean
+      }
       user_org_id: { Args: { _user_id: string }; Returns: string }
     }
     Enums: {
