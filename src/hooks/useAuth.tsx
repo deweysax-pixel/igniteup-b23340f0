@@ -38,10 +38,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       supabase.from('user_roles').select('role').eq('user_id', userId).maybeSingle(),
       supabase.from('profiles').select('full_name, avatar_url, organization_id').eq('id', userId).maybeSingle(),
     ]);
+
+    let orgName: string | null = null;
+    if (profileData?.organization_id) {
+      const { data: orgData } = await supabase
+        .from('organizations')
+        .select('name')
+        .eq('id', profileData.organization_id)
+        .maybeSingle();
+      orgName = orgData?.name ?? null;
+    }
+
     setState(prev => ({
       ...prev,
       role: (roleData?.role as AppRole) ?? null,
       profile: profileData ?? null,
+      organizationName: orgName,
       loading: false,
     }));
   }, []);
