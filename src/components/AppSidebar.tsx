@@ -152,7 +152,7 @@ export function AppSidebar() {
       <SidebarContent>
         {(isManagerRole ? managerSections : sections).map(section => {
           let visibleItems = section.items.filter(
-            item => !item.roles || (item.roles as readonly string[]).includes(state.currentRole)
+            item => !item.roles || (item.roles as readonly string[]).includes(displayRole)
           );
           if (isPreviewMode) {
             visibleItems = visibleItems.filter(item => PREVIEW_ALLOWED_URLS.includes(item.url));
