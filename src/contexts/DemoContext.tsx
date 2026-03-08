@@ -82,6 +82,12 @@ function demoReducer(state: DemoState, action: DemoAction): DemoState {
     case 'SWITCH_ROLE':
       return createInitialState(action.payload);
 
+    case 'ACTIVATE_DEMO_SESSION':
+      return state;
+
+    case 'END_DEMO_SESSION':
+      return state;
+
     case 'RESET_DEMO':
       return createInitialState(state.currentRole);
 
