@@ -177,7 +177,9 @@ export function AppSidebar() {
 
   const isAuthenticated = !!user;
   const displayRole = isAuthenticated ? (authRole ?? 'user') : state.currentRole;
-  const isManagerRole = displayRole === 'manager' || displayRole === 'admin';
+  const isAdminRole = displayRole === 'admin';
+  const isManagerRole = displayRole === 'manager';
+  const isLeaderRole = isAdminRole || isManagerRole;
 
   return (
     <Sidebar className="border-r border-sidebar-border">
