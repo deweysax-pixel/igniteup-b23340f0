@@ -195,13 +195,14 @@ const managerSections: { label: string; items: NavItem[] }[] = [
 const PREVIEW_ALLOWED_URLS = ['/app/today', '/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/ignite', '/app'];
 
 export function AppSidebar() {
-  const { state, resetDemo } = useDemo();
+  const { state, isDemoSession, resetDemo, endDemoSession } = useDemo();
   const { isPreviewMode } = usePreview();
   const { user, role: authRole, profile, signOut } = useAuth();
   const location = useLocation();
 
-  const isAuthenticated = !!user;
-  const displayRole = isAuthenticated ? (authRole ?? 'user') : state.currentRole;
+  // Demo session takes absolute precedence over real auth
+  const isAuthenticated = !!user && !isDemoSession;
+  const displayRole = isDemoSession ? state.currentRole : (isAuthenticated ? (authRole ?? 'user') : state.currentRole);
   const isAdminRole = displayRole === 'admin';
   const isSponsorRole = displayRole === 'sponsor';
   const isManagerRole = displayRole === 'manager';
