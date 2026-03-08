@@ -201,6 +201,7 @@ export type Database = {
           organization_id: string
           role: Database["public"]["Enums"]["app_role"]
           status: string
+          team_id: string | null
           token: string
         }
         Insert: {
@@ -213,6 +214,7 @@ export type Database = {
           organization_id: string
           role: Database["public"]["Enums"]["app_role"]
           status?: string
+          team_id?: string | null
           token?: string
         }
         Update: {
@@ -225,6 +227,7 @@ export type Database = {
           organization_id?: string
           role?: Database["public"]["Enums"]["app_role"]
           status?: string
+          team_id?: string | null
           token?: string
         }
         Relationships: [
@@ -233,6 +236,13 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invitations_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
             referencedColumns: ["id"]
           },
         ]
