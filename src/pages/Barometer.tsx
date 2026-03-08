@@ -41,7 +41,7 @@ export default function Barometer() {
   };
 
   // Compute aggregate data for chart
-  const canSeeAggregate = state.currentRole === 'admin' || state.currentRole === 'manager';
+  const canSeeAggregate = state.currentRole === 'admin' || state.currentRole === 'manager' || state.currentRole === 'sponsor';
   const responses = state.barometerResponses.filter(r => r.challengeId === activeChallenge?.id);
 
   const chartData = dimensions.map(d => {

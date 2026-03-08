@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { useAuth } from '@/hooks/useAuth';
@@ -408,5 +408,17 @@ function DemoDashboard() {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { state } = useDemo();
+  
+  // Sponsor gets dedicated executive dashboard (demo mode only for now)
+  if (!user && state.currentRole === 'sponsor') {
+    const SponsorDashboard = lazy(() => import('./SponsorDashboard'));
+    return (
+      <Suspense fallback={<div className="flex items-center justify-center py-20"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>}>
+        <SponsorDashboard />
+      </Suspense>
+    );
+  }
+  
   return user ? <AuthenticatedDashboard /> : <DemoDashboard />;
 }
