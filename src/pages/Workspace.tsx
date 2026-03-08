@@ -154,12 +154,34 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
     toast.success('Invite link copied!');
   };
 
+  const cancelInvite = async (invId: string) => {
+    const { error } = await supabase.from('invitations').update({ status: 'cancelled' } as any).eq('id', invId);
+    if (error) { toast.error(error.message); return; }
+    toast.success('Invitation cancelled');
+    loadData();
+  };
+
+  const resendInvite = async (inv: DbInvitation) => {
+    // Reset expiry to 7 days from now
+    const newExpiry = new Date(Date.now() + 7 * 86400000).toISOString();
+    const { error } = await supabase.from('invitations').update({ expires_at: newExpiry, status: 'pending' } as any).eq('id', inv.id);
+    if (error) { toast.error(error.message); return; }
+    copyInviteLink(inv.token);
+    toast.success('Invite renewed & link copied');
+    loadData();
+  };
+
+  const removeMember = async (memberId: string, memberName: string) => {
+    if (!confirm(`Remove ${memberName || 'this member'} from the organization? This will revoke their access.`)) return;
+    const { error } = await supabase.rpc('remove_org_member', { _admin_id: userId, _member_id: memberId } as any);
+    if (error) { toast.error(error.message); return; }
+    toast.success(`${memberName || 'Member'} removed`);
+    loadData();
+  };
+
   const pendingInvites = invitations.filter(i => i.status === 'pending');
   const acceptedInvites = invitations.filter(i => i.status === 'accepted');
-
-  const toggleMember = (id: string) => {
-    setSelectedMembers(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]);
-  };
+  const cancelledInvites = invitations.filter(i => i.status === 'cancelled');
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
