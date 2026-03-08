@@ -7,6 +7,7 @@ import { DemoProvider } from "@/contexts/DemoContext";
 import { JourneyProvider } from "@/contexts/JourneyContext";
 import { PreviewProvider } from "@/contexts/PreviewContext";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Landing from "./pages/Landing";
 import FitCheck from "./pages/FitCheck";
 import PreviewSandbox from "./pages/PreviewSandbox";
@@ -23,6 +24,7 @@ import CheckInPage from "./pages/CheckIn";
 import TeamLeaderboard from "./pages/TeamLeaderboard";
 import Barometer from "./pages/Barometer";
 import Admin from "./pages/Admin";
+import AdminInvites from "./pages/AdminInvites";
 import DemoScript from "./pages/DemoScript";
 import Playbooks from "./pages/Playbooks";
 import JourneyPage from "./pages/Journey";
@@ -41,6 +43,8 @@ import LeadsPage from "./pages/Leads";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
+
+const IS_DEMO_ENABLED = import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEMO === 'true';
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -66,18 +70,19 @@ const App = () => (
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
 
-                  {/* Demo login (role picker) */}
-                  <Route path="/login" element={<Login />} />
+                  {/* Demo login — only in dev / demo mode */}
+                  {IS_DEMO_ENABLED && <Route path="/login" element={<Login />} />}
 
-                  {/* App routes (demo-context driven, no auth gate for demo) */}
-                  <Route path="/app" element={<AppLayout />}>
+                  {/* Protected app routes */}
+                  <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
                     <Route index element={<Dashboard />} />
                     <Route path="challenges" element={<Challenges />} />
                     <Route path="checkin" element={<CheckInPage />} />
                     <Route path="team" element={<TeamLeaderboard />} />
                     <Route path="barometer" element={<Barometer />} />
                     <Route path="playbooks" element={<Playbooks />} />
-                    <Route path="admin" element={<Admin />} />
+                    <Route path="admin" element={<ProtectedRoute allowedRoles={['admin']}><Admin /></ProtectedRoute>} />
+                    <Route path="admin/invites" element={<ProtectedRoute allowedRoles={['admin']}><AdminInvites /></ProtectedRoute>} />
                     <Route path="demo" element={<DemoScript />} />
                     <Route path="journey" element={<JourneyPage />} />
                     <Route path="catalog" element={<CatalogPage />} />
@@ -85,11 +90,11 @@ const App = () => (
                     <Route path="modules/:id" element={<ModulePlayer />} />
                     <Route path="onboarding" element={<OnboardingPage />} />
                     <Route path="services" element={<ServiceRequests />} />
-                    <Route path="reports" element={<Reports />} />
+                    <Route path="reports" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><Reports /></ProtectedRoute>} />
                     <Route path="ignite" element={<IgnitePage />} />
                     <Route path="ignite-team" element={<IgniteTeam />} />
                     <Route path="today" element={<TodayPage />} />
-                    <Route path="workspace" element={<WorkspacePage />} />
+                    <Route path="workspace" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><WorkspacePage /></ProtectedRoute>} />
                     <Route path="leads" element={<LeadsPage />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
