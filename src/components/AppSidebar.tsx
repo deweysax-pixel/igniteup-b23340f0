@@ -129,6 +129,28 @@ const adminSections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
+const sponsorSections: { label: string; items: NavItem[] }[] = [
+  {
+    label: '',
+    items: [todayItem],
+  },
+  {
+    label: 'Overview',
+    items: [
+      { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
+      { title: 'Reports', url: '/app/reports', icon: FileBarChart },
+      { title: 'Ignite Heatmap', url: '/app/ignite-team', icon: Flame },
+    ],
+  },
+  {
+    label: 'Program',
+    items: [
+      { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'Teams', url: '/app/teams', icon: Users },
+    ],
+  },
+];
+
 const managerSections: { label: string; items: NavItem[] }[] = [
   {
     label: '',
