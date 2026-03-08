@@ -9,6 +9,7 @@ interface AuthState {
   session: Session | null;
   role: AppRole | null;
   profile: { full_name: string; avatar_url: string | null; organization_id: string | null } | null;
+  organizationName: string | null;
   loading: boolean;
 }
 
