@@ -257,14 +257,29 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
           {members.length === 0 ? (
             <p className="text-sm text-muted-foreground">No members yet. Invite your first team member above.</p>
           ) : (
-            <div className="space-y-2">
-              {members.map(m => (
-                <div key={m.id} className="flex items-center justify-between py-1.5 px-3 rounded-md border border-border text-sm">
-                  <span>{m.full_name || '(unnamed)'}</span>
-                  {m.id === userId && <Badge variant="secondary" className="text-[10px]">You</Badge>}
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Team</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {members.map(m => (
+                  <TableRow key={m.id}>
+                    <TableCell className="text-sm font-medium">
+                      {m.full_name || '(unnamed)'}
+                      {m.id === userId && <Badge variant="secondary" className="text-[10px] ml-2">You</Badge>}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize text-xs">{m.roleName ?? 'no role'}</Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{m.teamName ?? 'No team'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
