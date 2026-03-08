@@ -27,12 +27,15 @@ interface InternalAccount {
   createdAt: string;
 }
 
-interface DemoAccount {
+interface DemoEnvironment {
   id: string;
-  identifier: string;
+  name: string;
   environment: string;
+  accessType: 'password-protected';
   status: 'active' | 'disabled';
+  perspectives: string[];
   lastUsed: string | null;
+  accessRoute: string;
 }
 
 const ROLE_LABELS: Record<InternalRole, string> = {
