@@ -73,8 +73,8 @@ const App = () => (
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
 
-                  {/* Demo login — only in dev / demo mode */}
-                  {IS_DEMO_ENABLED && <Route path="/login" element={<Login />} />}
+                  {/* Demo login — always available */}
+                  <Route path="/login" element={<Login />} />
 
                   {/* Protected app routes */}
                   <Route path="/app" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
