@@ -178,6 +178,7 @@ export function AppSidebar() {
   const isAuthenticated = !!user;
   const displayRole = isAuthenticated ? (authRole ?? 'user') : state.currentRole;
   const isAdminRole = displayRole === 'admin';
+  const isSponsorRole = displayRole === 'sponsor';
   const isManagerRole = displayRole === 'manager';
   const isLeaderRole = isAdminRole || isManagerRole;
 
