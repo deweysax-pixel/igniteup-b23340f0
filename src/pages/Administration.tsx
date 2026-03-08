@@ -170,10 +170,6 @@ function DemoAccessTab() {
             Manage private demo environments — isolated from real client data and accounts.
           </p>
         </div>
-        <Button size="sm" variant="outline" className="gap-1.5" onClick={() => toast.info('Additional demo environments will be available in a future update.')}>
-          <Plus className="h-3.5 w-3.5" />
-          Create Demo Environment
-        </Button>
       </div>
 
       {environments.map(env => (
