@@ -29,6 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     session: null,
     role: null,
     profile: null,
+    organizationName: null,
     loading: true,
   });
 
