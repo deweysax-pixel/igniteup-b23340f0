@@ -512,12 +512,17 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_team_member: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
       needs_bootstrap: { Args: never; Returns: boolean }
       shares_team_with: {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
       }
       user_org_id: { Args: { _user_id: string }; Returns: string }
+      user_team_ids: { Args: { _user_id: string }; Returns: string[] }
     }
     Enums: {
       app_role: "admin" | "manager" | "collaborator" | "sponsor"
