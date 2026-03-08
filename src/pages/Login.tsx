@@ -1,10 +1,16 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Users, User, Eye } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { PasswordInput } from '@/components/PasswordInput';
+import { Label } from '@/components/ui/label';
+import { Shield, Users, User, Eye, Lock } from 'lucide-react';
 import type { Role } from '@/types/demo';
 import igniteupLogo from '@/assets/igniteup-logo.png';
+
+const DEMO_CODE = 'igniteup-demo-2026';
 
 const searchParams = new URLSearchParams(window.location.search);
 const showAdmin = searchParams.get('internal') === '1';
@@ -19,11 +25,53 @@ const roles: { role: Role; label: string; description: string; icon: React.Eleme
 export default function Login() {
   const { switchRole } = useDemo();
   const navigate = useNavigate();
+  const [authenticated, setAuthenticated] = useState(false);
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+
+  const handleUnlock = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (code === DEMO_CODE) {
+      setAuthenticated(true);
+      setError('');
+    } else {
+      setError('Invalid demo access code');
+    }
+  };
 
   const handleSelect = (role: Role) => {
     switchRole(role);
     navigate(role === 'manager' || role === 'admin' || role === 'sponsor' ? '/app' : '/app/journey');
   };
+
+  if (!authenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-6">
+        <div className="w-full max-w-sm space-y-6 animate-fade-in">
+          <div className="text-center space-y-2">
+            <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto cursor-pointer" /></a>
+            <p className="text-sm text-muted-foreground">Private demo access</p>
+          </div>
+          <Card>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg flex items-center gap-2"><Lock className="h-4 w-4" /> Demo Access</CardTitle>
+              <CardDescription>Enter the demo access code to continue</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleUnlock} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="demo-code">Access code</Label>
+                  <PasswordInput id="demo-code" placeholder="Enter access code" value={code} onChange={e => setCode(e.target.value)} required />
+                </div>
+                {error && <p className="text-sm text-destructive">{error}</p>}
+                <Button type="submit" className="w-full">Unlock Demo</Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6">
