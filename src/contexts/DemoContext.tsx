@@ -169,7 +169,10 @@ interface DemoContextValue {
   state: DemoState;
   dispatch: React.Dispatch<DemoAction>;
   currentUser: DemoState['users'][0] | undefined;
+  isDemoSession: boolean;
   switchRole: (role: Role) => void;
+  activateDemoSession: () => void;
+  endDemoSession: () => void;
   resetDemo: () => void;
 }
 
