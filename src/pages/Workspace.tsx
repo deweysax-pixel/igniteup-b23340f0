@@ -273,7 +273,7 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
       <Card className="opacity-60">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Map className="h-4 w-4 text-muted-foreground" /> Assign a journey
+            <MapIcon className="h-4 w-4 text-muted-foreground" /> Assign a journey
             <Badge variant="outline" className="text-[10px] ml-auto"><AlertTriangle className="h-3 w-3 mr-1 inline" />Not yet live</Badge>
           </CardTitle>
           <CardDescription className="text-xs">Journey assignment is not yet connected to real data. Coming soon.</CardDescription>
