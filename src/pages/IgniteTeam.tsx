@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useTeamData } from '@/hooks/useTeamData';
 import { IGNITE_PACKS, computePackStatusForUser, STATUS_CONFIG, type IgniteStatus } from '@/pages/Ignite';
 import { getWeekRange } from '@/lib/week-utils';
 import { getSeededUnitProgressForUser } from '@/data/demo-seed';
