@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { RequestDemoModal } from '@/components/RequestDemoModal';
 import { Target, BarChart3, Trophy, Eye, Zap, Radio, Settings2 } from 'lucide-react';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 export default function Landing() {
+  const [demoOpen, setDemoOpen] = useState(false);
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -14,8 +18,9 @@ export default function Landing() {
           <Link to="/pricing">
             <Button variant="ghost" size="sm">Pricing</Button>
           </Link>
+          <Button variant="outline" size="sm" onClick={() => setDemoOpen(true)}>Request a Demo</Button>
           <Link to="/auth">
-            <Button variant="outline" size="sm">Sign In</Button>
+            <Button size="sm">Sign In</Button>
           </Link>
         </div>
       </header>
@@ -57,14 +62,12 @@ export default function Landing() {
           </div>
 
           <div className="flex flex-col items-center gap-3 mt-4">
+            <Button size="lg" className="text-base px-8" onClick={() => setDemoOpen(true)}>
+              Request a Demo
+            </Button>
             <Link to="/fit-check">
-              <Button size="lg" className="text-base px-8">
-                Take the 90-second Fit Check
-              </Button>
-            </Link>
-            <Link to="/pricing">
               <Button variant="outline" size="lg" className="text-base px-8">
-                Request a Demo
+                Take the 90-second Fit Check
               </Button>
             </Link>
           </div>
@@ -85,7 +88,7 @@ export default function Landing() {
               { icon: Zap, label: 'Action', map: 'Units + Micro-actions' },
               { icon: Radio, label: 'Signal', map: 'Check-ins + Ignite' },
               { icon: Settings2, label: 'Adjust', map: 'Today recommendations' },
-            ].map((step, i) => (
+            ].map((step) => (
               <div key={step.label} className="flex flex-col items-center gap-2">
                 <div className="h-12 w-12 rounded-full border border-primary/30 bg-primary/10 flex items-center justify-center">
                   <step.icon className="h-5 w-5 text-primary" />
@@ -107,6 +110,8 @@ export default function Landing() {
       <footer className="text-center py-6 text-xs text-muted-foreground border-t border-border">
         IgniteUp · Leadership Development Platform
       </footer>
+
+      <RequestDemoModal open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }
