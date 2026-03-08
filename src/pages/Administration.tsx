@@ -62,7 +62,7 @@ const seedDemoEnvironments: DemoEnvironment[] = [
     id: '1',
     name: 'Horizon Group Demo',
     environment: 'Horizon Group',
-    accountEmail: 'demo@igniteup.io',
+    loginIdentifier: 'demo@igniteup.io',
     accessType: 'demo-account',
     status: 'active',
     perspectives: ['Sponsor', 'Manager', 'Collaborator'],
