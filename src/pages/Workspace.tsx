@@ -245,22 +245,38 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
                     <TableHead>Sent</TableHead>
-                    <TableHead className="w-[60px]">Link</TableHead>
+                    <TableHead className="w-[100px] text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pendingInvites.map(inv => (
-                    <TableRow key={inv.id}>
-                      <TableCell className="text-sm">{inv.email}</TableCell>
-                      <TableCell><Badge variant="outline" className="capitalize text-xs">{inv.role}</Badge></TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{new Date(inv.created_at).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        <Button size="icon" variant="ghost" onClick={() => copyInviteLink(inv.token)} title="Copy invite link">
-                          <Copy className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {pendingInvites.map(inv => {
+                    const isExpired = new Date(inv.expires_at) < new Date();
+                    return (
+                      <TableRow key={inv.id}>
+                        <TableCell className="text-sm">
+                          {inv.email}
+                          {isExpired && <Badge variant="destructive" className="text-[10px] ml-2">Expired</Badge>}
+                        </TableCell>
+                        <TableCell><Badge variant="outline" className="capitalize text-xs">{inv.role}</Badge></TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{new Date(inv.created_at).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button size="icon" variant="ghost" onClick={() => copyInviteLink(inv.token)} title="Copy invite link">
+                              <Copy className="h-4 w-4" />
+                            </Button>
+                            {isExpired && (
+                              <Button size="icon" variant="ghost" onClick={() => resendInvite(inv)} title="Renew & copy link">
+                                <RefreshCw className="h-4 w-4 text-primary" />
+                              </Button>
+                            )}
+                            <Button size="icon" variant="ghost" onClick={() => cancelInvite(inv.id)} title="Cancel invitation">
+                              <XCircle className="h-4 w-4 text-destructive" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
