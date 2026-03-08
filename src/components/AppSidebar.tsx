@@ -120,7 +120,6 @@ const managerSections: { label: string; items: NavItem[] }[] = [
       { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck },
       { title: 'Ignite (Personal)', url: '/app/ignite', icon: Flame },
       { title: 'Catalog', url: '/app/catalog', icon: Library },
-      { title: 'Builder', url: '/app/builder', icon: Hammer },
     ],
   },
   {
