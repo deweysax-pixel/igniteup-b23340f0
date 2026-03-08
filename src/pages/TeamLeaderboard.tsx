@@ -146,7 +146,7 @@ function AuthenticatedTeamLeaderboard() {
                       {member.streak}
                     </div>
                   )}
-                  <Badge variant="outline" className={`${getLevelColor(member.level)} border-current text-xs`}>
+                  <Badge variant="outline" className={`${getLevelColor(member.level as any)} border-current text-xs`}>
                     {member.level}
                   </Badge>
                   <span className="text-sm font-medium w-16 text-right">
