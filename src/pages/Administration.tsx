@@ -56,8 +56,17 @@ const seedInternalAccounts: InternalAccount[] = [
   { id: '1', name: 'Frederic Sitruk', email: 'fred@igniteup.io', role: 'super_admin', status: 'active', createdAt: '2025-11-01' },
 ];
 
-const seedDemoAccounts: DemoAccount[] = [
-  { id: '1', identifier: 'Horizon Group Demo', environment: 'Horizon Group', status: 'active', lastUsed: '2026-03-07' },
+const seedDemoEnvironments: DemoEnvironment[] = [
+  {
+    id: '1',
+    name: 'Horizon Group Demo',
+    environment: 'Horizon Group',
+    accessType: 'password-protected',
+    status: 'active',
+    perspectives: ['Sponsor', 'Manager', 'Collaborator'],
+    lastUsed: '2026-03-07',
+    accessRoute: '/login',
+  },
 ];
 
 /* ──────────────────────────────────────────────
