@@ -91,7 +91,7 @@ const App = () => (
                     <Route path="builder" element={<BuilderPage />} />
                     <Route path="modules/:id" element={<ModulePlayer />} />
                     <Route path="onboarding" element={<OnboardingPage />} />
-                    <Route path="services" element={<ServiceRequests />} />
+                    <Route path="services" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><ServiceRequests /></ProtectedRoute>} />
                     <Route path="reports" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><Reports /></ProtectedRoute>} />
                     <Route path="ignite" element={<IgnitePage />} />
                     <Route path="ignite-team" element={<IgniteTeam />} />
