@@ -271,10 +271,7 @@ function DemoDashboard() {
               <Grid3X3 className="h-4 w-4" />
               Open Ignite heatmap
             </Button>
-            <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate('/app/workspace')}>
-              <Building2 className="h-4 w-4" />
-              Activate workspace
-            </Button>
+            {/* No workspace activation in demo — demo is fully configured */}
           </div>
         )}
       </div>
