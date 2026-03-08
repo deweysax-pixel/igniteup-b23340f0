@@ -258,7 +258,20 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4">
-        {isAuthenticated ? (
+        {isDemoSession ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
+            onClick={() => {
+              endDemoSession();
+              window.location.href = '/login';
+            }}
+          >
+            <RotateCcw className="h-4 w-4" />
+            Exit Demo
+          </Button>
+        ) : isAuthenticated ? (
           <Button
             variant="ghost"
             size="sm"

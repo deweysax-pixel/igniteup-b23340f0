@@ -53,7 +53,14 @@ export default function AppLayout() {
                 <Zap className="h-3.5 w-3.5 text-primary" />
                 Do now
               </Button>
-              {authUser ? (
+              {isDemoSession && currentUser ? (
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">{currentUser.name}</span>
+                  <Badge variant="outline" className="text-xs">
+                    {currentUser.level} · {currentUser.xp} XP
+                  </Badge>
+                </div>
+              ) : authUser ? (
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-muted-foreground">
                     {profile?.full_name || authUser.email}

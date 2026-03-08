@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useState } from 'react';
 import type { DemoState, Role, CheckIn, BarometerResponse, ServiceRequest, ServiceRequestType, EvidenceItem, EvidenceType, WorkspaceInfo, WorkspaceInvite, JourneyAssignment, DemoRequest, DemoRequestStatus } from '@/types/demo';
 import { getLevel } from '@/types/demo';
 import { createInitialState } from '@/data/demo-seed';
