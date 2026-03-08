@@ -9,7 +9,7 @@ import {
   Shield,
   Play,
   RotateCcw,
-  Map,
+  Map as MapIcon,
   Library,
   Hammer,
   HeadphonesIcon,
@@ -47,7 +47,7 @@ const sections: { label: string; items: NavItem[] }[] = [
     label: 'Journey',
     items: [
       todayItem,
-      { title: 'My Journey', url: '/app/journey', icon: Map },
+      { title: 'My Journey', url: '/app/journey', icon: MapIcon },
       { title: 'Catalog', url: '/app/catalog', icon: Library },
       { title: 'Build Journey', url: '/app/builder', icon: Hammer },
     ],
@@ -91,7 +91,7 @@ const sections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
-const managerSections: { label: string; items: NavItem[] }[] = [
+const adminSections: { label: string; items: NavItem[] }[] = [
   {
     label: '',
     items: [todayItem],
@@ -114,15 +114,6 @@ const managerSections: { label: string; items: NavItem[] }[] = [
     ],
   },
   {
-    label: 'Me',
-    items: [
-      { title: 'My Journey', url: '/app/journey', icon: Map },
-      { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck },
-      { title: 'Ignite (Personal)', url: '/app/ignite', icon: Flame },
-      { title: 'Catalog', url: '/app/catalog', icon: Library },
-    ],
-  },
-  {
     label: 'Support',
     items: [
       { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin', 'manager'] },
@@ -138,6 +129,44 @@ const managerSections: { label: string; items: NavItem[] }[] = [
   },
 ];
 
+const managerSections: { label: string; items: NavItem[] }[] = [
+  {
+    label: '',
+    items: [todayItem],
+  },
+  {
+    label: 'Pilot',
+    items: [
+      { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
+      { title: 'Ignite Heatmap', url: '/app/ignite-team', icon: Flame },
+      { title: 'Reports', url: '/app/reports', icon: FileBarChart },
+    ],
+  },
+  {
+    label: 'Drive',
+    items: [
+      { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
+      { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'Team', url: '/app/team', icon: Users },
+    ],
+  },
+  {
+    label: 'Me',
+    items: [
+      { title: 'My Journey', url: '/app/journey', icon: MapIcon },
+      { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck },
+      { title: 'Ignite (Personal)', url: '/app/ignite', icon: Flame },
+      { title: 'Catalog', url: '/app/catalog', icon: Library },
+    ],
+  },
+  {
+    label: 'Support',
+    items: [
+      { title: 'Service Requests', url: '/app/services', icon: HeadphonesIcon, roles: ['admin', 'manager'] },
+    ],
+  },
+];
+
 const PREVIEW_ALLOWED_URLS = ['/app/today', '/app/journey', '/app/catalog', '/app/playbooks', '/app/challenges', '/app/checkin', '/app/barometer', '/app/ignite', '/app'];
 
 export function AppSidebar() {
@@ -148,7 +177,9 @@ export function AppSidebar() {
 
   const isAuthenticated = !!user;
   const displayRole = isAuthenticated ? (authRole ?? 'user') : state.currentRole;
-  const isManagerRole = displayRole === 'manager' || displayRole === 'admin';
+  const isAdminRole = displayRole === 'admin';
+  const isManagerRole = displayRole === 'manager';
+  const isLeaderRole = isAdminRole || isManagerRole;
 
   return (
     <Sidebar className="border-r border-sidebar-border">
@@ -160,7 +191,7 @@ export function AppSidebar() {
       </div>
 
       <SidebarContent>
-        {(isManagerRole ? managerSections : sections).map(section => {
+        {(isAdminRole ? adminSections : isManagerRole ? managerSections : sections).map(section => {
           let visibleItems = section.items.filter(
             item => !item.roles || (item.roles as readonly string[]).includes(displayRole)
           );
