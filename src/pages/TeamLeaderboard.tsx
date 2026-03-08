@@ -378,5 +378,6 @@ function DemoTeamLeaderboard() {
 
 export default function TeamLeaderboard() {
   const { user } = useAuth();
-  return user ? <AuthenticatedTeamLeaderboard /> : <DemoTeamLeaderboard />;
+  const { isDemoSession } = useDemo();
+  return (isDemoSession || !user) ? <DemoTeamLeaderboard /> : <AuthenticatedTeamLeaderboard />;
 }

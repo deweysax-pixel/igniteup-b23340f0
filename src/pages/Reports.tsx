@@ -682,7 +682,8 @@ function DemoReports() {
 /* ── Router: pick authenticated vs demo ── */
 export default function Reports() {
   const { user } = useAuth();
+  const { isDemoSession } = useDemo();
   
-  if (user) return <AuthenticatedReports />;
-  return <DemoReports />;
+  if (isDemoSession || !user) return <DemoReports />;
+  return <AuthenticatedReports />;
 }
