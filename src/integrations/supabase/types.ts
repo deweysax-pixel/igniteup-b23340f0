@@ -501,6 +501,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_invite_info: { Args: { _token: string }; Returns: Json }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
@@ -517,6 +518,10 @@ export type Database = {
         Returns: boolean
       }
       needs_bootstrap: { Args: never; Returns: boolean }
+      remove_org_member: {
+        Args: { _admin_id: string; _member_id: string }
+        Returns: undefined
+      }
       shares_team_with: {
         Args: { _target_id: string; _viewer_id: string }
         Returns: boolean
