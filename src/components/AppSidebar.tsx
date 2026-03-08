@@ -144,7 +144,7 @@ const PREVIEW_ALLOWED_URLS = ['/app/today', '/app/journey', '/app/catalog', '/ap
 export function AppSidebar() {
   const { state, resetDemo } = useDemo();
   const { isPreviewMode } = usePreview();
-  const { user, role: authRole, profile } = useAuth();
+  const { user, role: authRole, profile, signOut } = useAuth();
   const location = useLocation();
 
   const isAuthenticated = !!user;
@@ -207,9 +207,8 @@ export function AppSidebar() {
             size="sm"
             className="w-full justify-start gap-2 text-muted-foreground hover:text-foreground"
             onClick={async () => {
-              const { signOut } = await import('@/integrations/supabase/client').then(m => ({ signOut: () => m.supabase.auth.signOut() }));
               await signOut();
-              window.location.href = '/';
+              window.location.href = '/auth';
             }}
           >
             <LogOut className="h-4 w-4" />
