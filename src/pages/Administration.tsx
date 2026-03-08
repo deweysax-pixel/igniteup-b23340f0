@@ -318,7 +318,7 @@ export default function Administration() {
           </TabsTrigger>
           <TabsTrigger value="demo" className="gap-1.5">
             <Play className="h-3.5 w-3.5" />
-            Demo Accounts
+            Demo Access
           </TabsTrigger>
         </TabsList>
 
@@ -327,7 +327,7 @@ export default function Administration() {
         </TabsContent>
 
         <TabsContent value="demo" className="mt-6">
-          <DemoAccountsTab />
+          <DemoAccessTab />
         </TabsContent>
       </Tabs>
     </div>
