@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Building2, UserPlus, Map, Copy, Send, ArrowLeft, Users, AlertTriangle } from 'lucide-react';
+import { Building2, UserPlus, Map as MapIcon, Copy, Send, ArrowLeft, Users, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { modules } from '@/data/journey-seed';
 import type { Role } from '@/types/demo';
@@ -42,6 +42,8 @@ interface DbTeam {
 interface DbMember {
   id: string;
   full_name: string | null;
+  roleName: string | null;
+  teamName: string | null;
 }
 
 export default function Workspace() {
@@ -95,14 +97,31 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
 
   const loadData = async () => {
     if (!orgId) return;
-    const [{ data: invData }, { data: teamData }, { data: memberData }] = await Promise.all([
-      supabase.from('invitations').select('id, email, role, status, token, created_at, expires_at').eq('organization_id', orgId).order('created_at', { ascending: false }),
+    const [{ data: invData }, { data: teamData }, { data: profileData }, { data: roleData }, { data: tmData }] = await Promise.all([
+      supabase.from('invitations').select('id, email, role, status, token, created_at, expires_at, team_id').eq('organization_id', orgId).order('created_at', { ascending: false }),
       supabase.from('teams').select('id, name').eq('organization_id', orgId),
       supabase.from('profiles').select('id, full_name').eq('organization_id', orgId),
+      supabase.from('user_roles').select('user_id, role'),
+      supabase.from('team_members').select('user_id, team_id'),
     ]);
     setInvitations((invData as DbInvitation[]) ?? []);
-    setTeams((teamData as DbTeam[]) ?? []);
-    setMembers((memberData as DbMember[]) ?? []);
+    const teamsArr = (teamData as DbTeam[]) ?? [];
+    setTeams(teamsArr);
+
+    const teamMap = new Map<string, string>(teamsArr.map(t => [t.id, t.name] as [string, string]));
+    const roleMap = new Map<string, string>((roleData ?? []).map((r: any) => [r.user_id, r.role] as [string, string]));
+    const userTeamMap = new Map<string, string>();
+    for (const tm of (tmData ?? []) as any[]) {
+      const name = teamMap.get(tm.team_id);
+      if (name) userTeamMap.set(tm.user_id, name);
+    }
+
+    setMembers((profileData ?? []).map((p: any) => ({
+      id: p.id,
+      full_name: p.full_name,
+      roleName: roleMap.get(p.id) ?? null,
+      teamName: userTeamMap.get(p.id) ?? null,
+    })));
   };
 
   const sendInvite = async () => {
@@ -238,14 +257,29 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
           {members.length === 0 ? (
             <p className="text-sm text-muted-foreground">No members yet. Invite your first team member above.</p>
           ) : (
-            <div className="space-y-2">
-              {members.map(m => (
-                <div key={m.id} className="flex items-center justify-between py-1.5 px-3 rounded-md border border-border text-sm">
-                  <span>{m.full_name || '(unnamed)'}</span>
-                  {m.id === userId && <Badge variant="secondary" className="text-[10px]">You</Badge>}
-                </div>
-              ))}
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Team</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {members.map(m => (
+                  <TableRow key={m.id}>
+                    <TableCell className="text-sm font-medium">
+                      {m.full_name || '(unnamed)'}
+                      {m.id === userId && <Badge variant="secondary" className="text-[10px] ml-2">You</Badge>}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline" className="capitalize text-xs">{m.roleName ?? 'no role'}</Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">{m.teamName ?? 'No team'}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
@@ -254,7 +288,7 @@ function AuthenticatedWorkspace({ orgId, orgName, userId }: { orgId: string | nu
       <Card className="opacity-60">
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Map className="h-4 w-4 text-muted-foreground" /> Assign a journey
+            <MapIcon className="h-4 w-4 text-muted-foreground" /> Assign a journey
             <Badge variant="outline" className="text-[10px] ml-auto"><AlertTriangle className="h-3 w-3 mr-1 inline" />Not yet live</Badge>
           </CardTitle>
           <CardDescription className="text-xs">Journey assignment is not yet connected to real data. Coming soon.</CardDescription>
@@ -388,7 +422,7 @@ function DemoWorkspace({ state, dispatch, navigate }: { state: any; dispatch: an
       <Card>
         <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
-            <Map className="h-4 w-4 text-primary" /> Assign a journey
+            <MapIcon className="h-4 w-4 text-primary" /> Assign a journey
           </CardTitle>
           <CardDescription className="text-xs">Select a track and assign it to team members.</CardDescription>
         </CardHeader>
