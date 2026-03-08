@@ -384,8 +384,8 @@ function DemoReports() {
   const navigate = useNavigate();
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
   const [dateRange, setDateRange] = useState<string>('whole');
-  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
-  const activeUsers = state.users.filter(u => u.role !== 'admin');
+  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin' || state.currentRole === 'sponsor';
+  const activeUsers = state.users.filter(u => u.role !== 'admin' && u.role !== 'sponsor');
 
   const filteredUsers = useMemo(() => {
     if (selectedTeam === 'all') return state.users;

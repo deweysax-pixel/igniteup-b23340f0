@@ -224,7 +224,7 @@ function DemoDashboard() {
   const { state, currentUser } = useDemo();
   const navigate = useNavigate();
   const [reviewOpen, setReviewOpen] = useState(false);
-  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin';
+  const isManager = state.currentRole === 'manager' || state.currentRole === 'admin' || state.currentRole === 'sponsor';
   const activeChallenge = state.challenges.find(c => c.status === 'active');
   const weekLabel = getWeekRange().label;
 
