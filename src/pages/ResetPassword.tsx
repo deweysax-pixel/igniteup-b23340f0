@@ -81,7 +81,6 @@ export default function ResetPassword() {
                 <Label htmlFor="password">New Password</Label>
                 <PasswordInput id="password" placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} required />
               </div>
-              </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? 'Updating…' : 'Update Password'}
               </Button>
