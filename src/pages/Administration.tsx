@@ -227,10 +227,10 @@ function DemoAccessTab() {
                 size="sm"
                 variant="outline"
                 className="gap-1.5"
-                onClick={() => handleCopyLink(env.accessRoute)}
+                onClick={() => handleCopyUrl(env.accessRoute)}
               >
                 <Copy className="h-3.5 w-3.5" />
-                Copy Link
+                Copy Demo URL
               </Button>
               <Button
                 size="sm"
