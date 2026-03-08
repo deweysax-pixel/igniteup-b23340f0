@@ -6,11 +6,14 @@ import { Shield, Users, User, Eye } from 'lucide-react';
 import type { Role } from '@/types/demo';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
+const searchParams = new URLSearchParams(window.location.search);
+const showAdmin = searchParams.get('internal') === '1';
+
 const roles: { role: Role; label: string; description: string; icon: React.ElementType }[] = [
-  { role: 'admin', label: 'Administrator', description: 'Full organizational view, challenge management, and data export.', icon: Shield },
+  ...(showAdmin ? [{ role: 'admin' as Role, label: 'Administrator', description: 'Full organizational view, challenge management, and data export.', icon: Shield }] : []),
   { role: 'sponsor', label: 'Sponsor', description: 'Executive oversight with high-level KPIs, ROI tracking, and program health.', icon: Eye },
   { role: 'manager', label: 'Manager', description: 'Lead your team, track rankings, and validate weekly actions.', icon: Users },
-  { role: 'participant', label: 'Participant', description: 'Complete challenge actions, track your progress and your team\'s.', icon: User },
+  { role: 'participant', label: 'Collaborator', description: 'Complete challenge actions, track your progress and your team\'s.', icon: User },
 ];
 
 export default function Login() {
@@ -27,9 +30,9 @@ export default function Login() {
       <div className="w-full max-w-lg space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
            <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto cursor-pointer" /></a>
-           <span className="block text-lg font-medium text-muted-foreground mt-2">Demo</span>
+           <span className="block text-lg font-medium text-muted-foreground mt-2">Demo · Horizon Group</span>
           <p className="text-sm text-muted-foreground">
-            Choose a role to explore the platform
+            Choose a perspective to explore the platform
           </p>
         </div>
 
