@@ -622,11 +622,11 @@ function DemoReports() {
       {isManager && <DemoExecutiveSummary users={activeUsers} checkIns={state.checkIns} />}
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 print:grid-cols-5">
-        <KPICard icon={BookOpen} label="Modules Completed" value={`${modulesCompleted} / ${totalModules}`} />
-        <KPICard icon={ClipboardCheck} label="Units Completed" value={`${unitsCompleted} / ${totalUnits}`} />
+        <KPICard icon={BookOpen} label="Avg Modules Done" value={`${avgModulesCompleted} / ${totalModules}`} />
+        <KPICard icon={ClipboardCheck} label="Avg Units Done" value={`${avgUnitsCompleted} / ${totalUnits}`} />
         <KPICard icon={Activity} label="Check-ins" value={String(checkInsCompleted)} sub={`${activeStreaks} active streaks`} />
         <KPICard icon={Users} label="Active Users (7d)" value={String(activeUsersCount)} sub={`of ${filteredUsers.length} total`} />
-        <KPICard icon={Flame} label="Ignite Status" value="—" sub="Active / At Risk / Inactive" />
+        <KPICard icon={Flame} label="Ignite Status" value={`${activeUsersCount} Active`} sub={`${filteredUsers.length - activeUsersCount} Due`} />
       </div>
 
       <Card>
