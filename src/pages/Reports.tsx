@@ -406,26 +406,56 @@ function DemoReports() {
     });
   }, [state.checkIns, filteredUserIds, dateRange]);
 
-  const journeyModuleIds = useMemo(() => [...new Set(journey.steps.map(s => s.moduleId))], [journey.steps]);
-  const modulesCompleted = useMemo(() => journeyModuleIds.filter(id => moduleProgress[id]?.status === 'completed').length, [journeyModuleIds, moduleProgress]);
-  const totalModules = journeyModuleIds.length;
+  /* ── Per-user unit progress aggregation ── */
+  const perUserProgress = useMemo(() => {
+    const teamPerformanceModules = modules.filter(m => m.id.startsWith('tp-'));
+    const allTPUnitIds = teamPerformanceModules.flatMap(m => (m.units || []).map(u => u.unitId));
+    const totalUnitsAll = allTPUnitIds.length;
+    const totalModulesAll = teamPerformanceModules.length;
 
-  const allUnitIds = useMemo(() => modules.flatMap(m => (m.units || []).map(u => u.unitId)), [modules]);
-  const unitsCompleted = useMemo(() => allUnitIds.filter(id => unitProgress[id]?.status === 'completed').length, [allUnitIds, unitProgress]);
-  const totalUnits = allUnitIds.length;
+    return filteredUsers.map(user => {
+      const userUnitProg = getSeededUnitProgressForUser(user.id);
+      const completedUnitIds = allTPUnitIds.filter(uid => userUnitProg[uid]?.status === 'completed');
+      const unitsCount = completedUnitIds.length;
+
+      // A module is "completed" if all its units are done
+      const modulesCount = teamPerformanceModules.filter(mod => {
+        const modUnits = mod.units || [];
+        if (modUnits.length === 0) return false;
+        return modUnits.every(u => userUnitProg[u.unitId]?.status === 'completed');
+      }).length;
+
+      return { userId: user.id, unitsCompleted: unitsCount, modulesCompleted: modulesCount, totalUnits: totalUnitsAll, totalModules: totalModulesAll };
+    });
+  }, [filteredUsers, modules]);
+
+  const totalUnits = perUserProgress.length > 0 ? perUserProgress[0].totalUnits : 0;
+  const totalModules = perUserProgress.length > 0 ? perUserProgress[0].totalModules : 0;
+  const avgUnitsCompleted = perUserProgress.length > 0 ? Math.round(perUserProgress.reduce((s, p) => s + p.unitsCompleted, 0) / perUserProgress.length) : 0;
+  const avgModulesCompleted = perUserProgress.length > 0 ? Math.round(perUserProgress.reduce((s, p) => s + p.modulesCompleted, 0) / perUserProgress.length * 10) / 10 : 0;
 
   const checkInsCompleted = filteredCheckIns.length;
   const activeStreaks = useMemo(() => filteredUsers.filter(u => u.streak > 0).length, [filteredUsers]);
 
   const activeUsersCount = useMemo(() => {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 86400000);
-    const ids = new Set(
-      state.checkIns
-        .filter(ci => filteredUserIds.has(ci.userId) && new Date(ci.createdAt) >= sevenDaysAgo)
-        .map(ci => ci.userId)
-    );
-    return ids.size;
-  }, [state.checkIns, filteredUserIds]);
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    // Check both check-ins and unit completions within 7 days
+    const activeIds = new Set<string>();
+    state.checkIns.forEach(ci => {
+      if (filteredUserIds.has(ci.userId) && new Date(ci.createdAt).getTime() >= sevenDaysAgo) {
+        activeIds.add(ci.userId);
+      }
+    });
+    // Also count users with recent unit completions
+    filteredUsers.forEach(user => {
+      const userUnitProg = getSeededUnitProgressForUser(user.id);
+      const hasRecentUnit = Object.values(userUnitProg).some(
+        p => p.status === 'completed' && p.completedAt && new Date(p.completedAt).getTime() >= sevenDaysAgo
+      );
+      if (hasRecentUnit) activeIds.add(user.id);
+    });
+    return activeIds.size;
+  }, [state.checkIns, filteredUserIds, filteredUsers]);
 
   const filteredBarometer = useMemo(() => state.barometerResponses.filter(br => filteredUserIds.has(br.userId)), [state.barometerResponses, filteredUserIds]);
 
