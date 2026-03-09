@@ -195,6 +195,77 @@ export default function TodayPage() {
           to="/app/checkin"
         />
       </div>
+
+      {/* Micro-success moments — visible for collaborators and managers with momentum */}
+      <MicroSuccessMoments />
+    </div>
+  );
+}
+
+/* ── Micro-success moments ── */
+function MicroSuccessMoments() {
+  const { state, currentUser } = useDemo();
+  const { unitProgress } = useJourney();
+  const isManager = state.currentRole === 'manager';
+
+  const moments = useMemo(() => {
+    const items: { icon: React.ElementType; text: string; colorClass: string }[] = [];
+
+    // Streak moment
+    if (currentUser && currentUser.streak >= 3) {
+      items.push({
+        icon: Zap,
+        text: `${currentUser.streak}-week learning streak — you're building real consistency.`,
+        colorClass: 'text-amber-400',
+      });
+    }
+
+    // Units completed
+    const completedUnits = Object.values(unitProgress).filter(u => u.status === 'completed').length;
+    if (completedUnits >= 5) {
+      items.push({
+        icon: Trophy,
+        text: `${completedUnits} units completed — you're ahead of the team average.`,
+        colorClass: 'text-emerald-400',
+      });
+    }
+
+    // XP milestone
+    if (currentUser && currentUser.xp >= 150) {
+      items.push({
+        icon: TrendingUp,
+        text: `${currentUser.xp} XP earned — ${currentUser.level} level. Keep going!`,
+        colorClass: 'text-primary',
+      });
+    }
+
+    // Manager: team momentum
+    if (isManager) {
+      const teamMembers = state.users.filter(u => u.role === 'participant' && u.teamId === currentUser?.teamId);
+      const activeCount = teamMembers.filter(u => u.streak >= 2).length;
+      if (activeCount >= 2) {
+        items.push({
+          icon: TrendingUp,
+          text: `${activeCount} of ${teamMembers.length} team members have active streaks.`,
+          colorClass: 'text-emerald-400',
+        });
+      }
+    }
+
+    return items.slice(0, 3);
+  }, [currentUser, unitProgress, state.users, state.currentRole]);
+
+  if (moments.length === 0) return null;
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Recent wins</p>
+      {moments.map((m, i) => (
+        <div key={i} className="flex items-center gap-2.5 rounded-lg border border-border/40 bg-secondary/20 px-3 py-2">
+          <m.icon className={`h-4 w-4 shrink-0 ${m.colorClass}`} />
+          <span className="text-sm text-foreground/90">{m.text}</span>
+        </div>
+      ))}
     </div>
   );
 }
