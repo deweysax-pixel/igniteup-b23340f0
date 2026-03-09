@@ -308,37 +308,37 @@ function AuthenticatedReports() {
 
 /* ── Demo Executive Summary (unchanged) ── */
 function DemoExecutiveSummary({ users, checkIns }: { users: { id: string }[]; checkIns: { userId: string; createdAt: string }[] }) {
-  const thisWeek = getWeekRange();
-  const lastWeek = getLastWeekRange();
+  const sevenDaysAgo = Date.now() - 7 * 86400000;
+  const fourteenDaysAgo = Date.now() - 14 * 86400000;
 
-  const computeActiveCount = () => {
-    return users.filter(user => {
-      const unitProg = getSeededUnitProgressForUser(user.id);
-      const packStatuses = IGNITE_PACKS.map(pack =>
-        computePackStatusForUser(pack, unitProg, checkIns, user.id)
-      );
-      return packStatuses.every(ps => ps.status === 'active');
-    }).length;
-  };
+  // Active = has check-in OR unit completion in last 7 days
+  const activeIds = new Set<string>();
+  const prevActiveIds = new Set<string>();
 
-  const activeCount = computeActiveCount();
-  const activeRate = users.length > 0 ? Math.round((activeCount / users.length) * 100) : 0;
-  const dueCount = users.length - activeCount;
-
-  const checkInsThisWeek = checkIns.filter(ci => {
-    const d = new Date(ci.createdAt).getTime();
-    return d >= thisWeek.start.getTime() && d <= thisWeek.end.getTime();
-  });
-  const checkInsLastWeek = checkIns.filter(ci => {
-    const d = new Date(ci.createdAt).getTime();
-    return d >= lastWeek.start.getTime() && d <= lastWeek.end.getTime();
+  checkIns.forEach(ci => {
+    const t = new Date(ci.createdAt).getTime();
+    const uid = ci.userId;
+    if (users.some(u => u.id === uid)) {
+      if (t >= sevenDaysAgo) activeIds.add(uid);
+      if (t >= fourteenDaysAgo && t < sevenDaysAgo) prevActiveIds.add(uid);
+    }
   });
 
-  const ciThisWeekUsers = new Set(checkInsThisWeek.map(ci => ci.userId));
-  const ciLastWeekUsers = new Set(checkInsLastWeek.map(ci => ci.userId));
+  users.forEach(user => {
+    const userUnitProg = getSeededUnitProgressForUser(user.id);
+    Object.values(userUnitProg).forEach(p => {
+      if (p.completedAt) {
+        const t = new Date(p.completedAt).getTime();
+        if (t >= sevenDaysAgo) activeIds.add(user.id);
+        if (t >= fourteenDaysAgo && t < sevenDaysAgo) prevActiveIds.add(user.id);
+      }
+    });
+  });
 
-  const lastWeekActiveRate = users.length > 0 ? Math.round((ciLastWeekUsers.size / users.length) * 100) : null;
-  const lastWeekDue = ciLastWeekUsers.size > 0 ? users.length - ciLastWeekUsers.size : null;
+  const activeRate = users.length > 0 ? Math.round((activeIds.size / users.length) * 100) : 0;
+  const prevActiveRate = users.length > 0 ? Math.round((prevActiveIds.size / users.length) * 100) : null;
+  const dueCount = users.length - activeIds.size;
+  const prevDueCount = prevActiveIds.size > 0 ? users.length - prevActiveIds.size : null;
 
   return (
     <div className="space-y-2">
