@@ -7,7 +7,7 @@ import { useDemo } from '@/contexts/DemoContext';
 import { useJourney } from '@/contexts/JourneyContext';
 import { useIgniteStatus, usePackStatuses, STATUS_CONFIG } from '@/pages/Ignite';
 import type { IgniteStatus } from '@/pages/Ignite';
-import { Flame, ClipboardCheck, BookOpen, Compass, Sparkles, ArrowRight, ShieldCheck, AlertTriangle, Package } from 'lucide-react';
+import { Flame, ClipboardCheck, BookOpen, Compass, Sparkles, ArrowRight, ShieldCheck, AlertTriangle, Package, Trophy, TrendingUp, Zap } from 'lucide-react';
 import { getWeekRange } from '@/lib/week-utils';
 import { GlossaryTip } from '@/components/GlossaryTip';
 
