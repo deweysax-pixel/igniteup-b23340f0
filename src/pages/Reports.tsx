@@ -496,26 +496,54 @@ function DemoReports() {
   const learnerData = useMemo(() => {
     return filteredUsers.map(user => {
       const userCheckIns = state.checkIns.filter(ci => ci.userId === user.id);
-      const lastActivity = userCheckIns.length > 0
-        ? new Date(Math.max(...userCheckIns.map(ci => new Date(ci.createdAt).getTime()))).toLocaleDateString()
-        : 'N/A';
-      return { name: user.name, role: user.role, modulesCompleted, unitsCompleted, lastActivity, level: user.level };
-    });
-  }, [filteredUsers, state.checkIns, modulesCompleted, unitsCompleted]);
+      const userUnitProg = getSeededUnitProgressForUser(user.id);
 
+      // Find latest activity: max of check-in dates and unit completion dates
+      const allDates: number[] = [];
+      userCheckIns.forEach(ci => allDates.push(new Date(ci.createdAt).getTime()));
+      Object.values(userUnitProg).forEach(p => {
+        if (p.completedAt) allDates.push(new Date(p.completedAt).getTime());
+      });
+      const lastActivity = allDates.length > 0
+        ? new Date(Math.max(...allDates)).toLocaleDateString()
+        : 'N/A';
+
+      const pp = perUserProgress.find(p => p.userId === user.id);
+      return {
+        name: user.name, role: user.role,
+        modulesCompleted: pp?.modulesCompleted ?? 0,
+        unitsCompleted: pp?.unitsCompleted ?? 0,
+        lastActivity, level: user.level,
+      };
+    });
+  }, [filteredUsers, state.checkIns, perUserProgress]);
+
+  /* Module completion — aggregated across all filtered users */
   const moduleData = useMemo(() => {
-    return journeyModuleIds.map(modId => {
-      const mod = modules.find(m => m.id === modId);
-      if (!mod) return null;
+    const teamPerformanceModules = modules.filter(m => m.id.startsWith('tp-'));
+    return teamPerformanceModules.map(mod => {
       const units = mod.units || [];
-      const isCompleted = moduleProgress[modId]?.status === 'completed';
-      const pctLearners = isCompleted ? 100 : 0;
-      const avgUnitCompletion = units.length > 0
-        ? Math.round((units.filter(u => unitProgress[u.unitId]?.status === 'completed').length / units.length) * 100)
-        : (isCompleted ? 100 : 0);
+      if (units.length === 0) return null;
+
+      // For each user, compute % of this module's units completed
+      const userCompletionRates = filteredUsers.map(user => {
+        const userUnitProg = getSeededUnitProgressForUser(user.id);
+        const done = units.filter(u => userUnitProg[u.unitId]?.status === 'completed').length;
+        return done / units.length;
+      });
+
+      // % learners who completed ALL units of this module
+      const fullyCompleted = userCompletionRates.filter(r => r >= 1).length;
+      const pctLearners = filteredUsers.length > 0 ? Math.round((fullyCompleted / filteredUsers.length) * 100) : 0;
+
+      // Avg unit completion across all users
+      const avgUnitCompletion = userCompletionRates.length > 0
+        ? Math.round((userCompletionRates.reduce((s, r) => s + r, 0) / userCompletionRates.length) * 100)
+        : 0;
+
       return { title: mod.title, pctLearners, avgUnitCompletion };
     }).filter(Boolean) as { title: string; pctLearners: number; avgUnitCompletion: number }[];
-  }, [journeyModuleIds, modules, moduleProgress, unitProgress]);
+  }, [modules, filteredUsers]);
 
   const exportCSV = () => {
     const csv = [
