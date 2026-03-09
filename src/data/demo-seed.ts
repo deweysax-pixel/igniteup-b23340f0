@@ -281,83 +281,85 @@ export function getSeededUnitProgressForUser(userId: string): Record<string, Uni
     { status: 'completed' as const, completedAt: daysAgo(day) },
   ];
 
+  // Helper: complete ALL units for a pack (pack sizes: tp1=9, tp2=8, tp3=8, tp4=9, tp5=8)
+  const packUnitCounts: Record<number, number> = { 1: 9, 2: 8, 3: 8, 4: 9, 5: 8 };
+  const fullPack = (packIdx: number, startDay: number): [string, UnitProgress][] =>
+    Array.from({ length: packUnitCounts[packIdx] }, (_, i) =>
+      completed(packIdx, i + 1, startDay + i)
+    );
+
   const userPackMap: Record<string, [string, UnitProgress][]> = {
-    // ★ Top — all 5 packs active, multiple units per pack
+    // ★ Top — full modules completed + deep progress elsewhere
     u9: [
-      completed(1, 1, 1), completed(1, 2, 3), completed(1, 3, 6),
-      completed(2, 1, 2), completed(2, 2, 5),
-      completed(3, 1, 3), completed(3, 2, 7),
-      completed(4, 1, 4), completed(4, 2, 8),
-      completed(5, 1, 2), completed(5, 2, 6),
+      ...fullPack(1, 1),   // Trust: ALL 9 units → 1 module completed
+      ...fullPack(2, 2),   // Disagreement: ALL 8 units → 1 module completed
+      completed(3, 1, 3), completed(3, 2, 7), completed(3, 3, 9), completed(3, 4, 11), completed(3, 5, 13),  // Decision: 5/8
+      completed(4, 1, 4), completed(4, 2, 8), completed(4, 3, 10), completed(4, 4, 12),  // Accountability: 4/9
+      completed(5, 1, 2), completed(5, 2, 6), completed(5, 3, 8),  // Results: 3/8
     ],
     u6: [
-      completed(1, 1, 1), completed(1, 2, 4),
-      completed(2, 1, 2), completed(2, 2, 6), completed(2, 3, 9),
-      completed(3, 1, 3), completed(3, 2, 8),
-      completed(4, 1, 5), completed(4, 2, 10),
-      completed(5, 1, 4), completed(5, 2, 7),
+      ...fullPack(1, 1),   // Trust: ALL 9 units → 1 module completed
+      completed(2, 1, 2), completed(2, 2, 6), completed(2, 3, 9), completed(2, 4, 11), completed(2, 5, 13), completed(2, 6, 14),  // Disagreement: 6/8
+      ...fullPack(3, 3),   // Decision: ALL 8 units → 1 module completed
+      completed(4, 1, 5), completed(4, 2, 10), completed(4, 3, 12),  // Accountability: 3/9
+      completed(5, 1, 4), completed(5, 2, 7),  // Results: 2/8
     ],
 
-    // ● Solid — 4-5 packs active
+    // ● Solid — 1 full module + good progress in others
     u2: [
-      completed(1, 1, 2), completed(1, 2, 5),
-      completed(2, 1, 3), completed(2, 2, 8),
-      completed(3, 1, 4), completed(3, 2, 9),
-      completed(4, 1, 6),
+      ...fullPack(1, 2),   // Trust: ALL 9 units → 1 module completed
+      completed(2, 1, 3), completed(2, 2, 8), completed(2, 3, 11), completed(2, 4, 13),  // Disagreement: 4/8
+      completed(3, 1, 4), completed(3, 2, 9), completed(3, 3, 12),  // Decision: 3/8
+      completed(4, 1, 6), completed(4, 2, 10),  // Accountability: 2/9
       // pack 5: no unit → At Risk
     ],
     u5: [
-      completed(1, 1, 1), completed(1, 2, 4),
-      completed(2, 1, 3), completed(2, 2, 7),
-      completed(3, 1, 2), completed(3, 2, 6),
-      completed(4, 1, 5),
-      completed(5, 1, 3),
+      ...fullPack(2, 3),   // Disagreement: ALL 8 units → 1 module completed
+      completed(1, 1, 1), completed(1, 2, 4), completed(1, 3, 7), completed(1, 4, 10), completed(1, 5, 12),  // Trust: 5/9
+      completed(3, 1, 2), completed(3, 2, 6), completed(3, 3, 9),  // Decision: 3/8
+      completed(4, 1, 5), completed(4, 2, 8),  // Accountability: 2/9
+      completed(5, 1, 3),  // Results: 1/8
     ],
     u11: [
-      completed(1, 1, 2), completed(1, 2, 6),
-      completed(2, 1, 4),
+      completed(1, 1, 2), completed(1, 2, 6), completed(1, 3, 9), completed(1, 4, 11),  // Trust: 4/9
+      completed(2, 1, 4), completed(2, 2, 8), completed(2, 3, 10),  // Disagreement: 3/8
       // pack 3: no unit → At Risk
-      completed(4, 1, 5), completed(4, 2, 10),
-      completed(5, 1, 3),
+      completed(4, 1, 5), completed(4, 2, 10), completed(4, 3, 12),  // Accountability: 3/9
+      completed(5, 1, 3), completed(5, 2, 7),  // Results: 2/8
     ],
     u3: [
-      completed(1, 1, 3), completed(1, 2, 7),
-      completed(2, 1, 5), completed(2, 2, 10),
-      completed(3, 1, 4),
+      completed(1, 1, 3), completed(1, 2, 7), completed(1, 3, 10), completed(1, 4, 12),  // Trust: 4/9
+      completed(2, 1, 5), completed(2, 2, 10), completed(2, 3, 13),  // Disagreement: 3/8
+      completed(3, 1, 4), completed(3, 2, 9),  // Decision: 2/8
       // packs 4,5: no unit → At Risk
     ],
 
-    // ◐ Mid — 2-3 packs with units
+    // ◐ Mid — some partial progress, no full modules
     u10: [
-      completed(1, 1, 4),
-      completed(2, 1, 6),
-      completed(3, 1, 8),
-      // pack 4: old unit outside window
-      ['tp4-u1', { status: 'completed', completedAt: daysAgo(16) }],
+      completed(1, 1, 4), completed(1, 2, 8), completed(1, 3, 11),  // Trust: 3/9
+      completed(2, 1, 6), completed(2, 2, 10),  // Disagreement: 2/8
+      completed(3, 1, 8),  // Decision: 1/8
+      ['tp4-u1', { status: 'completed', completedAt: daysAgo(16) }],  // old outside window
       // pack 5: nothing
     ],
     u8: [
-      completed(1, 1, 5),
-      completed(2, 1, 9),
+      completed(1, 1, 5), completed(1, 2, 9),  // Trust: 2/9
+      completed(2, 1, 9), completed(2, 2, 12),  // Disagreement: 2/8
       // packs 3,4,5: nothing
     ],
     u12: [
-      completed(1, 1, 4),
-      completed(2, 1, 7),
-      // pack 3: old outside window
-      ['tp3-u1', { status: 'completed', completedAt: daysAgo(18) }],
+      completed(1, 1, 4), completed(1, 2, 8),  // Trust: 2/9
+      completed(2, 1, 7),  // Disagreement: 1/8
+      ['tp3-u1', { status: 'completed', completedAt: daysAgo(18) }],  // old outside window
       // packs 4,5: nothing
     ],
 
-    // ▽ At Risk — minimal units, no/old check-ins
+    // ▽ At Risk — minimal units, no full modules
     u4: [
-      completed(1, 1, 8),
-      // packs 2-5: nothing
+      completed(1, 1, 8),  // Trust: 1/9
     ],
     u7: [
-      // pack 1: old unit
-      ['tp1-u1', { status: 'completed', completedAt: daysAgo(15) }],
-      // packs 2-5: nothing
+      ['tp1-u1', { status: 'completed', completedAt: daysAgo(15) }],  // old
     ],
 
     // ✕ u13: empty → all Inactive
