@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { useJourney } from '@/contexts/JourneyContext';
-import { useIgniteStatus, usePackStatuses, STATUS_CONFIG } from '@/pages/Ignite';
+import { useIgniteStatus, usePackStatuses, STATUS_CONFIG, IGNITE_PACKS, computePackStatusForUser } from '@/pages/Ignite';
 import type { IgniteStatus } from '@/pages/Ignite';
-import { Flame, ClipboardCheck, BookOpen, Compass, Sparkles, ArrowRight, ShieldCheck, AlertTriangle, Package, Trophy, TrendingUp, Zap } from 'lucide-react';
+import { Flame, ClipboardCheck, BookOpen, Compass, Sparkles, ArrowRight, ShieldCheck, AlertTriangle, Package, Trophy, TrendingUp, Zap, Users, BarChart3, Eye } from 'lucide-react';
 import { getWeekRange } from '@/lib/week-utils';
 import { GlossaryTip } from '@/components/GlossaryTip';
+import { getSeededUnitProgressForUser } from '@/data/demo-seed';
 
 type RuleId = 'no_journey' | 'ignite_renewal' | 'low_signal' | 'momentum';
 
