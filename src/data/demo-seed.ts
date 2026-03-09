@@ -6,26 +6,37 @@ const organization: Organization = {
   name: 'Horizon Group',
 };
 
+/**
+ * Demo performer distribution:
+ *   ★ Top (2):    Camille Roux (u9), Thomas Moreau (u6)  — Gold/Platinum, high XP, long streaks
+ *   ● Solid (4):  Marc Leroy (u2), Emma Petit (u5), Léa Mercier (u11), Sophie Martin (u3)
+ *   ◐ Mid (3):    Antoine Blanc (u10), Nicolas Girard (u8), Hugo Faure (u12)
+ *   ▽ At Risk (2): Lucas Bernard (u4), Julie Fournier (u7)
+ *   ✕ Inactive (1): Manon Gauthier (u13)
+ */
 const users: User[] = [
   // Admin
   { id: 'u1', name: 'Claire Dubois', role: 'admin', teamId: 't1', level: 'Gold', xp: 320, streak: 4 },
-  // Sponsor — executive visibility, no team assignment
+  // Sponsor — executive visibility
   { id: 'u14', name: 'Philippe Renard', role: 'sponsor', teamId: 't1', level: 'Silver', xp: 0, streak: 0 },
+
   // Managers
-  { id: 'u2', name: 'Marc Leroy', role: 'manager', teamId: 't1', level: 'Silver', xp: 180, streak: 3 },
-  { id: 'u5', name: 'Emma Petit', role: 'manager', teamId: 't2', level: 'Gold', xp: 290, streak: 4 },
+  { id: 'u2', name: 'Marc Leroy', role: 'manager', teamId: 't1', level: 'Gold', xp: 275, streak: 5 },
+  { id: 'u5', name: 'Emma Petit', role: 'manager', teamId: 't2', level: 'Gold', xp: 310, streak: 6 },
+
   // Team Alpha — collaborators
-  { id: 'u3', name: 'Sophie Martin', role: 'participant', teamId: 't1', level: 'Silver', xp: 150, streak: 2 },
-  { id: 'u4', name: 'Lucas Bernard', role: 'participant', teamId: 't1', level: 'Bronze', xp: 80, streak: 1 },
-  { id: 'u9', name: 'Camille Roux', role: 'participant', teamId: 't1', level: 'Gold', xp: 260, streak: 3 },
-  { id: 'u10', name: 'Antoine Blanc', role: 'participant', teamId: 't1', level: 'Silver', xp: 140, streak: 2 },
-  { id: 'u13', name: 'Manon Gauthier', role: 'participant', teamId: 't1', level: 'Bronze', xp: 40, streak: 0 },
+  { id: 'u9', name: 'Camille Roux', role: 'participant', teamId: 't1', level: 'Platinum', xp: 520, streak: 8 },  // ★ Top
+  { id: 'u3', name: 'Sophie Martin', role: 'participant', teamId: 't1', level: 'Silver', xp: 185, streak: 3 },   // ● Solid
+  { id: 'u10', name: 'Antoine Blanc', role: 'participant', teamId: 't1', level: 'Silver', xp: 130, streak: 2 },   // ◐ Mid
+  { id: 'u4', name: 'Lucas Bernard', role: 'participant', teamId: 't1', level: 'Bronze', xp: 75, streak: 0 },     // ▽ At Risk
+  { id: 'u13', name: 'Manon Gauthier', role: 'participant', teamId: 't1', level: 'Bronze', xp: 25, streak: 0 },   // ✕ Inactive
+
   // Team Beta — collaborators
-  { id: 'u6', name: 'Thomas Moreau', role: 'participant', teamId: 't2', level: 'Silver', xp: 200, streak: 3 },
-  { id: 'u7', name: 'Julie Fournier', role: 'participant', teamId: 't2', level: 'Bronze', xp: 60, streak: 0 },
-  { id: 'u8', name: 'Nicolas Girard', role: 'participant', teamId: 't2', level: 'Silver', xp: 120, streak: 2 },
-  { id: 'u11', name: 'Léa Mercier', role: 'participant', teamId: 't2', level: 'Silver', xp: 170, streak: 3 },
-  { id: 'u12', name: 'Hugo Faure', role: 'participant', teamId: 't2', level: 'Bronze', xp: 90, streak: 1 },
+  { id: 'u6', name: 'Thomas Moreau', role: 'participant', teamId: 't2', level: 'Gold', xp: 445, streak: 7 },      // ★ Top
+  { id: 'u11', name: 'Léa Mercier', role: 'participant', teamId: 't2', level: 'Silver', xp: 210, streak: 4 },     // ● Solid
+  { id: 'u8', name: 'Nicolas Girard', role: 'participant', teamId: 't2', level: 'Silver', xp: 115, streak: 1 },   // ◐ Mid
+  { id: 'u12', name: 'Hugo Faure', role: 'participant', teamId: 't2', level: 'Bronze', xp: 95, streak: 1 },       // ◐ Mid
+  { id: 'u7', name: 'Julie Fournier', role: 'participant', teamId: 't2', level: 'Bronze', xp: 55, streak: 0 },    // ▽ At Risk
 ];
 
 const teams: Team[] = [
@@ -63,9 +74,6 @@ const challenges: Challenge[] = [
   },
 ];
 
-/*
- * Pre-seeded service requests for a realistic admin view.
- */
 const serviceRequests: ServiceRequest[] = [
   {
     id: 'sr-seed-1',
@@ -92,13 +100,27 @@ const serviceRequests: ServiceRequest[] = [
     message: 'My team is struggling with delegation. Can we schedule a workshop to work through the framework together?',
     status: 'in_review',
   },
+  {
+    id: 'sr-seed-3',
+    createdAt: '2026-02-16T11:00:00Z',
+    requesterName: 'Camille Roux',
+    requesterEmail: 'camille.roux@horizongroup.com',
+    role: 'participant',
+    team: 'Team Alpha',
+    requestType: 'ask_expert',
+    moduleTitle: 'Peer Accountability',
+    message: 'I want to explore how to apply the accountability framework with a cross-functional partner outside my team.',
+    status: 'new',
+  },
 ];
 
 /*
- * Check-in generation targeting Ignite distribution:
- *   Active  (7): u2, u3, u5, u6, u9, u10, u11  → recent check-ins + recent units
- *   At Risk (3): u4 (units, no check-in), u8 (check-in, no units), u12 (check-in, units outside window)
- *   Inactive(2): u7, u13 → no recent check-ins, no recent units
+ * Check-in generation — realistic spread:
+ *   ★ Top:     u9 (4 check-ins), u6 (4 check-ins) — very recent, multiple weeks
+ *   ● Solid:   u2 (3), u5 (3), u11 (3), u3 (2) — recent
+ *   ◐ Mid:     u10 (2), u8 (1 recent), u12 (1 recent)
+ *   ▽ At Risk: u4 (1 old, within window), u7 (1 old, edge of window)
+ *   ✕ Inactive: u13 (1 very old, outside window)
  */
 function generateCheckIns(): CheckIn[] {
   const ins: CheckIn[] = [];
@@ -106,71 +128,126 @@ function generateCheckIns(): CheckIn[] {
   const now = new Date('2026-02-17T12:00:00Z').getTime();
   const daysAgo = (d: number) => new Date(now - d * 86400000).toISOString();
 
-  // Users with recent check-ins (within 14 days)
-  const recentEntries: { userId: string; days: number[] }[] = [
-    // Active users — spread across last 14 days, 3+ within last 3 days
-    { userId: 'u2', days: [1, 8] },
-    { userId: 'u3', days: [2, 7] },
-    { userId: 'u5', days: [1, 10] },
-    { userId: 'u6', days: [3, 9] },
-    { userId: 'u9', days: [2, 6] },
-    { userId: 'u10', days: [3, 11] },
-    { userId: 'u11', days: [1, 5] },
-    // At Risk — has check-ins but no units
-    { userId: 'u8', days: [4, 12] },
-    // At Risk — has check-in within window, units outside window
-    { userId: 'u12', days: [6] },
+  const entries: { userId: string; weeks: { day: number; actions: string[]; note: string }[] }[] = [
+    // ★ Top performers — frequent, varied actions
+    { userId: 'u9', weeks: [
+      { day: 1, actions: ['a1', 'a2', 'a3', 'a4'], note: 'Full sweep this week. Delegation decision went really well.' },
+      { day: 5, actions: ['a1', 'a3'], note: 'Had a great feedback convo with Sophie.' },
+      { day: 8, actions: ['a1', 'a2', 'a4'], note: 'Shared our sprint results in the all-hands.' },
+      { day: 12, actions: ['a1', 'a2'], note: '' },
+    ]},
+    { userId: 'u6', weeks: [
+      { day: 1, actions: ['a1', 'a2', 'a3'], note: 'Delegated the client report to Hugo — will follow up.' },
+      { day: 4, actions: ['a1', 'a4'], note: 'Recognized Léa\'s work in standup.' },
+      { day: 7, actions: ['a1', 'a2', 'a3'], note: '' },
+      { day: 11, actions: ['a2', 'a4'], note: 'Stand-ups are becoming second nature.' },
+    ]},
+
+    // ● Solid — consistent but not perfect
+    { userId: 'u2', weeks: [
+      { day: 1, actions: ['a1', 'a3'], note: 'Gave feedback to Antoine about project priorities.' },
+      { day: 6, actions: ['a1', 'a2'], note: '' },
+      { day: 10, actions: ['a2', 'a4'], note: 'Team stand-ups improving.' },
+    ]},
+    { userId: 'u5', weeks: [
+      { day: 2, actions: ['a1', 'a2', 'a3'], note: 'Strong week — all three core actions.' },
+      { day: 7, actions: ['a1', 'a4'], note: '' },
+      { day: 11, actions: ['a2', 'a3'], note: 'Delegation is getting smoother.' },
+    ]},
+    { userId: 'u11', weeks: [
+      { day: 2, actions: ['a1', 'a2'], note: 'First real feedback conversation — felt good.' },
+      { day: 6, actions: ['a1'], note: '' },
+      { day: 10, actions: ['a2', 'a4'], note: 'Shared team progress during retro.' },
+    ]},
+    { userId: 'u3', weeks: [
+      { day: 3, actions: ['a1', 'a2'], note: 'Stand-up format is working well for us.' },
+      { day: 8, actions: ['a1', 'a4'], note: '' },
+    ]},
+
+    // ◐ Mid — some activity
+    { userId: 'u10', weeks: [
+      { day: 3, actions: ['a2'], note: 'Tried the stand-up format — shorter than expected.' },
+      { day: 9, actions: ['a1', 'a2'], note: '' },
+    ]},
+    { userId: 'u8', weeks: [
+      { day: 4, actions: ['a1', 'a2'], note: 'Gave feedback but felt awkward. Will try again.' },
+    ]},
+    { userId: 'u12', weeks: [
+      { day: 5, actions: ['a2'], note: '' },
+    ]},
+
+    // ▽ At Risk — old or edge-of-window
+    { userId: 'u4', weeks: [
+      { day: 12, actions: ['a1'], note: 'Quick feedback attempt.' },
+    ]},
+    { userId: 'u7', weeks: [
+      { day: 13, actions: ['a2'], note: '' },
+    ]},
+
+    // ✕ Inactive — outside window
+    { userId: 'u13', weeks: [
+      { day: 22, actions: ['a1'], note: '' },
+    ]},
   ];
 
-  for (const { userId, days } of recentEntries) {
-    for (let i = 0; i < days.length; i++) {
+  for (const { userId, weeks } of entries) {
+    for (let i = 0; i < weeks.length; i++) {
+      const w = weeks[i];
       ins.push({
         id: `ci-${counter++}`,
         userId,
         challengeId: 'ch-1',
         weekNumber: i + 1,
-        completedActionIds: ['a1', 'a2'],
-        note: '',
-        createdAt: daysAgo(days[i]),
+        completedActionIds: w.actions,
+        note: w.note,
+        createdAt: daysAgo(w.day),
       });
     }
-  }
-
-  // Old check-ins outside 14-day window for inactive & at-risk-no-checkin users
-  for (const { userId, daysBack } of [
-    { userId: 'u7', daysBack: 20 },
-    { userId: 'u13', daysBack: 25 },
-    { userId: 'u4', daysBack: 18 },
-  ]) {
-    ins.push({
-      id: `ci-${counter++}`,
-      userId,
-      challengeId: 'ch-1',
-      weekNumber: 1,
-      completedActionIds: ['a1'],
-      note: '',
-      createdAt: daysAgo(daysBack),
-    });
   }
 
   return ins;
 }
 
+/*
+ * Barometer responses — varied per user profile:
+ *   ★ Top:     start high, climb higher
+ *   ● Solid:   start mid, grow steadily
+ *   ◐ Mid:     start lower, some growth, some flat
+ *   ▽ At Risk: start low, slight movement
+ *   ✕ Inactive: only week 1 baseline
+ */
 function generateBarometerResponses(): BarometerResponse[] {
   const responses: BarometerResponse[] = [];
   let counter = 1;
 
-  for (const user of users.filter(u => u.role !== 'admin' && u.role !== 'sponsor')) {
-    for (let week = 1; week <= 3; week++) {
+  const profiles: Record<string, { weeks: number; base: [number, number, number]; growth: [number, number, number] }> = {
+    // [confidence, engagement, clarity] base + per-week growth
+    u2:  { weeks: 3, base: [3.2, 3.5, 3.0], growth: [0.4, 0.3, 0.5] },
+    u5:  { weeks: 3, base: [3.5, 3.8, 3.3], growth: [0.3, 0.2, 0.4] },
+    u9:  { weeks: 3, base: [3.8, 4.0, 3.5], growth: [0.3, 0.2, 0.4] },  // ★ starts high
+    u6:  { weeks: 3, base: [3.6, 3.9, 3.4], growth: [0.4, 0.3, 0.3] },  // ★
+    u3:  { weeks: 3, base: [2.8, 3.2, 2.9], growth: [0.5, 0.4, 0.6] },  // ● good growth
+    u11: { weeks: 3, base: [3.0, 3.3, 2.8], growth: [0.4, 0.3, 0.5] },
+    u10: { weeks: 3, base: [2.5, 2.8, 2.4], growth: [0.3, 0.2, 0.3] },  // ◐ slow growth
+    u8:  { weeks: 2, base: [2.3, 2.6, 2.2], growth: [0.2, 0.3, 0.2] },  // ◐ only 2 weeks
+    u12: { weeks: 2, base: [2.4, 2.5, 2.3], growth: [0.2, 0.1, 0.2] },
+    u4:  { weeks: 2, base: [2.0, 2.3, 2.0], growth: [0.1, 0.2, 0.1] },  // ▽ minimal growth
+    u7:  { weeks: 2, base: [2.1, 2.0, 1.9], growth: [0.1, 0.1, 0.2] },  // ▽
+    u13: { weeks: 1, base: [1.8, 2.0, 1.7], growth: [0, 0, 0] },        // ✕ baseline only
+  };
+
+  for (const [userId, p] of Object.entries(profiles)) {
+    for (let week = 1; week <= p.weeks; week++) {
+      const jitter = () => (Math.random() - 0.5) * 0.3;
       responses.push({
         id: `br-${counter++}`,
-        userId: user.id,
+        userId,
         challengeId: 'ch-1',
         weekNumber: week,
         scores: {
-          confidence: Math.min(5, 2 + week * 0.5 + Math.random()),
-          engagement: Math.min(5, 2.5 + week * 0.4 + Math.random()),
-          clarity: Math.min(5, 2 + week * 0.6 + Math.random()),
+          confidence: Math.min(5, Math.max(1, p.base[0] + (week - 1) * p.growth[0] + jitter())),
+          engagement: Math.min(5, Math.max(1, p.base[1] + (week - 1) * p.growth[1] + jitter())),
+          clarity: Math.min(5, Math.max(1, p.base[2] + (week - 1) * p.growth[2] + jitter())),
         },
       });
     }
@@ -179,68 +256,137 @@ function generateBarometerResponses(): BarometerResponse[] {
 }
 
 /*
- * Per-user seeded unit progress for the Team Ignite Heatmap.
- * Varies per pack to create realistic column differentiation.
+ * Per-user seeded unit progress — creates heatmap variety.
  *
- * Distribution target (user-level dominant status):
- *   Active  (7): u2, u3, u5, u6, u9, u10, u11
- *   At Risk (3): u4 (units only), u8 (check-ins only), u12 (units outside window)
- *   Inactive(2): u7, u13
- *
- * Pack-level variation (Active users don't all have every pack):
- *   u2:  packs 1-5  (all Active)
- *   u3:  packs 1,2,3,4  (pack 5 At Risk — missing unit)
- *   u5:  packs 1-5  (all Active)
- *   u6:  packs 1,2,3,5  (pack 4 At Risk — missing unit)
- *   u9:  packs 1,3,4,5  (pack 2 At Risk — missing unit)
- *   u10: packs 1,2,4     (packs 3,5 At Risk — missing unit)
- *   u11: packs 1-5  (all Active)
- *   u4:  packs 1,2,3     (packs 4,5 Inactive — no units, no check-in)
- *   u12: packs 1,2 old   (outside window → At Risk with check-in, Inactive without)
+ * Distribution per pack (Trust, Disagreement, Decision, Accountability, Results):
+ *   ★ u9:  5/5 Active — recent units in all packs
+ *   ★ u6:  5/5 Active — recent units in all packs
+ *   ● u2:  4/5 Active, 1 At Risk (pack 5 no unit)
+ *   ● u5:  5/5 Active
+ *   ● u11: 4/5 Active, 1 At Risk (pack 3 no unit)
+ *   ● u3:  3/5 Active, 2 At Risk (packs 4,5 no unit)
+ *   ◐ u10: 3/5 Active, 1 At Risk, 1 Inactive (packs 4 old, 5 none)
+ *   ◐ u8:  2/5 At Risk (units but no recent check-in for other packs), 3 Inactive
+ *   ◐ u12: 2/5 Active, 1 At Risk, 2 Inactive
+ *   ▽ u4:  1/5 At Risk (has unit, no check-in), 4 Inactive
+ *   ▽ u7:  1/5 At Risk, 4 Inactive
+ *   ✕ u13: 0/5 all Inactive
  */
 export function getSeededUnitProgressForUser(userId: string): Record<string, UnitProgress> {
   const now = new Date('2026-02-17T12:00:00Z').getTime();
   const daysAgo = (d: number) => new Date(now - d * 86400000).toISOString();
 
-  const packUnit = (packIdx: number, day: number): [string, UnitProgress] => [
-    `tp${packIdx}-u1`,
+  const completed = (packIdx: number, unitIdx: number, day: number): [string, UnitProgress] => [
+    `tp${packIdx}-u${unitIdx}`,
     { status: 'completed' as const, completedAt: daysAgo(day) },
   ];
 
   const userPackMap: Record<string, [string, UnitProgress][]> = {
-    // Active across all 5 packs
-    u2:  [packUnit(1, 1), packUnit(2, 3), packUnit(3, 2), packUnit(4, 4), packUnit(5, 5)],
-    u5:  [packUnit(1, 2), packUnit(2, 5), packUnit(3, 3), packUnit(4, 6), packUnit(5, 4)],
-    u11: [packUnit(1, 1), packUnit(2, 4), packUnit(3, 6), packUnit(4, 3), packUnit(5, 2)],
-    // Active in 4 packs, At Risk in 1 (missing unit for that pack)
-    u3:  [packUnit(1, 3), packUnit(2, 5), packUnit(3, 7), packUnit(4, 4)],              // missing pack 5
-    u6:  [packUnit(1, 2), packUnit(2, 6), packUnit(3, 8), packUnit(5, 3)],              // missing pack 4
-    u9:  [packUnit(1, 4), packUnit(3, 5), packUnit(4, 7), packUnit(5, 6)],              // missing pack 2
-    // Active in 3 packs, At Risk in 2
-    u10: [packUnit(1, 5), packUnit(2, 9), packUnit(4, 11)],                              // missing packs 3,5
-    // At Risk — u4: units within window but no check-ins → At Risk for packs with units, Inactive for rest
-    u4:  [packUnit(1, 5), packUnit(2, 7), packUnit(3, 6)],                               // packs 4,5 no unit
-    // At Risk — u12: units OUTSIDE 14-day window
-    u12: [['tp1-u1', { status: 'completed', completedAt: daysAgo(16) }],
-          ['tp2-u1', { status: 'completed', completedAt: daysAgo(18) }]],
+    // ★ Top — all 5 packs active, multiple units per pack
+    u9: [
+      completed(1, 1, 1), completed(1, 2, 3), completed(1, 3, 6),
+      completed(2, 1, 2), completed(2, 2, 5),
+      completed(3, 1, 3), completed(3, 2, 7),
+      completed(4, 1, 4), completed(4, 2, 8),
+      completed(5, 1, 2), completed(5, 2, 6),
+    ],
+    u6: [
+      completed(1, 1, 1), completed(1, 2, 4),
+      completed(2, 1, 2), completed(2, 2, 6), completed(2, 3, 9),
+      completed(3, 1, 3), completed(3, 2, 8),
+      completed(4, 1, 5), completed(4, 2, 10),
+      completed(5, 1, 4), completed(5, 2, 7),
+    ],
+
+    // ● Solid — 4-5 packs active
+    u2: [
+      completed(1, 1, 2), completed(1, 2, 5),
+      completed(2, 1, 3), completed(2, 2, 8),
+      completed(3, 1, 4), completed(3, 2, 9),
+      completed(4, 1, 6),
+      // pack 5: no unit → At Risk
+    ],
+    u5: [
+      completed(1, 1, 1), completed(1, 2, 4),
+      completed(2, 1, 3), completed(2, 2, 7),
+      completed(3, 1, 2), completed(3, 2, 6),
+      completed(4, 1, 5),
+      completed(5, 1, 3),
+    ],
+    u11: [
+      completed(1, 1, 2), completed(1, 2, 6),
+      completed(2, 1, 4),
+      // pack 3: no unit → At Risk
+      completed(4, 1, 5), completed(4, 2, 10),
+      completed(5, 1, 3),
+    ],
+    u3: [
+      completed(1, 1, 3), completed(1, 2, 7),
+      completed(2, 1, 5), completed(2, 2, 10),
+      completed(3, 1, 4),
+      // packs 4,5: no unit → At Risk
+    ],
+
+    // ◐ Mid — 2-3 packs with units
+    u10: [
+      completed(1, 1, 4),
+      completed(2, 1, 6),
+      completed(3, 1, 8),
+      // pack 4: old unit outside window
+      ['tp4-u1', { status: 'completed', completedAt: daysAgo(16) }],
+      // pack 5: nothing
+    ],
+    u8: [
+      completed(1, 1, 5),
+      completed(2, 1, 9),
+      // packs 3,4,5: nothing
+    ],
+    u12: [
+      completed(1, 1, 4),
+      completed(2, 1, 7),
+      // pack 3: old outside window
+      ['tp3-u1', { status: 'completed', completedAt: daysAgo(18) }],
+      // packs 4,5: nothing
+    ],
+
+    // ▽ At Risk — minimal units, no/old check-ins
+    u4: [
+      completed(1, 1, 8),
+      // packs 2-5: nothing
+    ],
+    u7: [
+      // pack 1: old unit
+      ['tp1-u1', { status: 'completed', completedAt: daysAgo(15) }],
+      // packs 2-5: nothing
+    ],
+
+    // ✕ u13: empty → all Inactive
   };
 
   const entries = userPackMap[userId];
-  if (!entries) return {}; // u7, u8, u13 → empty
+  if (!entries) return {};
   return Object.fromEntries(entries);
 }
 
 /*
- * Initial unit progress for the current logged-in user (seeded for /app/ignite).
+ * Current user (collaborator) unit progress — mid-to-good performer.
+ * Shows: 3 packs strong, 1 in progress, 1 not started.
  */
 export function getSeededCurrentUserUnitProgress(): Record<string, UnitProgress> {
   const daysAgo = (d: number) => new Date(Date.now() - d * 86400000).toISOString();
   return {
-    'tp1-u1': { status: 'completed', completedAt: daysAgo(2) },
-    'tp2-u1': { status: 'completed', completedAt: daysAgo(3) },
-    'tp3-u1': { status: 'completed', completedAt: daysAgo(4) },
-    'tp4-u1': { status: 'completed', completedAt: daysAgo(5) },
-    'tp5-u1': { status: 'completed', completedAt: daysAgo(6) },
+    // Pack 1: Trust — 3 units done (strong)
+    'tp1-u1': { status: 'completed', completedAt: daysAgo(10) },
+    'tp1-u2': { status: 'completed', completedAt: daysAgo(7) },
+    'tp1-u3': { status: 'completed', completedAt: daysAgo(3) },
+    // Pack 2: Disagreement — 2 units done
+    'tp2-u1': { status: 'completed', completedAt: daysAgo(8) },
+    'tp2-u2': { status: 'completed', completedAt: daysAgo(4) },
+    // Pack 3: Decision — 1 unit done (in progress)
+    'tp3-u1': { status: 'completed', completedAt: daysAgo(5) },
+    // Pack 4: Accountability — 1 unit done
+    'tp4-u1': { status: 'completed', completedAt: daysAgo(2) },
+    // Pack 5: Results OS — not started yet
   };
 }
 
