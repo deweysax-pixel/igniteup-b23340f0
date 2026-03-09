@@ -125,7 +125,7 @@ const serviceRequests: ServiceRequest[] = [
 function generateCheckIns(): CheckIn[] {
   const ins: CheckIn[] = [];
   let counter = 1;
-  const now = new Date('2026-02-17T12:00:00Z').getTime();
+  const now = Date.now();
   const daysAgo = (d: number) => new Date(now - d * 86400000).toISOString();
 
   const entries: { userId: string; weeks: { day: number; actions: string[]; note: string }[] }[] = [
@@ -273,7 +273,7 @@ function generateBarometerResponses(): BarometerResponse[] {
  *   ✕ u13: 0/5 all Inactive
  */
 export function getSeededUnitProgressForUser(userId: string): Record<string, UnitProgress> {
-  const now = new Date('2026-02-17T12:00:00Z').getTime();
+  const now = Date.now();
   const daysAgo = (d: number) => new Date(now - d * 86400000).toISOString();
 
   const completed = (packIdx: number, unitIdx: number, day: number): [string, UnitProgress] => [
