@@ -5,11 +5,12 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { useJourney } from '@/contexts/JourneyContext';
-import { useIgniteStatus, usePackStatuses, STATUS_CONFIG } from '@/pages/Ignite';
+import { useIgniteStatus, usePackStatuses, STATUS_CONFIG, IGNITE_PACKS, computePackStatusForUser } from '@/pages/Ignite';
 import type { IgniteStatus } from '@/pages/Ignite';
-import { Flame, ClipboardCheck, BookOpen, Compass, Sparkles, ArrowRight, ShieldCheck, AlertTriangle, Package, Trophy, TrendingUp, Zap } from 'lucide-react';
+import { Flame, ClipboardCheck, BookOpen, Compass, Sparkles, ArrowRight, ShieldCheck, AlertTriangle, Package, Trophy, TrendingUp, Zap, Users, BarChart3, Eye } from 'lucide-react';
 import { getWeekRange } from '@/lib/week-utils';
 import { GlossaryTip } from '@/components/GlossaryTip';
+import { getSeededUnitProgressForUser } from '@/data/demo-seed';
 
 type RuleId = 'no_journey' | 'ignite_renewal' | 'low_signal' | 'momentum';
 
@@ -114,6 +115,148 @@ const IGNITE_CHIP_COLOR: Record<IgniteStatus, string> = {
 };
 
 export default function TodayPage() {
+  const { state } = useDemo();
+
+  if (state.currentRole === 'sponsor') {
+    return <SponsorTodayPage />;
+  }
+
+  return <OperationalTodayPage />;
+}
+
+/* ── Sponsor Today — executive macro view ── */
+function SponsorTodayPage() {
+  const navigate = useNavigate();
+  const { state } = useDemo();
+  const weekLabel = getWeekRange().label;
+  const activeUsers = state.users.filter(u => u.role !== 'admin' && u.role !== 'sponsor');
+
+  const stats = useMemo(() => {
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    const activeIds = new Set<string>();
+
+    state.checkIns.forEach(ci => {
+      if (activeUsers.some(u => u.id === ci.userId) && new Date(ci.createdAt).getTime() >= sevenDaysAgo) {
+        activeIds.add(ci.userId);
+      }
+    });
+    activeUsers.forEach(user => {
+      const prog = getSeededUnitProgressForUser(user.id);
+      if (Object.values(prog).some(p => p.completedAt && new Date(p.completedAt).getTime() >= sevenDaysAgo)) {
+        activeIds.add(user.id);
+      }
+    });
+
+    const participation = activeUsers.length > 0 ? Math.round((activeIds.size / activeUsers.length) * 100) : 0;
+    const totalStreaks = activeUsers.filter(u => u.streak > 0).length;
+    const avgXP = activeUsers.length > 0 ? Math.round(activeUsers.reduce((s, u) => s + u.xp, 0) / activeUsers.length) : 0;
+
+    // Team health
+    const teamHealth = state.teams.map(team => {
+      const members = activeUsers.filter(u => u.teamId === team.id);
+      const teamActive = members.filter(u => activeIds.has(u.id)).length;
+      const rate = members.length > 0 ? Math.round((teamActive / members.length) * 100) : 0;
+      return { name: team.name, rate, active: teamActive, total: members.length };
+    });
+
+    // Recent wins
+    const recentCheckIns = state.checkIns.filter(ci => new Date(ci.createdAt).getTime() >= sevenDaysAgo);
+    const totalUnitsCompleted = activeUsers.reduce((sum, u) => {
+      const prog = getSeededUnitProgressForUser(u.id);
+      return sum + Object.values(prog).filter(p => p.status === 'completed').length;
+    }, 0);
+
+    return { participation, activeCount: activeIds.size, totalStreaks, avgXP, teamHealth, recentCheckIns: recentCheckIns.length, totalUnitsCompleted };
+  }, [state, activeUsers]);
+
+  return (
+    <div className="space-y-5 animate-fade-in max-w-2xl">
+      <div>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold tracking-tight">Program Overview</h2>
+          <span className="text-xs text-muted-foreground">{weekLabel}</span>
+        </div>
+        <p className="text-sm text-muted-foreground mt-1">Organization momentum at a glance — {state.organization.name}</p>
+      </div>
+
+      {/* Macro KPIs */}
+      <div className="grid grid-cols-3 gap-3">
+        <Card className="border-primary/20">
+          <CardContent className="pt-4 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Participation (7d)</p>
+            <p className="text-2xl font-bold mt-1">{stats.participation}%</p>
+            <p className="text-xs text-muted-foreground">{stats.activeCount} of {activeUsers.length} active</p>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/20">
+          <CardContent className="pt-4 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Active Streaks</p>
+            <p className="text-2xl font-bold mt-1">{stats.totalStreaks}</p>
+            <p className="text-xs text-muted-foreground">of {activeUsers.length} learners</p>
+          </CardContent>
+        </Card>
+        <Card className="border-primary/20">
+          <CardContent className="pt-4 pb-3 text-center">
+            <p className="text-xs text-muted-foreground">Avg XP</p>
+            <p className="text-2xl font-bold mt-1">{stats.avgXP}</p>
+            <p className="text-xs text-muted-foreground">{stats.totalUnitsCompleted} units done</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent wins */}
+      <div className="space-y-2">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Program momentum</p>
+        <div className="flex items-center gap-2.5 rounded-lg border border-border/40 bg-secondary/20 px-3 py-2">
+          <TrendingUp className="h-4 w-4 shrink-0 text-emerald-400" />
+          <span className="text-sm text-foreground/90">{stats.recentCheckIns} check-ins submitted in the last 7 days across the organization.</span>
+        </div>
+        <div className="flex items-center gap-2.5 rounded-lg border border-border/40 bg-secondary/20 px-3 py-2">
+          <Zap className="h-4 w-4 shrink-0 text-amber-400" />
+          <span className="text-sm text-foreground/90">{stats.totalStreaks} learners are maintaining active learning streaks.</span>
+        </div>
+        {stats.participation >= 60 && (
+          <div className="flex items-center gap-2.5 rounded-lg border border-border/40 bg-secondary/20 px-3 py-2">
+            <Trophy className="h-4 w-4 shrink-0 text-primary" />
+            <span className="text-sm text-foreground/90">Participation rate above 60% — the program is gaining traction.</span>
+          </div>
+        )}
+      </div>
+
+      {/* Teams to watch */}
+      <div className="space-y-2">
+        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Team health</p>
+        {stats.teamHealth.map(t => (
+          <div key={t.name} className="flex items-center justify-between rounded-lg border border-border/40 bg-secondary/20 px-3 py-2">
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">{t.name}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className={`text-sm font-semibold ${t.rate >= 70 ? 'text-emerald-400' : t.rate >= 40 ? 'text-amber-400' : 'text-red-400'}`}>
+                {t.rate}%
+              </span>
+              <span className="text-xs text-muted-foreground">{t.active}/{t.total} active</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Actions */}
+      <div className="flex gap-2">
+        <Button size="sm" className="gap-1.5" onClick={() => navigate('/app/reports')}>
+          <BarChart3 className="h-3.5 w-3.5" /> View Reports <ArrowRight className="h-3.5 w-3.5" />
+        </Button>
+        <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate('/app/barometer')}>
+          <Eye className="h-3.5 w-3.5" /> ROI Barometer
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Operational Today — Manager / Collaborator ── */
+function OperationalTodayPage() {
   const navigate = useNavigate();
   const { state } = useDemo();
   const decision = useTodayDecision();
@@ -196,7 +339,7 @@ export default function TodayPage() {
         />
       </div>
 
-      {/* Micro-success moments — visible for collaborators and managers with momentum */}
+      {/* Micro-success moments */}
       <MicroSuccessMoments />
     </div>
   );

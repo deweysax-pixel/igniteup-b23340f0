@@ -308,37 +308,37 @@ function AuthenticatedReports() {
 
 /* ── Demo Executive Summary (unchanged) ── */
 function DemoExecutiveSummary({ users, checkIns }: { users: { id: string }[]; checkIns: { userId: string; createdAt: string }[] }) {
-  const thisWeek = getWeekRange();
-  const lastWeek = getLastWeekRange();
+  const sevenDaysAgo = Date.now() - 7 * 86400000;
+  const fourteenDaysAgo = Date.now() - 14 * 86400000;
 
-  const computeActiveCount = () => {
-    return users.filter(user => {
-      const unitProg = getSeededUnitProgressForUser(user.id);
-      const packStatuses = IGNITE_PACKS.map(pack =>
-        computePackStatusForUser(pack, unitProg, checkIns, user.id)
-      );
-      return packStatuses.every(ps => ps.status === 'active');
-    }).length;
-  };
+  // Active = has check-in OR unit completion in last 7 days
+  const activeIds = new Set<string>();
+  const prevActiveIds = new Set<string>();
 
-  const activeCount = computeActiveCount();
-  const activeRate = users.length > 0 ? Math.round((activeCount / users.length) * 100) : 0;
-  const dueCount = users.length - activeCount;
-
-  const checkInsThisWeek = checkIns.filter(ci => {
-    const d = new Date(ci.createdAt).getTime();
-    return d >= thisWeek.start.getTime() && d <= thisWeek.end.getTime();
-  });
-  const checkInsLastWeek = checkIns.filter(ci => {
-    const d = new Date(ci.createdAt).getTime();
-    return d >= lastWeek.start.getTime() && d <= lastWeek.end.getTime();
+  checkIns.forEach(ci => {
+    const t = new Date(ci.createdAt).getTime();
+    const uid = ci.userId;
+    if (users.some(u => u.id === uid)) {
+      if (t >= sevenDaysAgo) activeIds.add(uid);
+      if (t >= fourteenDaysAgo && t < sevenDaysAgo) prevActiveIds.add(uid);
+    }
   });
 
-  const ciThisWeekUsers = new Set(checkInsThisWeek.map(ci => ci.userId));
-  const ciLastWeekUsers = new Set(checkInsLastWeek.map(ci => ci.userId));
+  users.forEach(user => {
+    const userUnitProg = getSeededUnitProgressForUser(user.id);
+    Object.values(userUnitProg).forEach(p => {
+      if (p.completedAt) {
+        const t = new Date(p.completedAt).getTime();
+        if (t >= sevenDaysAgo) activeIds.add(user.id);
+        if (t >= fourteenDaysAgo && t < sevenDaysAgo) prevActiveIds.add(user.id);
+      }
+    });
+  });
 
-  const lastWeekActiveRate = users.length > 0 ? Math.round((ciLastWeekUsers.size / users.length) * 100) : null;
-  const lastWeekDue = ciLastWeekUsers.size > 0 ? users.length - ciLastWeekUsers.size : null;
+  const activeRate = users.length > 0 ? Math.round((activeIds.size / users.length) * 100) : 0;
+  const prevActiveRate = users.length > 0 ? Math.round((prevActiveIds.size / users.length) * 100) : null;
+  const dueCount = users.length - activeIds.size;
+  const prevDueCount = prevActiveIds.size > 0 ? users.length - prevActiveIds.size : null;
 
   return (
     <div className="space-y-2">
@@ -346,10 +346,10 @@ function DemoExecutiveSummary({ users, checkIns }: { users: { id: string }[]; ch
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-primary/20">
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground">Active rate</p>
+            <p className="text-xs text-muted-foreground">Active rate (7d)</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold">{activeRate}%</span>
-              <DeltaBadge current={activeRate} previous={lastWeekActiveRate} suffix="%" />
+              <DeltaBadge current={activeRate} previous={prevActiveRate} suffix="%" />
             </div>
           </CardContent>
         </Card>
@@ -358,21 +358,21 @@ function DemoExecutiveSummary({ users, checkIns }: { users: { id: string }[]; ch
             <p className="text-xs text-muted-foreground">Due</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold">{dueCount}</span>
-              <DeltaBadge current={dueCount} previous={lastWeekDue} />
+              <DeltaBadge current={dueCount} previous={prevDueCount} />
             </div>
           </CardContent>
         </Card>
         <Card className="border-primary/20">
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground">Check-ins (7 days)</p>
+            <p className="text-xs text-muted-foreground">Active users (7d)</p>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold">{ciThisWeekUsers.size}/{users.length}</span>
-              <DeltaBadge current={ciThisWeekUsers.size} previous={ciLastWeekUsers.size > 0 ? ciLastWeekUsers.size : null} />
+              <span className="text-2xl font-bold">{activeIds.size}/{users.length}</span>
+              <DeltaBadge current={activeIds.size} previous={prevActiveIds.size > 0 ? prevActiveIds.size : null} />
             </div>
           </CardContent>
         </Card>
       </div>
-      <p className="text-xs text-muted-foreground">Deltas compare this week vs last week.</p>
+      <p className="text-xs text-muted-foreground">Deltas compare last 7 days vs previous 7 days.</p>
     </div>
   );
 }
@@ -406,26 +406,56 @@ function DemoReports() {
     });
   }, [state.checkIns, filteredUserIds, dateRange]);
 
-  const journeyModuleIds = useMemo(() => [...new Set(journey.steps.map(s => s.moduleId))], [journey.steps]);
-  const modulesCompleted = useMemo(() => journeyModuleIds.filter(id => moduleProgress[id]?.status === 'completed').length, [journeyModuleIds, moduleProgress]);
-  const totalModules = journeyModuleIds.length;
+  /* ── Per-user unit progress aggregation ── */
+  const perUserProgress = useMemo(() => {
+    const teamPerformanceModules = modules.filter(m => m.id.startsWith('tp-'));
+    const allTPUnitIds = teamPerformanceModules.flatMap(m => (m.units || []).map(u => u.unitId));
+    const totalUnitsAll = allTPUnitIds.length;
+    const totalModulesAll = teamPerformanceModules.length;
 
-  const allUnitIds = useMemo(() => modules.flatMap(m => (m.units || []).map(u => u.unitId)), [modules]);
-  const unitsCompleted = useMemo(() => allUnitIds.filter(id => unitProgress[id]?.status === 'completed').length, [allUnitIds, unitProgress]);
-  const totalUnits = allUnitIds.length;
+    return filteredUsers.map(user => {
+      const userUnitProg = getSeededUnitProgressForUser(user.id);
+      const completedUnitIds = allTPUnitIds.filter(uid => userUnitProg[uid]?.status === 'completed');
+      const unitsCount = completedUnitIds.length;
+
+      // A module is "completed" if all its units are done
+      const modulesCount = teamPerformanceModules.filter(mod => {
+        const modUnits = mod.units || [];
+        if (modUnits.length === 0) return false;
+        return modUnits.every(u => userUnitProg[u.unitId]?.status === 'completed');
+      }).length;
+
+      return { userId: user.id, unitsCompleted: unitsCount, modulesCompleted: modulesCount, totalUnits: totalUnitsAll, totalModules: totalModulesAll };
+    });
+  }, [filteredUsers, modules]);
+
+  const totalUnits = perUserProgress.length > 0 ? perUserProgress[0].totalUnits : 0;
+  const totalModules = perUserProgress.length > 0 ? perUserProgress[0].totalModules : 0;
+  const avgUnitsCompleted = perUserProgress.length > 0 ? Math.round(perUserProgress.reduce((s, p) => s + p.unitsCompleted, 0) / perUserProgress.length) : 0;
+  const avgModulesCompleted = perUserProgress.length > 0 ? Math.round(perUserProgress.reduce((s, p) => s + p.modulesCompleted, 0) / perUserProgress.length * 10) / 10 : 0;
 
   const checkInsCompleted = filteredCheckIns.length;
   const activeStreaks = useMemo(() => filteredUsers.filter(u => u.streak > 0).length, [filteredUsers]);
 
   const activeUsersCount = useMemo(() => {
-    const sevenDaysAgo = new Date(Date.now() - 7 * 86400000);
-    const ids = new Set(
-      state.checkIns
-        .filter(ci => filteredUserIds.has(ci.userId) && new Date(ci.createdAt) >= sevenDaysAgo)
-        .map(ci => ci.userId)
-    );
-    return ids.size;
-  }, [state.checkIns, filteredUserIds]);
+    const sevenDaysAgo = Date.now() - 7 * 86400000;
+    // Check both check-ins and unit completions within 7 days
+    const activeIds = new Set<string>();
+    state.checkIns.forEach(ci => {
+      if (filteredUserIds.has(ci.userId) && new Date(ci.createdAt).getTime() >= sevenDaysAgo) {
+        activeIds.add(ci.userId);
+      }
+    });
+    // Also count users with recent unit completions
+    filteredUsers.forEach(user => {
+      const userUnitProg = getSeededUnitProgressForUser(user.id);
+      const hasRecentUnit = Object.values(userUnitProg).some(
+        p => p.status === 'completed' && p.completedAt && new Date(p.completedAt).getTime() >= sevenDaysAgo
+      );
+      if (hasRecentUnit) activeIds.add(user.id);
+    });
+    return activeIds.size;
+  }, [state.checkIns, filteredUserIds, filteredUsers]);
 
   const filteredBarometer = useMemo(() => state.barometerResponses.filter(br => filteredUserIds.has(br.userId)), [state.barometerResponses, filteredUserIds]);
 
@@ -466,26 +496,54 @@ function DemoReports() {
   const learnerData = useMemo(() => {
     return filteredUsers.map(user => {
       const userCheckIns = state.checkIns.filter(ci => ci.userId === user.id);
-      const lastActivity = userCheckIns.length > 0
-        ? new Date(Math.max(...userCheckIns.map(ci => new Date(ci.createdAt).getTime()))).toLocaleDateString()
-        : 'N/A';
-      return { name: user.name, role: user.role, modulesCompleted, unitsCompleted, lastActivity, level: user.level };
-    });
-  }, [filteredUsers, state.checkIns, modulesCompleted, unitsCompleted]);
+      const userUnitProg = getSeededUnitProgressForUser(user.id);
 
+      // Find latest activity: max of check-in dates and unit completion dates
+      const allDates: number[] = [];
+      userCheckIns.forEach(ci => allDates.push(new Date(ci.createdAt).getTime()));
+      Object.values(userUnitProg).forEach(p => {
+        if (p.completedAt) allDates.push(new Date(p.completedAt).getTime());
+      });
+      const lastActivity = allDates.length > 0
+        ? new Date(Math.max(...allDates)).toLocaleDateString()
+        : 'N/A';
+
+      const pp = perUserProgress.find(p => p.userId === user.id);
+      return {
+        name: user.name, role: user.role,
+        modulesCompleted: pp?.modulesCompleted ?? 0,
+        unitsCompleted: pp?.unitsCompleted ?? 0,
+        lastActivity, level: user.level,
+      };
+    });
+  }, [filteredUsers, state.checkIns, perUserProgress]);
+
+  /* Module completion — aggregated across all filtered users */
   const moduleData = useMemo(() => {
-    return journeyModuleIds.map(modId => {
-      const mod = modules.find(m => m.id === modId);
-      if (!mod) return null;
+    const teamPerformanceModules = modules.filter(m => m.id.startsWith('tp-'));
+    return teamPerformanceModules.map(mod => {
       const units = mod.units || [];
-      const isCompleted = moduleProgress[modId]?.status === 'completed';
-      const pctLearners = isCompleted ? 100 : 0;
-      const avgUnitCompletion = units.length > 0
-        ? Math.round((units.filter(u => unitProgress[u.unitId]?.status === 'completed').length / units.length) * 100)
-        : (isCompleted ? 100 : 0);
+      if (units.length === 0) return null;
+
+      // For each user, compute % of this module's units completed
+      const userCompletionRates = filteredUsers.map(user => {
+        const userUnitProg = getSeededUnitProgressForUser(user.id);
+        const done = units.filter(u => userUnitProg[u.unitId]?.status === 'completed').length;
+        return done / units.length;
+      });
+
+      // % learners who completed ALL units of this module
+      const fullyCompleted = userCompletionRates.filter(r => r >= 1).length;
+      const pctLearners = filteredUsers.length > 0 ? Math.round((fullyCompleted / filteredUsers.length) * 100) : 0;
+
+      // Avg unit completion across all users
+      const avgUnitCompletion = userCompletionRates.length > 0
+        ? Math.round((userCompletionRates.reduce((s, r) => s + r, 0) / userCompletionRates.length) * 100)
+        : 0;
+
       return { title: mod.title, pctLearners, avgUnitCompletion };
     }).filter(Boolean) as { title: string; pctLearners: number; avgUnitCompletion: number }[];
-  }, [journeyModuleIds, modules, moduleProgress, unitProgress]);
+  }, [modules, filteredUsers]);
 
   const exportCSV = () => {
     const csv = [
@@ -564,11 +622,11 @@ function DemoReports() {
       {isManager && <DemoExecutiveSummary users={activeUsers} checkIns={state.checkIns} />}
 
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 print:grid-cols-5">
-        <KPICard icon={BookOpen} label="Modules Completed" value={`${modulesCompleted} / ${totalModules}`} />
-        <KPICard icon={ClipboardCheck} label="Units Completed" value={`${unitsCompleted} / ${totalUnits}`} />
+        <KPICard icon={BookOpen} label="Avg Modules Done" value={`${avgModulesCompleted} / ${totalModules}`} />
+        <KPICard icon={ClipboardCheck} label="Avg Units Done" value={`${avgUnitsCompleted} / ${totalUnits}`} />
         <KPICard icon={Activity} label="Check-ins" value={String(checkInsCompleted)} sub={`${activeStreaks} active streaks`} />
         <KPICard icon={Users} label="Active Users (7d)" value={String(activeUsersCount)} sub={`of ${filteredUsers.length} total`} />
-        <KPICard icon={Flame} label="Ignite Status" value="—" sub="Active / At Risk / Inactive" />
+        <KPICard icon={Flame} label="Ignite Status" value={`${activeUsersCount} Active`} sub={`${filteredUsers.length - activeUsersCount} Due`} />
       </div>
 
       <Card>
