@@ -346,10 +346,10 @@ function DemoExecutiveSummary({ users, checkIns }: { users: { id: string }[]; ch
       <div className="grid gap-4 sm:grid-cols-3">
         <Card className="border-primary/20">
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground">Active rate</p>
+            <p className="text-xs text-muted-foreground">Active rate (7d)</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold">{activeRate}%</span>
-              <DeltaBadge current={activeRate} previous={lastWeekActiveRate} suffix="%" />
+              <DeltaBadge current={activeRate} previous={prevActiveRate} suffix="%" />
             </div>
           </CardContent>
         </Card>
@@ -358,21 +358,21 @@ function DemoExecutiveSummary({ users, checkIns }: { users: { id: string }[]; ch
             <p className="text-xs text-muted-foreground">Due</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold">{dueCount}</span>
-              <DeltaBadge current={dueCount} previous={lastWeekDue} />
+              <DeltaBadge current={dueCount} previous={prevDueCount} />
             </div>
           </CardContent>
         </Card>
         <Card className="border-primary/20">
           <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground">Check-ins (7 days)</p>
+            <p className="text-xs text-muted-foreground">Active users (7d)</p>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold">{ciThisWeekUsers.size}/{users.length}</span>
-              <DeltaBadge current={ciThisWeekUsers.size} previous={ciLastWeekUsers.size > 0 ? ciLastWeekUsers.size : null} />
+              <span className="text-2xl font-bold">{activeIds.size}/{users.length}</span>
+              <DeltaBadge current={activeIds.size} previous={prevActiveIds.size > 0 ? prevActiveIds.size : null} />
             </div>
           </CardContent>
         </Card>
       </div>
-      <p className="text-xs text-muted-foreground">Deltas compare this week vs last week.</p>
+      <p className="text-xs text-muted-foreground">Deltas compare last 7 days vs previous 7 days.</p>
     </div>
   );
 }
