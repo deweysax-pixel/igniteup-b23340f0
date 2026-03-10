@@ -203,7 +203,7 @@ export default function PreviewJourney() {
 
           {/* CTA */}
           <div className="text-center space-y-3 pt-2">
-            <Button size="lg" className="gap-2" onClick={handleOpenDemo}>
+            <Button size="lg" className="gap-2" onClick={() => navigate('/rollout-preview')}>
               See your recommended IgniteUp rollout <ArrowRight className="h-4 w-4" />
             </Button>
             <p className="text-xs text-muted-foreground">
