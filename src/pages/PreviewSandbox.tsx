@@ -62,7 +62,7 @@ const challengeUnits: Record<string, { title: string; bullets: string[] }> = {
 export default function PreviewSandbox() {
   const navigate = useNavigate();
   const { fitCheckAnswers } = usePreview();
-  const challenge = fitCheckAnswers.challenge || 'alignment';
+  const challenge = fitCheckAnswers.behavior || 'alignment';
 
   const unit = challengeUnits[challenge] || DEFAULT_UNIT;
 
