@@ -7,38 +7,49 @@ import { ArrowRight, ArrowLeft, Sparkles } from 'lucide-react';
 import { usePreview } from '@/contexts/PreviewContext';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
-const challenges = [
-  { id: 'alignment', label: 'Team alignment & meetings', description: 'Improving how your team collaborates and stays aligned' },
-  { id: 'accountability', label: 'Accountability & follow-through', description: 'Making sure commitments are kept and results delivered' },
-  { id: 'hard-conversations', label: 'Hard conversations & trust', description: 'Navigating difficult feedback and building psychological safety' },
-  { id: 'motivation', label: 'Motivation & recognition', description: 'Keeping people engaged and recognizing contributions' },
-  { id: 'overwhelmed', label: 'Overwhelmed / stepping into a bigger role', description: 'Managing transition, delegation, and growing as a leader' },
+const behaviors = [
+  { id: 'feedback', label: 'Giving clear feedback', description: 'Help leaders deliver honest, actionable feedback consistently' },
+  { id: 'accountability', label: 'Holding people accountable', description: 'Build a culture where commitments are kept and results delivered' },
+  { id: 'alignment', label: 'Aligning the team around priorities', description: 'Ensure everyone moves in the same direction with clarity' },
+  { id: 'conversations', label: 'Having honest conversations', description: 'Navigate difficult topics with confidence and psychological safety' },
+  { id: 'recognition', label: 'Recognizing contributions', description: 'Make recognition a leadership habit that drives engagement' },
 ];
 
-const durations = [
-  { id: '4w', label: '4 weeks', hint: 'Quick sprint' },
-  { id: '8w', label: '8 weeks', hint: '2 months' },
-  { id: '3m', label: '3 months', hint: '~12 weeks' },
-  { id: '6m', label: '6 months', hint: '~24 weeks, full transformation' },
+const ambitions = [
+  { id: 'small', label: 'Small improvements in daily leadership', description: 'Quick wins in everyday interactions' },
+  { id: 'habits', label: 'More consistent leadership habits', description: 'Build repeatable weekly leadership behaviors' },
+  { id: 'shift', label: 'Strong leadership behavior shift', description: 'Visible change in how leaders operate day-to-day' },
+  { id: 'culture', label: 'Real culture change in how leaders operate', description: 'Organization-wide leadership transformation' },
 ];
 
 const audiences = [
-  { id: 'just-me', label: 'Just me', description: 'Personal leadership development' },
-  { id: 'my-team', label: 'My team', description: 'Team-wide rollout' },
+  { id: 'just-me', label: 'Just me', description: 'Personal leadership activation' },
+  { id: 'my-team', label: 'My team', description: 'Activate leadership habits across my team' },
+  { id: 'my-managers', label: 'My managers', description: 'Roll out to the managers I oversee' },
 ];
+
+const teamSizes = [
+  { id: '1', label: 'Just me', hint: 'Individual' },
+  { id: '2-10', label: '2–10 leaders', hint: 'Small cohort' },
+  { id: '10-50', label: '10–50 leaders', hint: 'Department rollout' },
+  { id: '50+', label: '50+ leaders', hint: 'Organization-wide' },
+];
+
+const TOTAL_STEPS = 4;
 
 export default function FitCheck() {
   const navigate = useNavigate();
   const { setFitCheckAnswers } = usePreview();
   const [step, setStep] = useState(1);
-  const [challenge, setChallenge] = useState('');
-  const [duration, setDuration] = useState('');
+  const [behavior, setBehavior] = useState('');
+  const [ambition, setAmbition] = useState('');
   const [audience, setAudience] = useState('');
+  const [teamSize, setTeamSize] = useState('');
 
-  const progress = step === 1 ? 33 : step === 2 ? 66 : 100;
+  const progress = (step / TOTAL_STEPS) * 100;
 
   const handleFinish = () => {
-    setFitCheckAnswers({ challenge, duration, audience });
+    setFitCheckAnswers({ behavior, ambition, audience, teamSize });
     navigate('/preview/journey');
   };
 
@@ -51,8 +62,8 @@ export default function FitCheck() {
       <main className="flex-1 flex items-center justify-center px-6 py-12">
         <div className="w-full max-w-lg space-y-6 animate-fade-in">
           <div className="text-center space-y-1">
-            <h1 className="text-2xl font-bold tracking-tight">90-Second Fit Check</h1>
-            <p className="text-sm text-muted-foreground">3 quick questions to build your personalized preview</p>
+            <h1 className="text-2xl font-bold tracking-tight">Leadership Activation Diagnostic</h1>
+            <p className="text-sm text-muted-foreground">4 quick questions to build your transformation profile</p>
           </div>
 
           <Progress value={progress} className="h-1.5" />
@@ -60,22 +71,22 @@ export default function FitCheck() {
           {step === 1 && (
             <Card>
               <CardHeader>
-                <CardDescription className="text-xs uppercase tracking-wider text-primary">Step 1 of 3</CardDescription>
-                <CardTitle className="text-lg">What's your biggest leadership challenge?</CardTitle>
+                <CardDescription className="text-xs uppercase tracking-wider text-primary">Step 1 of {TOTAL_STEPS}</CardDescription>
+                <CardTitle className="text-lg">What leadership behavior would make the biggest difference in your team right now?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                {challenges.map(c => (
+                {behaviors.map(b => (
                   <button
-                    key={c.id}
-                    onClick={() => setChallenge(c.id)}
-                    className={`w-full text-left p-3 rounded-md border transition-colors ${challenge === c.id ? 'border-primary bg-primary/5' : 'hover:bg-accent/50'}`}
+                    key={b.id}
+                    onClick={() => setBehavior(b.id)}
+                    className={`w-full text-left p-3 rounded-md border transition-colors ${behavior === b.id ? 'border-primary bg-primary/5' : 'hover:bg-accent/50'}`}
                   >
-                    <p className="text-sm font-medium">{c.label}</p>
-                    <p className="text-xs text-muted-foreground">{c.description}</p>
+                    <p className="text-sm font-medium">{b.label}</p>
+                    <p className="text-xs text-muted-foreground">{b.description}</p>
                   </button>
                 ))}
                 <div className="flex justify-end pt-2">
-                  <Button disabled={!challenge} className="gap-1.5" onClick={() => setStep(2)}>
+                  <Button disabled={!behavior} className="gap-1.5" onClick={() => setStep(2)}>
                     Next <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -86,27 +97,25 @@ export default function FitCheck() {
           {step === 2 && (
             <Card>
               <CardHeader>
-                <CardDescription className="text-xs uppercase tracking-wider text-primary">Step 2 of 3</CardDescription>
-                <CardTitle className="text-lg">How much time can you invest?</CardTitle>
+                <CardDescription className="text-xs uppercase tracking-wider text-primary">Step 2 of {TOTAL_STEPS}</CardDescription>
+                <CardTitle className="text-lg">What level of transformation are you aiming for?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <div className="grid grid-cols-2 gap-2">
-                  {durations.map(d => (
-                    <button
-                      key={d.id}
-                      onClick={() => setDuration(d.id)}
-                      className={`p-3 rounded-md border text-left transition-colors ${duration === d.id ? 'border-primary bg-primary/5' : 'hover:bg-accent/50'}`}
-                    >
-                      <p className="text-sm font-medium">{d.label}</p>
-                      <p className="text-xs text-muted-foreground">{d.hint}</p>
-                    </button>
-                  ))}
-                </div>
+                {ambitions.map(a => (
+                  <button
+                    key={a.id}
+                    onClick={() => setAmbition(a.id)}
+                    className={`w-full text-left p-3 rounded-md border transition-colors ${ambition === a.id ? 'border-primary bg-primary/5' : 'hover:bg-accent/50'}`}
+                  >
+                    <p className="text-sm font-medium">{a.label}</p>
+                    <p className="text-xs text-muted-foreground">{a.description}</p>
+                  </button>
+                ))}
                 <div className="flex justify-between pt-2">
                   <Button variant="ghost" className="gap-1.5" onClick={() => setStep(1)}>
                     <ArrowLeft className="h-4 w-4" /> Back
                   </Button>
-                  <Button disabled={!duration} className="gap-1.5" onClick={() => setStep(3)}>
+                  <Button disabled={!ambition} className="gap-1.5" onClick={() => setStep(3)}>
                     Next <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -117,8 +126,8 @@ export default function FitCheck() {
           {step === 3 && (
             <Card>
               <CardHeader>
-                <CardDescription className="text-xs uppercase tracking-wider text-primary">Step 3 of 3</CardDescription>
-                <CardTitle className="text-lg">Who is this for?</CardTitle>
+                <CardDescription className="text-xs uppercase tracking-wider text-primary">Step 3 of {TOTAL_STEPS}</CardDescription>
+                <CardTitle className="text-lg">Who will activate these leadership habits?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
                 {audiences.map(a => (
@@ -135,8 +144,39 @@ export default function FitCheck() {
                   <Button variant="ghost" className="gap-1.5" onClick={() => setStep(2)}>
                     <ArrowLeft className="h-4 w-4" /> Back
                   </Button>
-                  <Button disabled={!audience} className="gap-1.5" onClick={handleFinish}>
-                    <Sparkles className="h-4 w-4" /> See my preview
+                  <Button disabled={!audience} className="gap-1.5" onClick={() => setStep(4)}>
+                    Next <ArrowRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {step === 4 && (
+            <Card>
+              <CardHeader>
+                <CardDescription className="text-xs uppercase tracking-wider text-primary">Step 4 of {TOTAL_STEPS}</CardDescription>
+                <CardTitle className="text-lg">How many leaders are involved in this transformation?</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  {teamSizes.map(t => (
+                    <button
+                      key={t.id}
+                      onClick={() => setTeamSize(t.id)}
+                      className={`p-3 rounded-md border text-left transition-colors ${teamSize === t.id ? 'border-primary bg-primary/5' : 'hover:bg-accent/50'}`}
+                    >
+                      <p className="text-sm font-medium">{t.label}</p>
+                      <p className="text-xs text-muted-foreground">{t.hint}</p>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex justify-between pt-2">
+                  <Button variant="ghost" className="gap-1.5" onClick={() => setStep(3)}>
+                    <ArrowLeft className="h-4 w-4" /> Back
+                  </Button>
+                  <Button disabled={!teamSize} className="gap-1.5" onClick={handleFinish}>
+                    <Sparkles className="h-4 w-4" /> See my transformation profile
                   </Button>
                 </div>
               </CardContent>
