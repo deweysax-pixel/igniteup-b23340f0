@@ -67,6 +67,7 @@ const App = () => (
                   <Route path="/preview/journey" element={<PreviewJourney />} />
                   <Route path="/preview/sandbox" element={<PreviewSandbox />} />
                   <Route path="/pricing" element={<PricingPage />} />
+                  <Route path="/rollout-preview" element={<RolloutPreview />} />
                   <Route path="/bootstrap" element={<Bootstrap />} />
 
                   {/* Auth routes */}
