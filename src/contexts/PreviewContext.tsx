@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 
 export type FitCheckAnswers = {
-  challenge?: string;
-  duration?: string;
+  behavior?: string;
+  ambition?: string;
   audience?: string;
+  teamSize?: string;
 };
 
 interface PreviewContextValue {
