@@ -41,30 +41,7 @@ export default function Landing() {
             <p className="text-sm text-muted-foreground">Learn, practice, measure, repeat.</p>
           </div>
 
-          <ProductPreviewSection />
-
-          <div className="grid gap-4 md:grid-cols-3 text-left">
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-              <Target className="h-6 w-6 text-primary mt-0.5 shrink-0" />
-              <p className="text-sm text-card-foreground">
-                Leadership habits activated in 4 weeks
-              </p>
-            </div>
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-              <BarChart3 className="h-6 w-6 text-primary mt-0.5 shrink-0" />
-              <p className="text-sm text-card-foreground">
-                Leadership ROI your board can understand
-              </p>
-            </div>
-            <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
-              <Trophy className="h-6 w-6 text-primary mt-0.5 shrink-0" />
-              <p className="text-sm text-card-foreground">
-                Teams engaged through challenges and recognition
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center gap-3 mt-4">
+          <div className="flex flex-col items-center gap-3 mt-2">
             <Button size="lg" className="text-base px-8" onClick={() => setDemoOpen(true)}>
               Request a Demo
             </Button>
