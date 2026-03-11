@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RequestDemoModal } from '@/components/RequestDemoModal';
+import ProductPreviewSection from '@/components/ProductPreviewSection';
 import { Target, BarChart3, Trophy, Eye, Zap, Radio, Settings2 } from 'lucide-react';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
@@ -39,6 +40,8 @@ export default function Landing() {
             <p className="text-base text-foreground font-medium">IgniteUp is the leadership activation system that turns leadership behaviors into weekly actions teams practice, track, and improve.</p>
             <p className="text-sm text-muted-foreground">Learn, practice, measure, repeat.</p>
           </div>
+
+          <ProductPreviewSection />
 
           <div className="grid gap-4 md:grid-cols-3 text-left">
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
