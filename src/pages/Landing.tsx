@@ -32,11 +32,11 @@ export default function Landing() {
             Human Skills OS
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-            Transform your managers into high-impact leaders
-            <span className="text-primary"> — one challenge at a time.</span>
+            Activate leadership habits across your managers
+            <span className="text-primary"> — and make them measurable.</span>
           </h2>
           <div className="space-y-1">
-            <p className="text-base text-foreground font-medium">A Human Skills OS for real progress.</p>
+            <p className="text-base text-foreground font-medium">IgniteUp is the leadership activation system that turns leadership behaviors into weekly actions teams practice, track, and improve.</p>
             <p className="text-sm text-muted-foreground">Learn, practice, measure, repeat.</p>
           </div>
 
@@ -44,19 +44,19 @@ export default function Landing() {
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <Target className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                Measurable leadership habits in 4 weeks
+                Leadership habits activated in 4 weeks
               </p>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <BarChart3 className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                An ROI barometer that speaks the boardroom's language
+                Leadership ROI your board can understand
               </p>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <Trophy className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                Team dynamics driven by gamification and recognition
+                Teams engaged through challenges and recognition
               </p>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function Landing() {
           </div>
           <p className="text-xs text-muted-foreground">
             <Link to="/pricing" className="hover:text-foreground transition-colors underline underline-offset-2">
-              Prefer details? See pricing →
+              Prefer details? Explore pricing →
             </Link>
           </p>
         </div>
