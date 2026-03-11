@@ -32,11 +32,11 @@ export default function Landing() {
             Human Skills OS
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight leading-tight">
-            Transform your managers into high-impact leaders
-            <span className="text-primary"> — one challenge at a time.</span>
+            Activate leadership habits across your managers
+            <span className="text-primary"> — and make them measurable.</span>
           </h2>
           <div className="space-y-1">
-            <p className="text-base text-foreground font-medium">A Human Skills OS for real progress.</p>
+            <p className="text-base text-foreground font-medium">IgniteUp is the leadership activation system that turns leadership behaviors into weekly actions teams practice, track, and improve.</p>
             <p className="text-sm text-muted-foreground">Learn, practice, measure, repeat.</p>
           </div>
 
