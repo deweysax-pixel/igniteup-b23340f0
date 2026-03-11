@@ -199,7 +199,7 @@ export default function RolloutPreview() {
                         className="flex-1"
                       />
                       <Button type="submit" size="sm">
-                        Send
+                        Send my rollout plan
                       </Button>
                     </form>
                   )}
