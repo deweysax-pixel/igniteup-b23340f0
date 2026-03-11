@@ -79,29 +79,27 @@ export default function Landing() {
         </div>
 
         {/* How it works */}
-        <div className="w-full max-w-2xl py-16 space-y-8">
-          <h3 className="text-xl font-semibold tracking-tight text-center">How it works</h3>
+        <div className="w-full max-w-3xl py-16 space-y-10">
+          <div className="text-center space-y-2">
+            <h3 className="text-xl font-semibold tracking-tight">How IgniteUp activates leadership habits</h3>
+            <p className="text-sm text-muted-foreground">A simple system to turn leadership skills into consistent behaviors.</p>
+          </div>
 
-          <div className="grid grid-cols-4 gap-3 text-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             {[
-              { icon: Eye, label: 'Clarity', map: 'Journey' },
-              { icon: Zap, label: 'Action', map: 'Units + Micro-actions' },
-              { icon: Radio, label: 'Signal', map: 'Check-ins + Ignite' },
-              { icon: Settings2, label: 'Adjust', map: 'Today recommendations' },
+              { icon: Eye, label: 'Understand', description: 'Managers learn the leadership habit that matters most for their team. Small insights. Clear focus.' },
+              { icon: Zap, label: 'Practice', description: 'Managers apply the habit through short real-world leadership challenges. No theory. Just action.' },
+              { icon: Radio, label: 'Track', description: 'Teams log actions and check-ins so progress becomes visible. Leadership behaviors become measurable.' },
+              { icon: Settings2, label: 'Improve', description: 'IgniteUp highlights patterns and suggests the next leadership focus. Continuous improvement, week after week.' },
             ].map((step) => (
-              <div key={step.label} className="flex flex-col items-center gap-2">
+              <div key={step.label} className="flex flex-col items-center gap-3">
                 <div className="h-12 w-12 rounded-full border border-primary/30 bg-primary/10 flex items-center justify-center">
                   <step.icon className="h-5 w-5 text-primary" />
                 </div>
-                <span className="text-sm font-medium">{step.label}</span>
-                <span className="text-xs text-muted-foreground">= {step.map}</span>
+                <span className="text-sm font-semibold">{step.label}</span>
+                <span className="text-xs text-muted-foreground leading-relaxed">{step.description}</span>
               </div>
             ))}
-          </div>
-
-          <div className="text-center space-y-1">
-            <p className="text-base text-foreground font-medium">A Human Skills OS for real progress.</p>
-            <p className="text-sm text-muted-foreground">Learn, practice, measure, repeat.</p>
           </div>
         </div>
       </main>
