@@ -157,7 +157,7 @@ export default function RolloutPreview() {
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-between gap-4">
                   <p className="text-sm text-muted-foreground">
-                    See how IgniteUp works for teams like yours and explore your leadership rollout.
+                    See exactly how this rollout would work for your managers.
                   </p>
                   <Button className="w-full gap-2" asChild>
                     <a
