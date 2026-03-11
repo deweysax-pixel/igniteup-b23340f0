@@ -73,7 +73,7 @@ export default function Landing() {
           </div>
           <p className="text-xs text-muted-foreground">
             <Link to="/pricing" className="hover:text-foreground transition-colors underline underline-offset-2">
-              Prefer details? See pricing →
+              Prefer details? Explore pricing →
             </Link>
           </p>
         </div>
