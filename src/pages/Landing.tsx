@@ -58,8 +58,10 @@ export default function Landing() {
           </p>
         </div>
 
+        <ProductPreviewSection />
+
         {/* How it works */}
-        <div className="w-full max-w-3xl py-16 space-y-10">
+        <div className="w-full max-w-3xl py-12 space-y-10">
           <div className="text-center space-y-2">
             <h3 className="text-xl font-semibold tracking-tight">How IgniteUp activates leadership habits</h3>
             <p className="text-sm text-muted-foreground">A simple system to turn leadership skills into consistent behaviors.</p>
