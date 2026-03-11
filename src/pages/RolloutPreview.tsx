@@ -186,7 +186,7 @@ export default function RolloutPreview() {
                   {submitted ? (
                     <div className="flex items-center gap-2 text-sm text-primary font-medium justify-center py-2">
                       <CheckCircle2 className="h-4 w-4" />
-                      Your rollout preview will be sent shortly.
+                      Thanks! Your rollout preview will be sent shortly.
                     </div>
                   ) : (
                     <form onSubmit={handleEmailSubmit} className="flex gap-2">
