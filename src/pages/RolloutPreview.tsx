@@ -144,7 +144,7 @@ export default function RolloutPreview() {
 
           {/* Section 3 — CTAs */}
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-center">Want to explore this rollout?</h2>
+            <h2 className="text-lg font-bold text-center">Explore how IgniteUp would work in your organization</h2>
 
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Option 1 — Book */}
@@ -157,7 +157,7 @@ export default function RolloutPreview() {
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col justify-between gap-4">
                   <p className="text-sm text-muted-foreground">
-                    See how IgniteUp works for teams like yours and explore your leadership rollout.
+                    See exactly how this rollout would work for your managers.
                   </p>
                   <Button className="w-full gap-2" asChild>
                     <a
@@ -186,7 +186,7 @@ export default function RolloutPreview() {
                   {submitted ? (
                     <div className="flex items-center gap-2 text-sm text-primary font-medium justify-center py-2">
                       <CheckCircle2 className="h-4 w-4" />
-                      Your rollout preview will be sent shortly.
+                      Thanks! Your rollout preview will be sent shortly.
                     </div>
                   ) : (
                     <form onSubmit={handleEmailSubmit} className="flex gap-2">
@@ -199,7 +199,7 @@ export default function RolloutPreview() {
                         className="flex-1"
                       />
                       <Button type="submit" size="sm">
-                        Send
+                        Send my rollout plan
                       </Button>
                     </form>
                   )}
