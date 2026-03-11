@@ -28,7 +28,7 @@ export default function Landing() {
 
       {/* Hero */}
       <main className="flex-1 flex flex-col items-center justify-center px-6">
-        <div className="max-w-2xl text-center space-y-8 animate-fade-in">
+        <div className="max-w-2xl text-center space-y-6 animate-fade-in pt-12">
           <Badge variant="outline" className="border-primary/40 text-primary text-xs tracking-widest uppercase px-3 py-1">
             Human Skills OS
           </Badge>
