@@ -44,19 +44,19 @@ export default function Landing() {
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <Target className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                Measurable leadership habits in 4 weeks
+                Leadership habits activated in 4 weeks
               </p>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <BarChart3 className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                An ROI barometer that speaks the boardroom's language
+                Leadership ROI your board can understand
               </p>
             </div>
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <Trophy className="h-6 w-6 text-primary mt-0.5 shrink-0" />
               <p className="text-sm text-card-foreground">
-                Team dynamics driven by gamification and recognition
+                Teams engaged through challenges and recognition
               </p>
             </div>
           </div>
