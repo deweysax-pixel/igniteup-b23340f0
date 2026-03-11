@@ -144,7 +144,7 @@ export default function RolloutPreview() {
 
           {/* Section 3 — CTAs */}
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-center">Want to explore this rollout?</h2>
+            <h2 className="text-lg font-bold text-center">Explore how IgniteUp would work in your organization</h2>
 
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Option 1 — Book */}
