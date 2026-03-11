@@ -159,15 +159,15 @@ export default function RolloutPreview() {
                   <p className="text-sm text-muted-foreground">
                     See exactly how this rollout would work for your managers.
                   </p>
-                  <Button className="w-full gap-2" asChild>
-                    <a
-                      href="https://calendly.com"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Book a 20-minute walkthrough <ArrowRight className="h-4 w-4" />
-                    </a>
-                  </Button>
+              <Button className="w-full gap-2" asChild>
+                <a
+                  href="https://calendly.com/frederic-sitruk/igniteup-leadership-rollout-walkthrough"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Book a 20-minute walkthrough <ArrowRight className="h-4 w-4" />
+                </a>
+              </Button>
                 </CardContent>
               </Card>
 
