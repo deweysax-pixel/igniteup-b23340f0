@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { RequestDemoModal } from '@/components/RequestDemoModal';
+import ProductPreviewSection from '@/components/ProductPreviewSection';
 import { Target, BarChart3, Trophy, Eye, Zap, Radio, Settings2 } from 'lucide-react';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
