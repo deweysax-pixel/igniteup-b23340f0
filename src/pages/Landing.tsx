@@ -41,6 +41,8 @@ export default function Landing() {
             <p className="text-sm text-muted-foreground">Learn, practice, measure, repeat.</p>
           </div>
 
+          <ProductPreviewSection />
+
           <div className="grid gap-4 md:grid-cols-3 text-left">
             <div className="flex items-start gap-3 p-4 rounded-lg bg-card border border-border">
               <Target className="h-6 w-6 text-primary mt-0.5 shrink-0" />
