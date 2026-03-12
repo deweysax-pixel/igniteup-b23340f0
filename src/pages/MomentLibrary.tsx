@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Compass, Users, Shield, Flame, MessageSquareQuote, Target, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const themeIcons: Record<string, React.ReactNode> = {
   Compass: <Compass className="h-5 w-5" />,
@@ -13,17 +14,24 @@ const themeIcons: Record<string, React.ReactNode> = {
 };
 
 const themeColors: Record<string, string> = {
-  direction: 'border-l-blue-500',
-  alignment: 'border-l-emerald-500',
+  direction: 'border-l-purple-500',
+  alignment: 'border-l-blue-500',
   ownership: 'border-l-amber-500',
-  energy: 'border-l-rose-500',
+  energy: 'border-l-pink-500',
 };
 
-const themeBadgeColors: Record<string, string> = {
-  direction: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  alignment: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+const themeIconColors: Record<string, string> = {
+  direction: 'text-purple-400 bg-purple-500/10',
+  alignment: 'text-blue-400 bg-blue-500/10',
+  ownership: 'text-amber-400 bg-amber-500/10',
+  energy: 'text-pink-400 bg-pink-500/10',
+};
+
+const themeBadgeStyles: Record<string, string> = {
+  direction: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  alignment: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   ownership: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  energy: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+  energy: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
 };
 
 function MomentCard({ moment, themeId }: { moment: LeadershipMoment; themeId: string }) {
@@ -59,21 +67,27 @@ function MomentCard({ moment, themeId }: { moment: LeadershipMoment; themeId: st
 
 function ThemeSection({ theme }: { theme: Theme }) {
   const totalMoments = theme.habits.reduce((sum, h) => sum + h.moments.length, 0);
+  const totalHabits = theme.habits.length;
 
   return (
     <Card className="bg-card/30 border-border/50">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10 text-primary">
+          <div className={cn("p-2 rounded-lg", themeIconColors[theme.id])}>
             {themeIcons[theme.icon]}
           </div>
           <div className="flex-1">
             <CardTitle className="text-lg">{theme.name}</CardTitle>
             <CardDescription className="text-xs mt-0.5">{theme.description}</CardDescription>
           </div>
-          <Badge variant="outline" className={themeBadgeColors[theme.id]}>
-            {totalMoments} moment{totalMoments !== 1 ? 's' : ''}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
+              {totalHabits} habit{totalHabits !== 1 ? 's' : ''}
+            </Badge>
+            <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
+              {totalMoments} moment{totalMoments !== 1 ? 's' : ''}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
