@@ -66,24 +66,27 @@ function MomentCard({ moment, themeId }: { moment: LeadershipMoment; themeId: st
 
 function ThemeSection({ theme }: { theme: Theme }) {
   const totalMoments = theme.habits.reduce((sum, h) => sum + h.moments.length, 0);
+  const totalHabits = theme.habits.length;
 
   return (
     <Card className="bg-card/30 border-border/50">
       <CardHeader className="pb-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10 text-primary">
+          <div className={cn("p-2 rounded-lg", themeIconColors[theme.id])}>
             {themeIcons[theme.icon]}
           </div>
           <div className="flex-1">
             <CardTitle className="text-lg">{theme.name}</CardTitle>
             <CardDescription className="text-xs mt-0.5">{theme.description}</CardDescription>
           </div>
-          <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
-            {totalHabits} habit{totalHabits !== 1 ? 's' : ''}
-          </Badge>
-          <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
-            {totalMoments} moment{totalMoments !== 1 ? 's' : ''}
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
+              {totalHabits} habit{totalHabits !== 1 ? 's' : ''}
+            </Badge>
+            <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
+              {totalMoments} moment{totalMoments !== 1 ? 's' : ''}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
