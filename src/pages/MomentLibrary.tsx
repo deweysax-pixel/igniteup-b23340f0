@@ -78,7 +78,10 @@ function ThemeSection({ theme }: { theme: Theme }) {
             <CardTitle className="text-lg">{theme.name}</CardTitle>
             <CardDescription className="text-xs mt-0.5">{theme.description}</CardDescription>
           </div>
-          <Badge variant="outline" className={themeBadgeColors[theme.id]}>
+          <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
+            {totalHabits} habit{totalHabits !== 1 ? 's' : ''}
+          </Badge>
+          <Badge variant="outline" className={themeBadgeStyles[theme.id]}>
             {totalMoments} moment{totalMoments !== 1 ? 's' : ''}
           </Badge>
         </div>
