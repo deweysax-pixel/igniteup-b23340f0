@@ -44,6 +44,7 @@ import AdminTeams from "./pages/AdminTeams";
 import Administration from "./pages/Administration";
 import Bootstrap from "./pages/Bootstrap";
 import RolloutPreview from "./pages/RolloutPreview";
+import MomentLibrary from "./pages/MomentLibrary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
