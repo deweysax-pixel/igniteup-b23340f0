@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Compass, Users, Shield, Flame, MessageSquareQuote, Target, Lightbulb, CheckCircle2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const themeIcons: Record<string, React.ReactNode> = {
   Compass: <Compass className="h-5 w-5" />,
