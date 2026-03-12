@@ -34,6 +34,8 @@ export interface Action {
   points: number;
 }
 
+export type LeadershipThemeId = 'direction' | 'alignment' | 'ownership' | 'energy';
+
 export interface Challenge {
   id: string;
   title: string;
@@ -41,6 +43,7 @@ export interface Challenge {
   startDate: string;
   endDate: string;
   status: ChallengeStatus;
+  themeId?: LeadershipThemeId;
   weeklyActions: Action[];
 }
 
