@@ -13,17 +13,24 @@ const themeIcons: Record<string, React.ReactNode> = {
 };
 
 const themeColors: Record<string, string> = {
-  direction: 'border-l-blue-500',
-  alignment: 'border-l-emerald-500',
+  direction: 'border-l-purple-500',
+  alignment: 'border-l-blue-500',
   ownership: 'border-l-amber-500',
-  energy: 'border-l-rose-500',
+  energy: 'border-l-pink-500',
 };
 
-const themeBadgeColors: Record<string, string> = {
-  direction: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  alignment: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+const themeIconColors: Record<string, string> = {
+  direction: 'text-purple-400 bg-purple-500/10',
+  alignment: 'text-blue-400 bg-blue-500/10',
+  ownership: 'text-amber-400 bg-amber-500/10',
+  energy: 'text-pink-400 bg-pink-500/10',
+};
+
+const themeBadgeStyles: Record<string, string> = {
+  direction: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  alignment: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   ownership: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  energy: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+  energy: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
 };
 
 function MomentCard({ moment, themeId }: { moment: LeadershipMoment; themeId: string }) {
