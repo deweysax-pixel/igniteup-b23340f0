@@ -52,6 +52,7 @@ const challenges: Challenge[] = [
     startDate: '2026-02-01',
     endDate: '2026-02-28',
     status: 'active',
+    themeId: 'alignment',
     weeklyActions: [
       { id: 'a1', label: 'Give constructive feedback to a colleague', points: 15 },
       { id: 'a2', label: 'Run a 10-min stand-up with your team', points: 10 },
