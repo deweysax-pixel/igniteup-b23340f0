@@ -7,6 +7,21 @@ import { Button } from '@/components/ui/button';
 import { Copy, Map, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
+import type { LeadershipThemeId } from '@/types/demo';
+
+const themeLabels: Record<string, string> = {
+  direction: 'Direction',
+  alignment: 'Alignment',
+  ownership: 'Ownership',
+  energy: 'Energy',
+};
+
+const themeBadgeStyles: Record<string, string> = {
+  direction: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  alignment: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  ownership: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  energy: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
+};
 
 export default function Challenges() {
   const navigate = useNavigate();
