@@ -67,6 +67,7 @@ const challenges: Challenge[] = [
     startDate: '2026-03-01',
     endDate: '2026-03-28',
     status: 'upcoming',
+    themeId: 'direction',
     weeklyActions: [
       { id: 'a5', label: 'Prepare a 2-minute pitch', points: 15 },
       { id: 'a6', label: 'Practice active listening in a meeting', points: 10 },

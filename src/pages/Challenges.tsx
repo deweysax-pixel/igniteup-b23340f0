@@ -61,6 +61,11 @@ export default function Challenges() {
           {state.challenges.map(ch => (
             <Card key={ch.id}>
               <CardHeader>
+                {ch.themeId && (
+                  <Badge variant="outline" className={`w-fit text-[10px] px-2 py-0 ${themeBadgeStyles[ch.themeId]}`}>
+                    {themeLabels[ch.themeId]}
+                  </Badge>
+                )}
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg">{ch.title}</CardTitle>
                   <Badge variant={statusVariant(ch.status)}>{statusLabel(ch.status)}</Badge>
