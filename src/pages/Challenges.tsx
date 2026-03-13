@@ -164,24 +164,25 @@ export default function Challenges() {
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
-                            <div className="flex-1 min-w-0 space-y-1.5">
-                              {/* Week + Theme */}
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-xs text-muted-foreground font-medium">Week {idx + 1}</span>
-                                {moment && (
-                                  <>
-                                    <span className="text-xs text-muted-foreground">•</span>
-                                    <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${themeBadgeStyles[moment.themeId]}`}>
-                                      {themeLabels[moment.themeId]}
-                                    </Badge>
-                                  </>
-                                )}
-                                {isCurrentWeek && (
-                                  <Badge variant="default" className="text-[9px] px-1.5 py-0 ml-1">
-                                    This week
+                          <div className="flex-1 min-w-0 space-y-1.5">
+                            {/* Week + Theme */}
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-xs text-muted-foreground font-medium">Week {idx + 1}</span>
+                              {moment && (
+                                <>
+                                  <span className="text-xs text-muted-foreground">•</span>
+                                  <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${themeBadgeStyles[moment.themeId]}`}>
+                                    {themeLabels[moment.themeId]}
                                   </Badge>
-                                )}
+                                </>
+                              )}
+                            </div>
+                            {/* This week indicator */}
+                            {isCurrentWeek && (
+                              <div className="flex items-center gap-1">
+                                <span className="text-xs font-medium text-primary">🔥 This week</span>
                               </div>
+                            )}
                               {/* Title */}
                               <p className="font-medium">{a.label}</p>
                               {/* Instruction */}
