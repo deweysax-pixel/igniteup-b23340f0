@@ -54,10 +54,10 @@ const challenges: Challenge[] = [
     status: 'active',
     themeId: 'alignment',
     weeklyActions: [
-      { id: 'a1', label: 'Give constructive feedback to a colleague', points: 15 },
-      { id: 'a2', label: 'Run a 10-min stand-up with your team', points: 10 },
-      { id: 'a3', label: 'Make a documented delegated decision', points: 20 },
-      { id: 'a4', label: 'Share a team win during a meeting', points: 10 },
+      { id: 'a1', label: 'Give constructive feedback to a colleague', points: 15, momentId: 'give-sbi-feedback' },
+      { id: 'a2', label: 'Check real understanding with your team', points: 10, momentId: 'check-real-understanding' },
+      { id: 'a3', label: 'Clarify ownership of a key task', points: 20, momentId: 'clarify-ownership' },
+      { id: 'a4', label: 'Share a team win during a meeting', points: 10, momentId: 'share-team-win' },
     ],
   },
   {
@@ -69,9 +69,9 @@ const challenges: Challenge[] = [
     status: 'upcoming',
     themeId: 'direction',
     weeklyActions: [
-      { id: 'a5', label: 'Prepare a 2-minute pitch', points: 15 },
-      { id: 'a6', label: 'Practice active listening in a meeting', points: 10 },
-      { id: 'a7', label: 'Write a clear summary message', points: 15 },
+      { id: 'a5', label: 'Clarify the real priority', points: 15, momentId: 'clarify-real-priority' },
+      { id: 'a6', label: 'Name the decision owner', points: 10, momentId: 'name-decision-owner' },
+      { id: 'a7', label: 'Recognize a contribution', points: 15, momentId: 'recognize-contribution' },
     ],
   },
 ];
