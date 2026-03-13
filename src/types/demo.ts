@@ -32,6 +32,7 @@ export interface Action {
   id: string;
   label: string;
   points: number;
+  momentId?: string;
 }
 
 export type LeadershipThemeId = 'direction' | 'alignment' | 'ownership' | 'energy';
