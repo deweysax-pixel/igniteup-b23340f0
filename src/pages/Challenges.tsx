@@ -165,8 +165,8 @@ export default function Challenges() {
                         >
                           <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0 space-y-1.5">
-                            {/* Week + Theme */}
-                            <div className="flex items-center gap-1.5">
+                            {/* Week + Theme + This week */}
+                            <div className="flex items-center gap-1.5 flex-wrap">
                               <span className="text-xs text-muted-foreground font-medium">Week {idx + 1}</span>
                               {moment && (
                                 <>
@@ -176,13 +176,13 @@ export default function Challenges() {
                                   </Badge>
                                 </>
                               )}
+                              {isCurrentWeek && (
+                                <>
+                                  <span className="text-xs text-muted-foreground">•</span>
+                                  <span className="text-xs font-medium text-primary">🔥 This week</span>
+                                </>
+                              )}
                             </div>
-                            {/* This week indicator */}
-                            {isCurrentWeek && (
-                              <div className="flex items-center gap-1">
-                                <span className="text-xs font-medium text-primary">🔥 This week</span>
-                              </div>
-                            )}
                               {/* Title */}
                               <p className="font-medium">{a.label}</p>
                               {/* Instruction */}
