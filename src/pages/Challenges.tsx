@@ -4,9 +4,10 @@ import { useJourney } from '@/contexts/JourneyContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Copy, Map, BookOpen } from 'lucide-react';
+import { Copy, Map, BookOpen, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
+import { leadershipThemes } from '@/data/leadership-moments';
 import type { LeadershipThemeId } from '@/types/demo';
 
 const themeLabels: Record<string, string> = {
@@ -23,12 +24,24 @@ const themeBadgeStyles: Record<string, string> = {
   energy: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
 };
 
+// Build a flat lookup of momentId → moment data
+const momentLookup = (() => {
+  const map: Record<string, { title: string; action: string; themeId: string }> = {};
+  for (const theme of leadershipThemes) {
+    for (const habit of theme.habits) {
+      for (const moment of habit.moments) {
+        map[moment.id] = { title: moment.title, action: moment.action, themeId: theme.id };
+      }
+    }
+  }
+  return map;
+})();
+
 export default function Challenges() {
   const navigate = useNavigate();
   const { state } = useDemo();
   const { journey, modules } = useJourney();
 
-  // Check if the feedback module is linked to the current journey
   const feedbackModule = modules.find(m => m.id === 'mod-1');
   const isLinkedToJourney = journey.steps.some(s => s.moduleId === 'mod-1');
 
@@ -71,22 +84,52 @@ export default function Challenges() {
                   <Badge variant={statusVariant(ch.status)}>{statusLabel(ch.status)}</Badge>
                 </div>
                 <CardDescription>{ch.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
                 <p className="text-xs text-muted-foreground">
                   {ch.startDate} → {ch.endDate}
                 </p>
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Weekly Actions</p>
-                  {ch.weeklyActions.map(a => (
-                    <div key={a.id} className="flex items-center justify-between text-sm">
-                      <span>{a.label}</span>
-                      <span className="text-primary font-medium">+{a.points} pts</span>
-                    </div>
-                  ))}
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Leadership Actions */}
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold">Leadership Actions</p>
+                  {ch.weeklyActions.map((a, idx) => {
+                    const moment = a.momentId ? momentLookup[a.momentId] : null;
+                    return (
+                      <div key={a.id} className="flex items-start justify-between gap-3 text-sm border border-border/50 rounded-lg p-3">
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs text-muted-foreground font-medium">Week {idx + 1}</span>
+                            {moment && (
+                              <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${themeBadgeStyles[moment.themeId]}`}>
+                                {themeLabels[moment.themeId]}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="font-medium">{a.label}</p>
+                          {moment && (
+                            <p className="text-xs text-muted-foreground line-clamp-1">{moment.action.split('\n')[0]}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-primary font-medium text-xs">+{a.points} XP</span>
+                          {a.momentId && (
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-7 px-2 text-xs gap-1 text-muted-foreground hover:text-primary"
+                              onClick={() => navigate('/app/moment-library')}
+                            >
+                              <ExternalLink className="h-3 w-3" />
+                              Open moment
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
 
-                {/* How to do it — only for the active feedback challenge */}
+                {/* How to do it — only for active challenges */}
                 {ch.status === 'active' && (
                   <div className="border-t border-border pt-4 space-y-3">
                     <p className="text-sm font-semibold">How to do it (2 minutes)</p>
@@ -110,7 +153,7 @@ export default function Challenges() {
                       {feedbackModule?.playbookRoute && (
                         <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(feedbackModule.playbookRoute!)}>
                           <BookOpen className="h-3.5 w-3.5" />
-                          Open Module
+                          Open Playbook
                         </Button>
                       )}
                       <Button size="sm" variant="link" className="gap-1.5" onClick={() => navigate('/app/journey')}>
