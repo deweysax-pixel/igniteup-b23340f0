@@ -276,14 +276,19 @@ export default function ProgramBuilder() {
           <Badge variant="outline" className="text-[10px] px-2 py-0">Step 3</Badge>
           <span className="text-sm font-semibold">Generate sprint</span>
         </div>
-        <Button
-          onClick={handleGenerate}
-          disabled={!canGenerate}
-          className="gap-2"
-        >
-          <Sparkles className="h-4 w-4" />
-          Generate my sprint
-        </Button>
+        <div className="space-y-2">
+          <Button
+            onClick={handleGenerate}
+            disabled={!canGenerate}
+            className="gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generate my sprint
+          </Button>
+          <p className="text-xs text-muted-foreground text-center">
+            Your generated program will appear below.
+          </p>
+        </div>
       </div>
 
       {/* STEP 4 — Preview */}
