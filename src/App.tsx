@@ -30,6 +30,7 @@ import Playbooks from "./pages/Playbooks";
 import JourneyPage from "./pages/Journey";
 import CatalogPage from "./pages/Catalog";
 import BuilderPage from "./pages/Builder";
+import ProgramBuilder from "./pages/ProgramBuilder";
 import ModulePlayer from "./pages/ModulePlayer";
 import OnboardingPage from "./pages/Onboarding";
 import ServiceRequests from "./pages/ServiceRequests";
@@ -95,6 +96,7 @@ const App = () => (
                     <Route path="journey" element={<JourneyPage />} />
                     <Route path="catalog" element={<CatalogPage />} />
                     <Route path="builder" element={<BuilderPage />} />
+                    <Route path="program-builder" element={<ProgramBuilder />} />
                     <Route path="modules/:id" element={<ModulePlayer />} />
                     <Route path="onboarding" element={<OnboardingPage />} />
                     <Route path="services" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><ServiceRequests /></ProtectedRoute>} />
