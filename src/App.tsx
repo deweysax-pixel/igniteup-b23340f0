@@ -96,6 +96,7 @@ const App = () => (
                     <Route path="journey" element={<JourneyPage />} />
                     <Route path="catalog" element={<CatalogPage />} />
                     <Route path="builder" element={<BuilderPage />} />
+                    <Route path="program-builder" element={<ProgramBuilder />} />
                     <Route path="modules/:id" element={<ModulePlayer />} />
                     <Route path="onboarding" element={<OnboardingPage />} />
                     <Route path="services" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><ServiceRequests /></ProtectedRoute>} />
