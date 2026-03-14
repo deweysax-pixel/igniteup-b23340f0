@@ -13,6 +13,7 @@ import {
   Map as MapIcon,
   Library,
   Hammer,
+  Sparkles,
   HeadphonesIcon,
   FileBarChart,
   Flame,
