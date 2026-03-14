@@ -75,6 +75,17 @@ export default function Challenges() {
   const navigate = useNavigate();
   const { state } = useDemo();
   const { journey, modules } = useJourney();
+  const [justCreatedId, setJustCreatedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = sessionStorage.getItem('justCreatedChallengeId');
+    if (id) {
+      sessionStorage.removeItem('justCreatedChallengeId');
+      setJustCreatedId(id);
+      const timer = setTimeout(() => setJustCreatedId(null), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const feedbackModule = modules.find(m => m.id === 'mod-1');
   const isLinkedToJourney = journey.steps.some(s => s.moduleId === 'mod-1');
