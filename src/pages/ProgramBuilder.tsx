@@ -295,12 +295,18 @@ export default function ProgramBuilder() {
       {generatedPlan && (
         <>
           <Separator />
-          <div className="space-y-4">
+          <div ref={previewRef} className="space-y-4 animate-fade-in">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-[10px] px-2 py-0">Preview</Badge>
               <span className="text-sm font-semibold">Leadership Sprint Preview</span>
             </div>
-            <Card>
+
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="font-medium">Sprint generated</span>
+            </p>
+
+            <Card className={`transition-all duration-500 ${justGenerated ? 'ring-2 ring-primary/50 shadow-lg shadow-primary/10' : ''}`}>
               <CardContent className="pt-5 space-y-2">
                 {generatedPlan.map(w => {
                   const theme = leadershipThemes.find(t => t.id === w.themeId);
