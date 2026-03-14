@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { useJourney } from '@/contexts/JourneyContext';
@@ -74,6 +75,17 @@ export default function Challenges() {
   const navigate = useNavigate();
   const { state } = useDemo();
   const { journey, modules } = useJourney();
+  const [justCreatedId, setJustCreatedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = sessionStorage.getItem('justCreatedChallengeId');
+    if (id) {
+      sessionStorage.removeItem('justCreatedChallengeId');
+      setJustCreatedId(id);
+      const timer = setTimeout(() => setJustCreatedId(null), 10000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const feedbackModule = modules.find(m => m.id === 'mod-1');
   const isLinkedToJourney = journey.steps.some(s => s.moduleId === 'mod-1');
@@ -110,8 +122,13 @@ export default function Challenges() {
             const progressPct = ch.status === 'completed' ? 100 : ch.status === 'upcoming' ? 0 : Math.round((currentWeek / totalWeeks) * 100);
             const progressColorClass = ch.themeId ? themeProgressColors[ch.themeId] : '';
 
+            const isJustCreated = ch.id === justCreatedId;
+
             return (
-              <Card key={ch.id}>
+              <Card
+                key={ch.id}
+                className={isJustCreated ? 'ring-1 ring-primary/40 shadow-[0_0_16px_-4px_hsl(var(--primary)/0.3)] animate-fade-in' : ''}
+              >
                 <CardHeader className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -121,6 +138,11 @@ export default function Challenges() {
                         </Badge>
                       )}
                       <Badge variant={statusVariant(ch.status)}>{statusLabel(ch.status)}</Badge>
+                      {isJustCreated && (
+                        <Badge variant="outline" className="text-[10px] px-2 py-0 bg-primary/10 text-primary border-primary/20 animate-pulse">
+                          ✨ Just created
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {ch.startDate} → {ch.endDate}
