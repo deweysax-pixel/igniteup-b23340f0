@@ -146,7 +146,14 @@ export default function ProgramBuilder() {
     }
     setGeneratedPlan(plan);
     setSaved(false);
+    setJustGenerated(true);
     toast.success('Sprint generated!');
+
+    // Scroll to preview and clear highlight after animation
+    setTimeout(() => {
+      previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+    setTimeout(() => setJustGenerated(false), 3000);
   };
 
   const handleRegenerate = () => {
