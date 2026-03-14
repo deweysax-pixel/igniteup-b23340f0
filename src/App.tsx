@@ -30,6 +30,7 @@ import Playbooks from "./pages/Playbooks";
 import JourneyPage from "./pages/Journey";
 import CatalogPage from "./pages/Catalog";
 import BuilderPage from "./pages/Builder";
+import ProgramBuilder from "./pages/ProgramBuilder";
 import ModulePlayer from "./pages/ModulePlayer";
 import OnboardingPage from "./pages/Onboarding";
 import ServiceRequests from "./pages/ServiceRequests";
