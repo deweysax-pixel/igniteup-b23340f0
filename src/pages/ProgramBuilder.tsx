@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -97,11 +97,13 @@ interface GeneratedWeek {
 export default function ProgramBuilder() {
   const navigate = useNavigate();
   const { state, dispatch } = useDemo();
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
   const [duration, setDuration] = useState<number | null>(null);
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedWeek[] | null>(null);
   const [saved, setSaved] = useState(false);
+  const [justGenerated, setJustGenerated] = useState(false);
 
   const allMoments = useMemo(() => getAllMoments(), []);
 
@@ -144,7 +146,14 @@ export default function ProgramBuilder() {
     }
     setGeneratedPlan(plan);
     setSaved(false);
+    setJustGenerated(true);
     toast.success('Sprint generated!');
+
+    // Scroll to preview and clear highlight after animation
+    setTimeout(() => {
+      previewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+    setTimeout(() => setJustGenerated(false), 3000);
   };
 
   const handleRegenerate = () => {
@@ -267,26 +276,37 @@ export default function ProgramBuilder() {
           <Badge variant="outline" className="text-[10px] px-2 py-0">Step 3</Badge>
           <span className="text-sm font-semibold">Generate sprint</span>
         </div>
-        <Button
-          onClick={handleGenerate}
-          disabled={!canGenerate}
-          className="gap-2"
-        >
-          <Sparkles className="h-4 w-4" />
-          Generate my sprint
-        </Button>
+        <div className="space-y-2">
+          <Button
+            onClick={handleGenerate}
+            disabled={!canGenerate}
+            className="gap-2"
+          >
+            <Sparkles className="h-4 w-4" />
+            Generate my sprint
+          </Button>
+          <p className="text-xs text-muted-foreground text-center">
+            Your generated program will appear below.
+          </p>
+        </div>
       </div>
 
       {/* STEP 4 — Preview */}
       {generatedPlan && (
         <>
           <Separator />
-          <div className="space-y-4">
+          <div ref={previewRef} className="space-y-4 animate-fade-in">
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="text-[10px] px-2 py-0">Preview</Badge>
               <span className="text-sm font-semibold">Leadership Sprint Preview</span>
             </div>
-            <Card>
+
+            <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span className="font-medium">Sprint generated</span>
+            </p>
+
+            <Card className={`transition-all duration-500 ${justGenerated ? 'ring-2 ring-primary/50 shadow-lg shadow-primary/10' : ''}`}>
               <CardContent className="pt-5 space-y-2">
                 {generatedPlan.map(w => {
                   const theme = leadershipThemes.find(t => t.id === w.themeId);
