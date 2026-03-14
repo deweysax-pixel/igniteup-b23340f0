@@ -194,6 +194,9 @@ export default function ProgramBuilder() {
     state.challenges.push(newChallenge);
     setSaved(true);
     toast.success('Program saved! It will appear on your Challenges page.');
+
+    // Store the new challenge ID so the Challenges page can highlight it
+    sessionStorage.setItem('justCreatedChallengeId', newChallenge.id);
   };
 
   const canGenerate = selectedThemes.length > 0 && duration !== null;
