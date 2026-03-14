@@ -97,11 +97,13 @@ interface GeneratedWeek {
 export default function ProgramBuilder() {
   const navigate = useNavigate();
   const { state, dispatch } = useDemo();
+  const previewRef = useRef<HTMLDivElement>(null);
 
   const [selectedThemes, setSelectedThemes] = useState<string[]>([]);
   const [duration, setDuration] = useState<number | null>(null);
   const [generatedPlan, setGeneratedPlan] = useState<GeneratedWeek[] | null>(null);
   const [saved, setSaved] = useState(false);
+  const [justGenerated, setJustGenerated] = useState(false);
 
   const allMoments = useMemo(() => getAllMoments(), []);
 
