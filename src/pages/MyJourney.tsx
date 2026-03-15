@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
+import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -65,7 +67,9 @@ function getCurrentWeek(startDate: string, endDate: string, totalWeeks: number):
 
 export default function MyJourney() {
   const navigate = useNavigate();
-  const { state } = useDemo();
+  const { state, dispatch } = useDemo();
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [bonusXp, setBonusXp] = useState(0);
 
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
   const currentUser = state.users.find(u => u.role === 'participant') ?? state.users[0];
@@ -80,8 +84,39 @@ export default function MyJourney() {
   const progressColor = activeChallenge?.themeId ? themeProgressColors[activeChallenge.themeId] : '';
 
   const currentAction = activeChallenge?.weeklyActions[currentWeek - 1];
+  const isCompleted = currentAction ? completedIds.has(currentAction.id) : false;
   const currentMoment = currentAction?.momentId ? momentLookup[currentAction.momentId] : null;
   const currentInstruction = currentAction?.momentId ? momentInstructions[currentAction.momentId] : null;
+
+  // Count completed weeks for progress
+  const completedWeeks = activeChallenge
+    ? activeChallenge.weeklyActions.filter((_, i) => {
+        const weekNum = i + 1;
+        return weekNum < currentWeek || (weekNum === currentWeek && isCompleted);
+      }).length
+    : 0;
+  const dynamicProgressPct = activeChallenge
+    ? Math.round((completedWeeks / totalWeeks) * 100)
+    : 0;
+
+  const handleMarkDone = () => {
+    if (!currentAction || !activeChallenge || !currentUser || isCompleted) return;
+    setCompletedIds(prev => new Set(prev).add(currentAction.id));
+    setBonusXp(prev => prev + currentAction.points);
+
+    dispatch({
+      type: 'CHECK_IN',
+      payload: {
+        userId: currentUser.id,
+        challengeId: activeChallenge.id,
+        weekNumber: currentWeek,
+        completedActionIds: [currentAction.id],
+        note: 'Completed from My Journey',
+      },
+    });
+
+    toast.success(`🎉 Action completed — +${currentAction.points} XP earned`);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
@@ -104,11 +139,20 @@ export default function MyJourney() {
         <>
           {/* This Week */}
           {currentAction && currentWeek > 0 && currentWeek <= totalWeeks && (
-            <Card className="border-primary/30 bg-primary/5">
+            <Card className={`transition-all duration-500 ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-primary/30 bg-primary/5'}`}>
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <Flame className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-primary">This week</span>
+                  {isCompleted ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <span className="font-semibold text-green-500">✅ Completed</span>
+                    </>
+                  ) : (
+                    <>
+                      <Flame className="h-4 w-4 text-primary" />
+                      <span className="font-semibold text-primary">This week</span>
+                    </>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -135,7 +179,7 @@ export default function MyJourney() {
 
                 {/* XP + buttons */}
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-primary font-semibold text-sm">+{currentAction.points} XP</span>
+                  <span className={`font-semibold text-sm ${isCompleted ? 'text-green-500' : 'text-primary'}`}>+{currentAction.points} XP</span>
                   <div className="flex flex-wrap gap-2">
                     {currentAction.momentId && (
                       <Button
@@ -148,9 +192,14 @@ export default function MyJourney() {
                         Open moment
                       </Button>
                     )}
-                    <Button size="sm" className="gap-1.5 text-xs">
+                    <Button
+                      size="sm"
+                      className="gap-1.5 text-xs"
+                      disabled={isCompleted}
+                      onClick={handleMarkDone}
+                    >
                       <CheckCircle2 className="h-3 w-3" />
-                      Mark as done
+                      {isCompleted ? 'Done' : 'Mark as done'}
                     </Button>
                   </div>
                 </div>
@@ -168,7 +217,7 @@ export default function MyJourney() {
                 <span>{activeChallenge.title}</span>
                 <span>Week {currentWeek} / {totalWeeks}</span>
               </div>
-              <Progress value={progressPct} className={`h-2 bg-secondary ${progressColor}`} />
+              <Progress value={dynamicProgressPct} className={`h-2 bg-secondary ${progressColor}`} />
             </CardContent>
           </Card>
 
@@ -180,7 +229,7 @@ export default function MyJourney() {
               </div>
               <div>
                 <p className="text-sm font-medium">Your XP</p>
-                <p className="text-2xl font-bold text-primary">{currentUser?.xp ?? 0} <span className="text-sm font-normal text-muted-foreground">XP earned</span></p>
+                <p className="text-2xl font-bold text-primary">{(currentUser?.xp ?? 0) + bonusXp} <span className="text-sm font-normal text-muted-foreground">XP earned</span></p>
               </div>
             </CardContent>
           </Card>
