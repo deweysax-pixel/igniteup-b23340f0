@@ -260,9 +260,6 @@ function DemoDashboard() {
 
 
 
-        </CardContent>
-      </Card>
-
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
