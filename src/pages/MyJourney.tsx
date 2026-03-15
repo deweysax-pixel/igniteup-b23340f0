@@ -217,7 +217,7 @@ export default function MyJourney() {
                 <span>{activeChallenge.title}</span>
                 <span>Week {currentWeek} / {totalWeeks}</span>
               </div>
-              <Progress value={progressPct} className={`h-2 bg-secondary ${progressColor}`} />
+              <Progress value={dynamicProgressPct} className={`h-2 bg-secondary ${progressColor}`} />
             </CardContent>
           </Card>
 
