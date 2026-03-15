@@ -293,41 +293,8 @@ function DemoDashboard() {
       {/* Leadership action this week */}
       <WeeklyActionCard showJourneyLink />
 
-      {/* This week's focus */}
-      <Card className="border-primary/30 bg-primary/5">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-sm font-semibold">This week's focus</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium">Goal:</span>
-            <span className="text-muted-foreground">1 feedback conversation</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium">Tip:</span>
-            <span className="text-muted-foreground">Keep it under 2 minutes.</span>
-          </div>
-          {isManager && (
-            <p className="text-xs text-muted-foreground italic">
-              Suggested move: pick 1 member who's Due and run 1 feedback conversation.
-            </p>
-          )}
-          <div className="flex flex-wrap gap-2 pt-1">
-            <Button size="sm" variant="default" className="gap-2" onClick={() => navigate('/app/playbooks')}>
-              <BookOpen className="h-3.5 w-3.5" />
-              Open Weekly Feedback Playbook
-            </Button>
-            <Button size="sm" variant="outline" className="gap-2" onClick={handleCopySBI}>
-              <Copy className="h-3.5 w-3.5" />
-              Copy SBI Template
-            </Button>
-            {isManager && (
-              <Button size="sm" variant="secondary" className="gap-2" onClick={() => navigate('/app/ignite-team?filter=due')}>
-                <Users className="h-3.5 w-3.5" />
-                Pick a Due member
-              </Button>
-            )}
-          </div>
+
+
         </CardContent>
       </Card>
 
