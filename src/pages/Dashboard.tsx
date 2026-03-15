@@ -290,6 +290,9 @@ function DemoDashboard() {
 
       {isManager && <TeamAttentionCard />}
 
+      {/* Leadership action this week */}
+      <WeeklyActionCard showJourneyLink />
+
       {/* This week's focus */}
       <Card className="border-primary/30 bg-primary/5">
         <CardHeader className="pb-2">
