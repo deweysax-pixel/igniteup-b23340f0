@@ -229,7 +229,7 @@ export default function MyJourney() {
               </div>
               <div>
                 <p className="text-sm font-medium">Your XP</p>
-                <p className="text-2xl font-bold text-primary">{currentUser?.xp ?? 0} <span className="text-sm font-normal text-muted-foreground">XP earned</span></p>
+                <p className="text-2xl font-bold text-primary">{(currentUser?.xp ?? 0) + bonusXp} <span className="text-sm font-normal text-muted-foreground">XP earned</span></p>
               </div>
             </CardContent>
           </Card>
