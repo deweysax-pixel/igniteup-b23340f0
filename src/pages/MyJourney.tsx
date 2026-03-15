@@ -67,7 +67,9 @@ function getCurrentWeek(startDate: string, endDate: string, totalWeeks: number):
 
 export default function MyJourney() {
   const navigate = useNavigate();
-  const { state } = useDemo();
+  const { state, dispatch } = useDemo();
+  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [bonusXp, setBonusXp] = useState(0);
 
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
   const currentUser = state.users.find(u => u.role === 'participant') ?? state.users[0];
