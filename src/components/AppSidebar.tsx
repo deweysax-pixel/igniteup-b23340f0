@@ -61,6 +61,7 @@ const sections: { label: string; items: NavItem[] }[] = [
     items: [
       { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
       { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'My Journey', url: '/app/my-journey', icon: Footprints },
       { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck, roles: ['manager', 'participant'] },
       { title: 'Team', url: '/app/team', icon: Users },
     ],
