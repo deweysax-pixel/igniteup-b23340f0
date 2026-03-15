@@ -46,6 +46,7 @@ import Administration from "./pages/Administration";
 import Bootstrap from "./pages/Bootstrap";
 import RolloutPreview from "./pages/RolloutPreview";
 import MomentLibrary from "./pages/MomentLibrary";
+import MyJourney from "./pages/MyJourney";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -108,6 +109,7 @@ const App = () => (
                     <Route path="leads" element={<ProtectedRoute allowedRoles={['admin']}><LeadsPage /></ProtectedRoute>} />
                     <Route path="administration" element={<ProtectedRoute allowedRoles={['admin']}><Administration /></ProtectedRoute>} />
                     <Route path="moment-library" element={<MomentLibrary />} />
+                    <Route path="my-journey" element={<MyJourney />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
