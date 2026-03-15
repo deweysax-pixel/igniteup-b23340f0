@@ -61,6 +61,7 @@ const sections: { label: string; items: NavItem[] }[] = [
     items: [
       { title: 'Dashboard', url: '/app', icon: LayoutDashboard },
       { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'My Journey', url: '/app/my-journey', icon: Footprints },
       { title: 'My Check-in', url: '/app/checkin', icon: ClipboardCheck, roles: ['manager', 'participant'] },
       { title: 'Team', url: '/app/team', icon: Users },
     ],
@@ -114,6 +115,7 @@ const adminSections: { label: string; items: NavItem[] }[] = [
     items: [
       { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
       { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'My Journey', url: '/app/my-journey', icon: Footprints },
       { title: 'Teams', url: '/app/teams', icon: Users },
     ],
   },
