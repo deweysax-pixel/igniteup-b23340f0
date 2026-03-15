@@ -175,6 +175,7 @@ const managerSections: { label: string; items: NavItem[] }[] = [
     items: [
       { title: 'Playbooks', url: '/app/playbooks', icon: BookOpen },
       { title: 'Challenges', url: '/app/challenges', icon: Target },
+      { title: 'My Journey', url: '/app/my-journey', icon: Footprints },
       { title: 'Team', url: '/app/team', icon: Users },
     ],
   },

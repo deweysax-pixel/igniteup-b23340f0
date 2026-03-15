@@ -109,6 +109,7 @@ const App = () => (
                     <Route path="leads" element={<ProtectedRoute allowedRoles={['admin']}><LeadsPage /></ProtectedRoute>} />
                     <Route path="administration" element={<ProtectedRoute allowedRoles={['admin']}><Administration /></ProtectedRoute>} />
                     <Route path="moment-library" element={<MomentLibrary />} />
+                    <Route path="my-journey" element={<MyJourney />} />
                   </Route>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
