@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
-import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { ExternalLink, CheckCircle2, Flame, Trophy } from 'lucide-react';
+import { toast } from 'sonner';
 import { leadershipThemes } from '@/data/leadership-moments';
+import { getCurrentWeek } from '@/components/WeeklyActionCard';
 
 const themeLabels: Record<string, string> = {
   direction: 'Direction',
@@ -53,18 +54,6 @@ const momentLookup = (() => {
   return map;
 })();
 
-function getCurrentWeek(startDate: string, endDate: string, totalWeeks: number): number {
-  const now = new Date();
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  if (now < start) return 0;
-  if (now > end) return totalWeeks;
-  const elapsed = now.getTime() - start.getTime();
-  const total = end.getTime() - start.getTime();
-  const weekLen = total / totalWeeks;
-  return Math.min(Math.floor(elapsed / weekLen) + 1, totalWeeks);
-}
-
 export default function MyJourney() {
   const navigate = useNavigate();
   const { state, dispatch } = useDemo();
@@ -78,9 +67,6 @@ export default function MyJourney() {
   const currentWeek = activeChallenge
     ? getCurrentWeek(activeChallenge.startDate, activeChallenge.endDate, totalWeeks)
     : 0;
-  const progressPct = activeChallenge
-    ? activeChallenge.status === 'completed' ? 100 : Math.round((currentWeek / totalWeeks) * 100)
-    : 0;
   const progressColor = activeChallenge?.themeId ? themeProgressColors[activeChallenge.themeId] : '';
 
   const currentAction = activeChallenge?.weeklyActions[currentWeek - 1];
@@ -88,7 +74,6 @@ export default function MyJourney() {
   const currentMoment = currentAction?.momentId ? momentLookup[currentAction.momentId] : null;
   const currentInstruction = currentAction?.momentId ? momentInstructions[currentAction.momentId] : null;
 
-  // Count completed weeks for progress
   const completedWeeks = activeChallenge
     ? activeChallenge.weeklyActions.filter((_, i) => {
         const weekNum = i + 1;

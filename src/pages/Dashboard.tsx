@@ -11,6 +11,7 @@ import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen, PlayCircle, Grid3X3, 
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { TeamAttentionCard } from '@/components/TeamAttentionCard';
+import { WeeklyActionCard } from '@/components/WeeklyActionCard';
 import { WeeklyReviewModal } from '@/components/WeeklyReviewModal';
 import { getWeekRange } from '@/lib/week-utils';
 
@@ -288,6 +289,9 @@ function DemoDashboard() {
       )}
 
       {isManager && <TeamAttentionCard />}
+
+      {/* Leadership action this week */}
+      <WeeklyActionCard showJourneyLink />
 
       {/* This week's focus */}
       <Card className="border-primary/30 bg-primary/5">
