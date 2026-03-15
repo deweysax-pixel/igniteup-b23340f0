@@ -139,11 +139,20 @@ export default function MyJourney() {
         <>
           {/* This Week */}
           {currentAction && currentWeek > 0 && currentWeek <= totalWeeks && (
-            <Card className="border-primary/30 bg-primary/5">
+            <Card className={`transition-all duration-500 ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-primary/30 bg-primary/5'}`}>
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-2 text-sm">
-                  <Flame className="h-4 w-4 text-primary" />
-                  <span className="font-semibold text-primary">This week</span>
+                  {isCompleted ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                      <span className="font-semibold text-green-500">✅ Completed</span>
+                    </>
+                  ) : (
+                    <>
+                      <Flame className="h-4 w-4 text-primary" />
+                      <span className="font-semibold text-primary">This week</span>
+                    </>
+                  )}
                 </div>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -170,7 +179,7 @@ export default function MyJourney() {
 
                 {/* XP + buttons */}
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-primary font-semibold text-sm">+{currentAction.points} XP</span>
+                  <span className={`font-semibold text-sm ${isCompleted ? 'text-green-500' : 'text-primary'}`}>+{currentAction.points} XP</span>
                   <div className="flex flex-wrap gap-2">
                     {currentAction.momentId && (
                       <Button
@@ -183,9 +192,14 @@ export default function MyJourney() {
                         Open moment
                       </Button>
                     )}
-                    <Button size="sm" className="gap-1.5 text-xs">
+                    <Button
+                      size="sm"
+                      className="gap-1.5 text-xs"
+                      disabled={isCompleted}
+                      onClick={handleMarkDone}
+                    >
                       <CheckCircle2 className="h-3 w-3" />
-                      Mark as done
+                      {isCompleted ? 'Done' : 'Mark as done'}
                     </Button>
                   </div>
                 </div>
