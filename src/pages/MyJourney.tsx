@@ -84,8 +84,39 @@ export default function MyJourney() {
   const progressColor = activeChallenge?.themeId ? themeProgressColors[activeChallenge.themeId] : '';
 
   const currentAction = activeChallenge?.weeklyActions[currentWeek - 1];
+  const isCompleted = currentAction ? completedIds.has(currentAction.id) : false;
   const currentMoment = currentAction?.momentId ? momentLookup[currentAction.momentId] : null;
   const currentInstruction = currentAction?.momentId ? momentInstructions[currentAction.momentId] : null;
+
+  // Count completed weeks for progress
+  const completedWeeks = activeChallenge
+    ? activeChallenge.weeklyActions.filter((_, i) => {
+        const weekNum = i + 1;
+        return weekNum < currentWeek || (weekNum === currentWeek && isCompleted);
+      }).length
+    : 0;
+  const dynamicProgressPct = activeChallenge
+    ? Math.round((completedWeeks / totalWeeks) * 100)
+    : 0;
+
+  const handleMarkDone = () => {
+    if (!currentAction || !activeChallenge || !currentUser || isCompleted) return;
+    setCompletedIds(prev => new Set(prev).add(currentAction.id));
+    setBonusXp(prev => prev + currentAction.points);
+
+    dispatch({
+      type: 'CHECK_IN',
+      payload: {
+        userId: currentUser.id,
+        challengeId: activeChallenge.id,
+        weekNumber: currentWeek,
+        completedActionIds: [currentAction.id],
+        note: 'Completed from My Journey',
+      },
+    });
+
+    toast.success(`🎉 Action completed — +${currentAction.points} XP earned`);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
