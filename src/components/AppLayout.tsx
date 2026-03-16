@@ -9,6 +9,7 @@ import { PreviewGate } from '@/components/PreviewGate';
 import { CommandCenter } from '@/components/CommandCenter';
 import { SearchJump } from '@/components/SearchJump';
 import { DemoPerspectiveSwitcher } from '@/components/DemoPerspectiveSwitcher';
+import { SparkAssistant } from '@/components/SparkAssistant';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -88,6 +89,7 @@ export default function AppLayout() {
       </div>
       <CommandCenter open={commandOpen} onOpenChange={setCommandOpen} />
       <DemoPerspectiveSwitcher />
+      <SparkAssistant />
     </SidebarProvider>
   );
 }
