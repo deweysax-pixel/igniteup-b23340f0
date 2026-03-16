@@ -278,7 +278,21 @@ export function SparkAssistant() {
                     >
                       {m.role === 'assistant' ? (
                         <div className="prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_li]:mb-0.5">
-                          <ReactMarkdown>{m.content}</ReactMarkdown>
+                          <ReactMarkdown components={{
+                            blockquote: ({ children }) => {
+                              const text = extractText(children);
+                              return (
+                                <div className="relative group/bq">
+                                  <blockquote className="border-l-2 border-primary/40 pl-3 italic text-muted-foreground my-2">
+                                    {children}
+                                  </blockquote>
+                                  {text && (
+                                    <CopyScriptButton text={text} />
+                                  )}
+                                </div>
+                              );
+                            }
+                          }}>{m.content}</ReactMarkdown>
                         </div>
                       ) : (
                         m.content
