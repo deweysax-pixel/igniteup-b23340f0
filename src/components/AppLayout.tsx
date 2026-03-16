@@ -89,6 +89,7 @@ export default function AppLayout() {
       </div>
       <CommandCenter open={commandOpen} onOpenChange={setCommandOpen} />
       <DemoPerspectiveSwitcher />
+      <SparkAssistant />
     </SidebarProvider>
   );
 }
