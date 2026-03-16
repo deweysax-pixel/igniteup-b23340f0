@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useDemo } from '@/contexts/DemoContext';
 import { getCurrentWeek } from '@/components/WeeklyActionCard';
 import { leadershipThemes } from '@/data/leadership-moments';
@@ -6,7 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Send, MessageSquare, Lightbulb, RotateCcw } from 'lucide-react';
+import { Sparkles, Send, MessageSquare, Lightbulb, RotateCcw, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 
