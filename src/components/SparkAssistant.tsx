@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useDemo } from '@/contexts/DemoContext';
 import { getCurrentWeek } from '@/components/WeeklyActionCard';
 import { leadershipThemes } from '@/data/leadership-moments';
@@ -6,11 +6,40 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Send, MessageSquare, Lightbulb, RotateCcw } from 'lucide-react';
+import { Sparkles, Send, MessageSquare, Lightbulb, RotateCcw, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/spark-chat`;
+
+function extractText(node: React.ReactNode): string {
+  if (typeof node === 'string') return node;
+  if (Array.isArray(node)) return node.map(extractText).join('');
+  if (node && typeof node === 'object' && 'props' in node) {
+    return extractText((node as React.ReactElement).props.children);
+  }
+  return '';
+}
+
+function CopyScriptButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(text.trim());
+    setCopied(true);
+    toast.success('Script copied');
+    setTimeout(() => setCopied(false), 2000);
+  }, [text]);
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="flex items-center gap-1 text-[10px] font-medium text-primary hover:text-primary/80 transition-colors mt-1"
+    >
+      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+      {copied ? 'Copied' : 'Copy script'}
+    </button>
+  );
+}
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
@@ -278,7 +307,21 @@ export function SparkAssistant() {
                     >
                       {m.role === 'assistant' ? (
                         <div className="prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_li]:mb-0.5">
-                          <ReactMarkdown>{m.content}</ReactMarkdown>
+                          <ReactMarkdown components={{
+                            blockquote: ({ children }) => {
+                              const text = extractText(children);
+                              return (
+                                <div className="relative group/bq">
+                                  <blockquote className="border-l-2 border-primary/40 pl-3 italic text-muted-foreground my-2">
+                                    {children}
+                                  </blockquote>
+                                  {text && (
+                                    <CopyScriptButton text={text} />
+                                  )}
+                                </div>
+                              );
+                            }
+                          }}>{m.content}</ReactMarkdown>
                         </div>
                       ) : (
                         m.content
