@@ -75,7 +75,7 @@ export function saveConversation(messages: Msg[], actionTitle?: string): void {
   const entry: SavedConversation = {
     id: crypto.randomUUID(),
     type: detectType(messages),
-    preview: extractPreview(messages),
+    preview: extractTopicSummary(messages),
     actionTitle: actionTitle || undefined,
     messages,
     timestamp: Date.now(),
