@@ -186,13 +186,13 @@ export function SparkAssistant() {
 
   const handleNewConversation = useCallback(() => {
     if (messages.length >= 2) {
-      saveConversation(messages);
+      saveConversation(messages, actionLabel || undefined);
       setHistory(loadHistory());
     }
     setMessages([]);
     setInput('');
     setView('chat');
-  }, [messages]);
+  }, [messages, actionLabel]);
 
   const handleOpenHistory = useCallback(() => {
     setHistory(loadHistory());
@@ -200,13 +200,12 @@ export function SparkAssistant() {
   }, []);
 
   const handleSelectConversation = useCallback((conv: SavedConversation) => {
-    // Save current conversation first if it has content
     if (messages.length >= 2) {
-      saveConversation(messages);
+      saveConversation(messages, actionLabel || undefined);
     }
     setMessages(conv.messages);
     setView('chat');
-  }, [messages]);
+  }, [messages, actionLabel]);
 
   const handleDeleteConversation = useCallback((id: string) => {
     deleteConversation(id);
@@ -216,14 +215,14 @@ export function SparkAssistant() {
   // Auto-save when closing the panel
   const handleOpenChange = useCallback((isOpen: boolean) => {
     if (!isOpen && messages.length >= 2) {
-      saveConversation(messages);
+      saveConversation(messages, actionLabel || undefined);
     }
     setOpen(isOpen);
     if (isOpen) {
       setView('chat');
       setHistory(loadHistory());
     }
-  }, [messages]);
+  }, [messages, actionLabel]);
 
   const send = async (text: string) => {
     if (!text.trim() || isLoading) return;

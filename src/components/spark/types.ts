@@ -6,6 +6,7 @@ export interface SavedConversation {
   id: string;
   type: ConversationType;
   preview: string;
+  actionTitle?: string;
   messages: Msg[];
   timestamp: number;
 }
