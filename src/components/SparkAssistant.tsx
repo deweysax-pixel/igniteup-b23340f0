@@ -186,13 +186,13 @@ export function SparkAssistant() {
 
   const handleNewConversation = useCallback(() => {
     if (messages.length >= 2) {
-      saveConversation(messages);
+      saveConversation(messages, actionLabel || undefined);
       setHistory(loadHistory());
     }
     setMessages([]);
     setInput('');
     setView('chat');
-  }, [messages]);
+  }, [messages, actionLabel]);
 
   const handleOpenHistory = useCallback(() => {
     setHistory(loadHistory());
