@@ -44,25 +44,28 @@ export function SparkHistory({ history, onSelect, onDelete, onBack }: Props) {
             No conversations yet. Start chatting with Spark!
           </div>
         ) : (
-          <div className="p-2 space-y-1">
+          <div className="p-2 space-y-1.5">
             {history.map(conv => {
               const cfg = typeConfig[conv.type];
               const Icon = cfg.icon;
               return (
                 <div
                   key={conv.id}
-                  className="group flex items-start gap-2 rounded-lg border border-border bg-card p-2.5 hover:bg-accent/50 transition-colors cursor-pointer"
+                  className="group flex items-start gap-2.5 rounded-lg border border-border bg-card p-3 hover:bg-accent/50 transition-colors cursor-pointer"
                   onClick={() => onSelect(conv)}
                 >
-                  <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                    <Icon className="h-3 w-3 text-primary" />
+                  <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                    <Icon className="h-3.5 w-3.5 text-primary" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">{cfg.label}</Badge>
-                      <span className="text-[10px] text-muted-foreground">{formatTime(conv.timestamp)}</span>
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 shrink-0">{cfg.label}</Badge>
+                      <span className="text-[10px] text-muted-foreground ml-auto shrink-0">{formatTime(conv.timestamp)}</span>
                     </div>
-                    <p className="text-xs text-foreground truncate">{conv.preview}</p>
+                    {conv.actionTitle && (
+                      <p className="text-xs font-medium text-foreground truncate">{conv.actionTitle}</p>
+                    )}
+                    <p className="text-[11px] text-muted-foreground truncate italic">"{conv.preview}"</p>
                   </div>
                   <button
                     onClick={e => { e.stopPropagation(); onDelete(conv.id); }}
