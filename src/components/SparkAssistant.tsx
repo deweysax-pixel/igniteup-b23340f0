@@ -6,9 +6,12 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Sparkles, Send, MessageSquare, Lightbulb, RotateCcw, Copy, Check } from 'lucide-react';
+import { Sparkles, Send, MessageSquare, Lightbulb, RotateCcw, Copy, Check, Plus, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
+import type { Msg, SavedConversation } from '@/components/spark/types';
+import { loadHistory, saveConversation, deleteConversation } from '@/components/spark/history-store';
+import { SparkHistory } from '@/components/spark/SparkHistory';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/spark-chat`;
 
@@ -40,8 +43,6 @@ function CopyScriptButton({ text }: { text: string }) {
     </button>
   );
 }
-
-type Msg = { role: 'user' | 'assistant'; content: string };
 
 const momentLookup = (() => {
   const map: Record<string, { title: string; action: string; themeId: string }> = {};
@@ -138,6 +139,8 @@ export function SparkAssistant() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [view, setView] = useState<'chat' | 'history'>('chat');
+  const [history, setHistory] = useState<SavedConversation[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -176,10 +179,51 @@ export function SparkAssistant() {
   }, [messages]);
 
   useEffect(() => {
-    if (open && inputRef.current) {
+    if (open && inputRef.current && view === 'chat') {
       setTimeout(() => inputRef.current?.focus(), 300);
     }
-  }, [open]);
+  }, [open, view]);
+
+  const handleNewConversation = useCallback(() => {
+    if (messages.length >= 2) {
+      saveConversation(messages);
+      setHistory(loadHistory());
+    }
+    setMessages([]);
+    setInput('');
+    setView('chat');
+  }, [messages]);
+
+  const handleOpenHistory = useCallback(() => {
+    setHistory(loadHistory());
+    setView('history');
+  }, []);
+
+  const handleSelectConversation = useCallback((conv: SavedConversation) => {
+    // Save current conversation first if it has content
+    if (messages.length >= 2) {
+      saveConversation(messages);
+    }
+    setMessages(conv.messages);
+    setView('chat');
+  }, [messages]);
+
+  const handleDeleteConversation = useCallback((id: string) => {
+    deleteConversation(id);
+    setHistory(loadHistory());
+  }, []);
+
+  // Auto-save when closing the panel
+  const handleOpenChange = useCallback((isOpen: boolean) => {
+    if (!isOpen && messages.length >= 2) {
+      saveConversation(messages);
+    }
+    setOpen(isOpen);
+    if (isOpen) {
+      setView('chat');
+      setHistory(loadHistory());
+    }
+  }, [messages]);
 
   const send = async (text: string) => {
     if (!text.trim() || isLoading) return;
@@ -222,7 +266,7 @@ export function SparkAssistant() {
     <>
       {/* Floating button */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => handleOpenChange(true)}
         className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-0.5 group"
         aria-label="Open Spark assistant"
       >
@@ -234,131 +278,162 @@ export function SparkAssistant() {
       </button>
 
       {/* Chat panel */}
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-md p-0 flex flex-col bg-background border-border">
-          {/* Header */}
-          <SheetHeader className="p-4 pb-3 border-b border-border">
-            <div className="flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                <Sparkles className="h-4 w-4 text-primary" />
-              </div>
-              <div>
-                <SheetTitle className="text-sm">Spark — Your leadership coach</SheetTitle>
-                <SheetDescription className="text-xs">
-                  Ask for help preparing or reflecting on your leadership actions.
-                </SheetDescription>
-              </div>
-            </div>
-          </SheetHeader>
+          {view === 'history' ? (
+            <SparkHistory
+              history={history}
+              onSelect={handleSelectConversation}
+              onDelete={handleDeleteConversation}
+              onBack={() => setView('chat')}
+            />
+          ) : (
+            <>
+              {/* Header */}
+              <SheetHeader className="p-4 pb-3 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <SheetTitle className="text-sm">Spark — Your leadership coach</SheetTitle>
+                    <SheetDescription className="text-xs">
+                      Ask for help preparing or reflecting on your leadership actions.
+                    </SheetDescription>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={handleOpenHistory}
+                      title="History"
+                    >
+                      <Clock className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7"
+                      onClick={handleNewConversation}
+                      title="New conversation"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </SheetHeader>
 
-          {/* Messages */}
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
-            {messages.length === 0 ? (
-              <div className="space-y-4">
-                {/* Current action context */}
-                {actionLabel && (
-                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-2">
-                    <p className="text-xs font-medium text-primary">Your leadership action this week:</p>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-muted-foreground">Week {actionWeek}</span>
-                      {actionTheme && (
-                        <>
-                          <span className="text-xs text-muted-foreground">•</span>
-                          <Badge variant="outline" className="text-[9px] px-1.5 py-0">{actionTheme}</Badge>
-                        </>
-                      )}
+              {/* Messages */}
+              <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+                {messages.length === 0 ? (
+                  <div className="space-y-4">
+                    {/* Current action context */}
+                    {actionLabel && (
+                      <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-2">
+                        <p className="text-xs font-medium text-primary">Your leadership action this week:</p>
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-muted-foreground">Week {actionWeek}</span>
+                          {actionTheme && (
+                            <>
+                              <span className="text-xs text-muted-foreground">•</span>
+                              <Badge variant="outline" className="text-[9px] px-1.5 py-0">{actionTheme}</Badge>
+                            </>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium">{actionLabel}</p>
+                        {actionInstruction && (
+                          <p className="text-xs text-muted-foreground">{actionInstruction}</p>
+                        )}
+                      </div>
+                    )}
+
+                    <p className="text-sm text-muted-foreground">
+                      Would you like help preparing what to say?
+                    </p>
+
+                    {/* Quick actions */}
+                    <div className="space-y-2">
+                      {quickActions.map(qa => (
+                        <button
+                          key={qa.label}
+                          onClick={() => send(qa.prompt)}
+                          disabled={isLoading}
+                          className="w-full flex items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-sm hover:bg-accent/50 transition-colors disabled:opacity-50"
+                        >
+                          <qa.icon className="h-4 w-4 text-primary shrink-0" />
+                          {qa.label}
+                        </button>
+                      ))}
                     </div>
-                    <p className="text-sm font-medium">{actionLabel}</p>
-                    {actionInstruction && (
-                      <p className="text-xs text-muted-foreground">{actionInstruction}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((m, i) => (
+                      <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div
+                          className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
+                            m.role === 'user'
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-card border border-border'
+                          }`}
+                        >
+                          {m.role === 'assistant' ? (
+                            <div className="prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_li]:mb-0.5">
+                              <ReactMarkdown components={{
+                                blockquote: ({ children }) => {
+                                  const text = extractText(children);
+                                  return (
+                                    <div className="relative group/bq">
+                                      <blockquote className="border-l-2 border-primary/40 pl-3 italic text-muted-foreground my-2">
+                                        {children}
+                                      </blockquote>
+                                      {text && (
+                                        <CopyScriptButton text={text} />
+                                      )}
+                                    </div>
+                                  );
+                                }
+                              }}>{m.content}</ReactMarkdown>
+                            </div>
+                          ) : (
+                            m.content
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
+                      <div className="flex justify-start">
+                        <div className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-muted-foreground">
+                          <span className="animate-pulse">Thinking…</span>
+                        </div>
+                      </div>
                     )}
                   </div>
                 )}
+              </ScrollArea>
 
-                <p className="text-sm text-muted-foreground">
-                  Would you like help preparing what to say?
-                </p>
-
-                {/* Quick actions */}
-                <div className="space-y-2">
-                  {quickActions.map(qa => (
-                    <button
-                      key={qa.label}
-                      onClick={() => send(qa.prompt)}
-                      disabled={isLoading}
-                      className="w-full flex items-center gap-2.5 rounded-lg border border-border bg-card p-3 text-left text-sm hover:bg-accent/50 transition-colors disabled:opacity-50"
-                    >
-                      <qa.icon className="h-4 w-4 text-primary shrink-0" />
-                      {qa.label}
-                    </button>
-                  ))}
-                </div>
+              {/* Input */}
+              <div className="p-3 border-t border-border">
+                <form
+                  onSubmit={e => { e.preventDefault(); send(input); }}
+                  className="flex items-center gap-2"
+                >
+                  <input
+                    ref={inputRef}
+                    value={input}
+                    onChange={e => setInput(e.target.value)}
+                    placeholder="Ask Spark anything…"
+                    disabled={isLoading}
+                    className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
+                  />
+                  <Button type="submit" size="icon" className="h-9 w-9 shrink-0" disabled={isLoading || !input.trim()}>
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </form>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((m, i) => (
-                  <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div
-                      className={`max-w-[85%] rounded-lg px-3 py-2 text-sm ${
-                        m.role === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-card border border-border'
-                      }`}
-                    >
-                      {m.role === 'assistant' ? (
-                        <div className="prose prose-sm prose-invert max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:mb-2 [&_li]:mb-0.5">
-                          <ReactMarkdown components={{
-                            blockquote: ({ children }) => {
-                              const text = extractText(children);
-                              return (
-                                <div className="relative group/bq">
-                                  <blockquote className="border-l-2 border-primary/40 pl-3 italic text-muted-foreground my-2">
-                                    {children}
-                                  </blockquote>
-                                  {text && (
-                                    <CopyScriptButton text={text} />
-                                  )}
-                                </div>
-                              );
-                            }
-                          }}>{m.content}</ReactMarkdown>
-                        </div>
-                      ) : (
-                        m.content
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {isLoading && messages[messages.length - 1]?.role !== 'assistant' && (
-                  <div className="flex justify-start">
-                    <div className="bg-card border border-border rounded-lg px-3 py-2 text-sm text-muted-foreground">
-                      <span className="animate-pulse">Thinking…</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-          </ScrollArea>
-
-          {/* Input */}
-          <div className="p-3 border-t border-border">
-            <form
-              onSubmit={e => { e.preventDefault(); send(input); }}
-              className="flex items-center gap-2"
-            >
-              <input
-                ref={inputRef}
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                placeholder="Ask Spark anything…"
-                disabled={isLoading}
-                className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:opacity-50"
-              />
-              <Button type="submit" size="icon" className="h-9 w-9 shrink-0" disabled={isLoading || !input.trim()}>
-                <Send className="h-4 w-4" />
-              </Button>
-            </form>
-          </div>
+            </>
+          )}
         </SheetContent>
       </Sheet>
     </>
