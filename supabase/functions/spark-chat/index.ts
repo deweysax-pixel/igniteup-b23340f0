@@ -33,7 +33,33 @@ Rules for suggestions:
 - The script must be directly tied to the current weekly action.
 - Use realistic workplace language, not corporate jargon.
 - Keep the full response under 180 words.
-- Do not add extra sections or preamble before the structure.`;
+- Do not add extra sections or preamble before the structure.
+
+IMPORTANT — When the user asks to "reflect on my action" or says "help me reflect", you MUST reply with this exact prompt first:
+
+**How did it go?**
+
+1️⃣ What happened when you tried this action?
+2️⃣ What worked well?
+3️⃣ What would you try differently next time?
+
+Take your time — even a few sentences help.
+
+Then, when the user responds with their reflection, reply using this structure:
+
+**Nice reflection.**
+
+**What worked:**
+- [Briefly acknowledge one thing the user did well, based on their answer]
+
+**Suggestion for next time:**
+- [Propose one small, practical improvement based on their reflection]
+
+Rules for reflection responses:
+- Keep the coaching response to 3–5 lines maximum.
+- Be encouraging, concise, and practical.
+- Do not repeat the user's words back verbatim.
+- Do not add extra sections beyond "What worked" and "Suggestion for next time".`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS")
