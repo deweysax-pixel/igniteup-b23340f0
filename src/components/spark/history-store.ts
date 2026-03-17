@@ -23,26 +23,47 @@ function detectType(messages: Msg[]): ConversationType {
   return 'unknown';
 }
 
-function extractPreview(messages: Msg[]): string {
-  const assistant = messages.find(m => m.role === 'assistant');
-  if (assistant) {
-    const clean = assistant.content.replace(/[*#>_~`🎯💡⚡1️⃣2️⃣3️⃣]/g, '').trim();
-    const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
-    const meaningful = lines.find(l =>
-      l.length > 20 &&
-      !l.startsWith('Suggested script') &&
-      !l.startsWith('Why this works') &&
-      !l.startsWith('Quick version') &&
-      !l.startsWith('How did it go') &&
-      !l.startsWith('Nice reflection') &&
-      !l.startsWith('What worked') &&
-      !l.startsWith('Suggestion for next')
-    );
-    if (meaningful) return meaningful.slice(0, 100);
-    return lines[0]?.slice(0, 80) || 'Conversation';
+function extractTopicSummary(messages: Msg[]): string {
+  const userMsg = messages.find(m => m.role === 'user')?.content?.toLowerCase() || '';
+
+  // Detect reflection prompts
+  if (userMsg.includes('reflect') || userMsg.includes('how') && userMsg.includes('went')) {
+    return 'Action reflection';
   }
-  const user = messages.find(m => m.role === 'user');
-  return user?.content?.slice(0, 80) || 'Conversation';
+
+  // Detect suggestion/script generation
+  if (userMsg.includes('suggestion') || userMsg.includes('generate') || userMsg.includes('script')) {
+    // Try to extract topic from the assistant response
+    const assistantMsg = messages.find(m => m.role === 'assistant')?.content || '';
+    const scriptMatch = assistantMsg.match(/[""]([^""]{5,40})[""]|> (.{5,40})/);
+    if (scriptMatch) {
+      const snippet = (scriptMatch[1] || scriptMatch[2] || '').trim();
+      // Condense to 3-4 words
+      const words = snippet.split(/\s+/).slice(0, 4).join(' ');
+      if (words.length > 3) return words;
+    }
+    return 'Action script';
+  }
+
+  // For questions, extract topic from user message
+  if (userMsg.includes('question') || userMsg.includes('how') || userMsg.includes('what') || userMsg.includes('why')) {
+    // Strip generic prefixes and extract meaningful words
+    const cleaned = userMsg
+      .replace(/^(i have a question about|help me with|tell me about|how (do|can|should) i)\s*/i, '')
+      .replace(/my leadership action this week\.?/i, '')
+      .replace(/this week\.?/i, '')
+      .trim();
+    if (cleaned.length > 3) {
+      const words = cleaned.split(/\s+/).slice(0, 4).join(' ');
+      return words.charAt(0).toUpperCase() + words.slice(1);
+    }
+    return 'Leadership question';
+  }
+
+  // Fallback: extract key words from user message
+  const words = userMsg.replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 3).slice(0, 3).join(' ');
+  if (words.length > 3) return words.charAt(0).toUpperCase() + words.slice(1);
+  return 'Conversation';
 }
 
 export function saveConversation(messages: Msg[], actionTitle?: string): void {

@@ -65,7 +65,7 @@ export function SparkHistory({ history, onSelect, onDelete, onBack }: Props) {
                     {conv.actionTitle && (
                       <p className="text-xs font-medium text-foreground truncate">{conv.actionTitle}</p>
                     )}
-                    <p className="text-[11px] text-muted-foreground truncate italic">"{conv.preview}"</p>
+                    <p className="text-[11px] text-muted-foreground truncate">{conv.preview}</p>
                   </div>
                   <button
                     onClick={e => { e.stopPropagation(); onDelete(conv.id); }}
