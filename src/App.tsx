@@ -119,6 +119,7 @@ const App = () => (
             </JourneyProvider>
           </DemoProvider>
         </PreviewProvider>
+        </ThemeProvider>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
