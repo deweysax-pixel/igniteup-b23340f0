@@ -46,6 +46,7 @@ export default function AppLayout() {
               <SearchJump />
             </div>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button
                 size="sm"
                 variant="outline"
