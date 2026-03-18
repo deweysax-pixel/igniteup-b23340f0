@@ -11,6 +11,7 @@ import { SearchJump } from '@/components/SearchJump';
 import { DemoPerspectiveSwitcher } from '@/components/DemoPerspectiveSwitcher';
 import { SparkAssistant } from '@/components/SparkAssistant';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
