@@ -93,15 +93,15 @@ function extractTopicSummary(messages: Msg[]): string {
       .trim();
 
     if (cleaned.length > 3) {
-      const summary = extractMeaningfulWords(cleaned);
+      const summary = extractSemanticLabel(cleaned);
       if (summary.length > 2) return summary;
     }
   }
 
-  // Fallback: raw first user words (never use AI response)
+  // Fallback: extract keywords from first user message
   const firstUser = userMessages[0]?.content || '';
-  const fallback = firstUser.replace(/[^\p{L}\p{N}\s]/gu, '').split(/\s+/).filter(w => w.length > 2).slice(0, 3).join(' ');
-  if (fallback.length > 2) return fallback.charAt(0).toUpperCase() + fallback.slice(1);
+  const fallback = extractSemanticLabel(firstUser);
+  if (fallback.length > 2) return fallback;
   return 'Spark chat';
 }
 
