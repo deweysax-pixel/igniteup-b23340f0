@@ -105,14 +105,31 @@ function extractTopicSummary(messages: Msg[]): string {
   return 'Spark chat';
 }
 
-export function saveConversation(messages: Msg[], actionTitle?: string): void {
-  if (messages.length < 2) return;
+export function saveConversation(messages: Msg[], actionTitle?: string, existingId?: string): string {
+  if (messages.length === 0) return existingId || '';
   const history = loadHistory();
-  const lastEntry = history[0];
-  if (lastEntry && lastEntry.messages.length === messages.length &&
-      lastEntry.messages[0]?.content === messages[0]?.content) return;
+
+  // Update existing conversation in-place
+  if (existingId) {
+    const idx = history.findIndex(c => c.id === existingId);
+    if (idx !== -1) {
+      history[idx] = {
+        ...history[idx],
+        messages,
+        preview: extractTopicSummary(messages),
+        type: detectType(messages),
+        actionTitle: actionTitle || history[idx].actionTitle,
+        timestamp: Date.now(),
+      };
+      persist(history);
+      return existingId;
+    }
+  }
+
+  // Create new entry
+  const id = crypto.randomUUID();
   const entry: SavedConversation = {
-    id: crypto.randomUUID(),
+    id,
     type: detectType(messages),
     preview: extractTopicSummary(messages),
     actionTitle: actionTitle || undefined,
@@ -120,6 +137,7 @@ export function saveConversation(messages: Msg[], actionTitle?: string): void {
     timestamp: Date.now(),
   };
   persist([entry, ...history]);
+  return id;
 }
 
 export function deleteConversation(id: string): void {

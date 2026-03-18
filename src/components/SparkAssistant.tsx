@@ -143,6 +143,7 @@ export function SparkAssistant() {
   const [history, setHistory] = useState<SavedConversation[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const conversationIdRef = useRef<string | null>(null);
 
   const { state } = useDemo();
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
@@ -178,6 +179,13 @@ export function SparkAssistant() {
     }
   }, [messages]);
 
+  // Auto-save whenever messages change (after at least 1 message)
+  useEffect(() => {
+    if (messages.length === 0) return;
+    const id = saveConversation(messages, actionLabel || undefined, conversationIdRef.current || undefined);
+    conversationIdRef.current = id;
+  }, [messages, actionLabel]);
+
   useEffect(() => {
     if (open && inputRef.current && view === 'chat') {
       setTimeout(() => inputRef.current?.focus(), 300);
@@ -185,14 +193,11 @@ export function SparkAssistant() {
   }, [open, view]);
 
   const handleNewConversation = useCallback(() => {
-    if (messages.length >= 2) {
-      saveConversation(messages, actionLabel || undefined);
-      setHistory(loadHistory());
-    }
+    conversationIdRef.current = null;
     setMessages([]);
     setInput('');
     setView('chat');
-  }, [messages, actionLabel]);
+  }, []);
 
   const handleOpenHistory = useCallback(() => {
     setHistory(loadHistory());
@@ -200,29 +205,27 @@ export function SparkAssistant() {
   }, []);
 
   const handleSelectConversation = useCallback((conv: SavedConversation) => {
-    if (messages.length >= 2) {
-      saveConversation(messages, actionLabel || undefined);
-    }
+    conversationIdRef.current = conv.id;
     setMessages(conv.messages);
     setView('chat');
-  }, [messages, actionLabel]);
+  }, []);
 
   const handleDeleteConversation = useCallback((id: string) => {
     deleteConversation(id);
     setHistory(loadHistory());
+    if (conversationIdRef.current === id) {
+      conversationIdRef.current = null;
+      setMessages([]);
+    }
   }, []);
 
-  // Auto-save when closing the panel
   const handleOpenChange = useCallback((isOpen: boolean) => {
-    if (!isOpen && messages.length >= 2) {
-      saveConversation(messages, actionLabel || undefined);
-    }
     setOpen(isOpen);
     if (isOpen) {
       setView('chat');
       setHistory(loadHistory());
     }
-  }, [messages, actionLabel]);
+  }, []);
 
   const send = async (text: string) => {
     if (!text.trim() || isLoading) return;
