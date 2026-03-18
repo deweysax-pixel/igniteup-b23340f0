@@ -52,38 +52,31 @@ function extractMeaningfulWords(text: string, maxWords = 4): string {
 }
 
 function extractTopicSummary(messages: Msg[]): string {
-  // Try user message first
-  const userMsg = messages.find(m => m.role === 'user')?.content || '';
-
-  // Strip known quick-action prompts to get to real content
-  const cleaned = userMsg
-    .replace(/^generate a concrete suggestion for how i can execute my leadership action this week\.?/i, '')
-    .replace(/^i have a question about my leadership action this week\.?/i, '')
-    .replace(/^help me reflect on how my leadership action went this week\.?/i, '')
-    .trim();
-
-  // If user typed something beyond the quick-action prompt, extract from that
-  if (cleaned.length > 5) {
-    const summary = extractMeaningfulWords(cleaned);
-    if (summary.length > 2) return summary;
-  }
-
-  // Try assistant response content
-  const assistantMsg = messages.find(m => m.role === 'assistant')?.content || '';
-  if (assistantMsg) {
-    // Strip markdown formatting
-    const plain = assistantMsg
-      .replace(/[#*>`_~\[\]()]/g, '')
-      .replace(/suggested script:?/gi, '')
-      .replace(/why this works:?/gi, '')
-      .replace(/quick version:?/gi, '')
+  // Collect all user messages, prefer later ones (more specific)
+  const userMessages = messages.filter(m => m.role === 'user');
+  
+  for (let i = userMessages.length - 1; i >= 0; i--) {
+    const raw = userMessages[i].content || '';
+    
+    // Strip known quick-action prompt prefixes
+    const cleaned = raw
+      .replace(/^generate a concrete suggestion for how i can execute my leadership action this week\.?/i, '')
+      .replace(/^i have a question about my leadership action this week\.?/i, '')
+      .replace(/^help me reflect on how my leadership action went this week\.?/i, '')
+      .replace(/^génère une suggestion concrète.*?cette semaine\.?/i, '')
+      .replace(/^j'ai une question sur.*?cette semaine\.?/i, '')
+      .replace(/^aide-moi à réfléchir.*?cette semaine\.?/i, '')
       .trim();
-    const summary = extractMeaningfulWords(plain);
-    if (summary.length > 2) return summary;
+
+    if (cleaned.length > 3) {
+      const summary = extractMeaningfulWords(cleaned);
+      if (summary.length > 2) return summary;
+    }
   }
 
-  // Last resort: first words of user message as-is
-  const fallback = userMsg.replace(/[^\p{L}\p{N}\s]/gu, '').split(/\s+/).filter(w => w.length > 2).slice(0, 3).join(' ');
+  // Fallback: raw first user words (never use AI response)
+  const firstUser = userMessages[0]?.content || '';
+  const fallback = firstUser.replace(/[^\p{L}\p{N}\s]/gu, '').split(/\s+/).filter(w => w.length > 2).slice(0, 3).join(' ');
   if (fallback.length > 2) return fallback.charAt(0).toUpperCase() + fallback.slice(1);
   return 'Spark chat';
 }
