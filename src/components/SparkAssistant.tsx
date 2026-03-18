@@ -143,6 +143,7 @@ export function SparkAssistant() {
   const [history, setHistory] = useState<SavedConversation[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const conversationIdRef = useRef<string | null>(null);
 
   const { state } = useDemo();
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
