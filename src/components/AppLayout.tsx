@@ -11,6 +11,7 @@ import { SearchJump } from '@/components/SearchJump';
 import { DemoPerspectiveSwitcher } from '@/components/DemoPerspectiveSwitcher';
 import { SparkAssistant } from '@/components/SparkAssistant';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
@@ -45,6 +46,7 @@ export default function AppLayout() {
               <SearchJump />
             </div>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Button
                 size="sm"
                 variant="outline"
