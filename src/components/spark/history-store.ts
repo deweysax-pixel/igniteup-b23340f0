@@ -23,47 +23,69 @@ function detectType(messages: Msg[]): ConversationType {
   return 'unknown';
 }
 
+function extractMeaningfulWords(text: string, maxWords = 4): string {
+  const stopWords = new Set([
+    'i', 'me', 'my', 'we', 'our', 'you', 'your', 'the', 'a', 'an', 'is', 'are', 'was', 'were',
+    'be', 'been', 'do', 'does', 'did', 'have', 'has', 'had', 'can', 'could', 'should', 'would',
+    'will', 'shall', 'may', 'might', 'must', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by',
+    'from', 'about', 'into', 'this', 'that', 'it', 'its', 'and', 'or', 'but', 'not', 'so', 'if',
+    'then', 'than', 'just', 'also', 'very', 'really', 'much', 'more', 'most', 'some', 'any',
+    'want', 'need', 'like', 'how', 'what', 'when', 'where', 'why', 'who', 'which',
+    // French stop words
+    'je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'le', 'la', 'les', 'un', 'une',
+    'des', 'du', 'de', 'et', 'ou', 'mais', 'donc', 'car', 'ni', 'que', 'qui', 'est', 'sont',
+    'suis', 'es', 'être', 'avoir', 'ai', 'as', 'a', 'mon', 'ma', 'mes', 'ton', 'ta', 'tes',
+    'son', 'sa', 'ses', 'ce', 'cette', 'ces', 'ne', 'pas', 'plus', 'en', 'sur', 'pour', 'par',
+    'avec', 'dans', 'au', 'aux', 'se', 'si', 'on', 'tout', 'bien', 'fait', 'faire',
+    'comment', 'quoi', 'quel', 'quelle',
+  ]);
+
+  const words = text
+    .replace(/[^\p{L}\p{N}\s]/gu, '')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !stopWords.has(w.toLowerCase()))
+    .slice(0, maxWords);
+
+  if (words.length === 0) return '';
+  const result = words.join(' ');
+  return result.charAt(0).toUpperCase() + result.slice(1);
+}
+
 function extractTopicSummary(messages: Msg[]): string {
-  const userMsg = messages.find(m => m.role === 'user')?.content?.toLowerCase() || '';
+  // Try user message first
+  const userMsg = messages.find(m => m.role === 'user')?.content || '';
 
-  // Detect reflection prompts
-  if (userMsg.includes('reflect') || userMsg.includes('how') && userMsg.includes('went')) {
-    return 'Action reflection';
+  // Strip known quick-action prompts to get to real content
+  const cleaned = userMsg
+    .replace(/^generate a concrete suggestion for how i can execute my leadership action this week\.?/i, '')
+    .replace(/^i have a question about my leadership action this week\.?/i, '')
+    .replace(/^help me reflect on how my leadership action went this week\.?/i, '')
+    .trim();
+
+  // If user typed something beyond the quick-action prompt, extract from that
+  if (cleaned.length > 5) {
+    const summary = extractMeaningfulWords(cleaned);
+    if (summary.length > 2) return summary;
   }
 
-  // Detect suggestion/script generation
-  if (userMsg.includes('suggestion') || userMsg.includes('generate') || userMsg.includes('script')) {
-    // Try to extract topic from the assistant response
-    const assistantMsg = messages.find(m => m.role === 'assistant')?.content || '';
-    const scriptMatch = assistantMsg.match(/[""]([^""]{5,40})[""]|> (.{5,40})/);
-    if (scriptMatch) {
-      const snippet = (scriptMatch[1] || scriptMatch[2] || '').trim();
-      // Condense to 3-4 words
-      const words = snippet.split(/\s+/).slice(0, 4).join(' ');
-      if (words.length > 3) return words;
-    }
-    return 'Action script';
-  }
-
-  // For questions, extract topic from user message
-  if (userMsg.includes('question') || userMsg.includes('how') || userMsg.includes('what') || userMsg.includes('why')) {
-    // Strip generic prefixes and extract meaningful words
-    const cleaned = userMsg
-      .replace(/^(i have a question about|help me with|tell me about|how (do|can|should) i)\s*/i, '')
-      .replace(/my leadership action this week\.?/i, '')
-      .replace(/this week\.?/i, '')
+  // Try assistant response content
+  const assistantMsg = messages.find(m => m.role === 'assistant')?.content || '';
+  if (assistantMsg) {
+    // Strip markdown formatting
+    const plain = assistantMsg
+      .replace(/[#*>`_~\[\]()]/g, '')
+      .replace(/suggested script:?/gi, '')
+      .replace(/why this works:?/gi, '')
+      .replace(/quick version:?/gi, '')
       .trim();
-    if (cleaned.length > 3) {
-      const words = cleaned.split(/\s+/).slice(0, 4).join(' ');
-      return words.charAt(0).toUpperCase() + words.slice(1);
-    }
-    return 'Leadership question';
+    const summary = extractMeaningfulWords(plain);
+    if (summary.length > 2) return summary;
   }
 
-  // Fallback: extract key words from user message
-  const words = userMsg.replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 3).slice(0, 3).join(' ');
-  if (words.length > 3) return words.charAt(0).toUpperCase() + words.slice(1);
-  return 'Conversation';
+  // Last resort: first words of user message as-is
+  const fallback = userMsg.replace(/[^\p{L}\p{N}\s]/gu, '').split(/\s+/).filter(w => w.length > 2).slice(0, 3).join(' ');
+  if (fallback.length > 2) return fallback.charAt(0).toUpperCase() + fallback.slice(1);
+  return 'Spark chat';
 }
 
 export function saveConversation(messages: Msg[], actionTitle?: string): void {
