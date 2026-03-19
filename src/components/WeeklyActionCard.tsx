@@ -4,7 +4,7 @@ import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, CheckCircle2, Flame } from 'lucide-react';
+import { ExternalLink, CheckCircle2, Flame, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { leadershipThemes } from '@/data/leadership-moments';
 
