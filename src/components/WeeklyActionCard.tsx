@@ -68,6 +68,15 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [showReflectNudge, setShowReflectNudge] = useState(false);
 
+  const handleReflectNow = useCallback(() => {
+    setShowReflectNudge(false);
+    window.dispatchEvent(
+      new CustomEvent('spark:open', {
+        detail: { prompt: 'Help me reflect on how my leadership action went this week' },
+      })
+    );
+  }, []);
+
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
   const currentUser = state.users.find(u => u.role === 'participant') ?? state.users[0];
 
