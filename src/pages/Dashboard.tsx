@@ -106,6 +106,9 @@ function AuthenticatedDashboard() {
         </div>
       )}
 
+      {/* Spark coaching nudge — only when action not yet done */}
+      <SparkNudgeCard />
+
       {/* Leadership action this week */}
       <WeeklyActionCard showJourneyLink />
 
