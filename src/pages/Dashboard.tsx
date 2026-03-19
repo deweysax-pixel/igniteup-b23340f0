@@ -13,6 +13,7 @@ import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { TeamAttentionCard } from '@/components/TeamAttentionCard';
 import { WeeklyActionCard } from '@/components/WeeklyActionCard';
 import { WeeklyReviewModal } from '@/components/WeeklyReviewModal';
+import { SparkNudgeCard } from '@/components/SparkNudgeCard';
 import { getWeekRange } from '@/lib/week-utils';
 
 /* ── Authenticated Dashboard (real DB data, team-scoped for managers) ── */
@@ -104,6 +105,9 @@ function AuthenticatedDashboard() {
           </button>
         </div>
       )}
+
+      {/* Spark coaching nudge — only when action not yet done */}
+      <SparkNudgeCard />
 
       {/* Leadership action this week */}
       <WeeklyActionCard showJourneyLink />
@@ -255,10 +259,11 @@ function DemoDashboard() {
 
       {isManager && <TeamAttentionCard />}
 
+      {/* Spark coaching nudge */}
+      <SparkNudgeCard />
+
       {/* Leadership action this week */}
       <WeeklyActionCard showJourneyLink />
-
-
 
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-4">
