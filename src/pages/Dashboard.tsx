@@ -259,10 +259,11 @@ function DemoDashboard() {
 
       {isManager && <TeamAttentionCard />}
 
+      {/* Spark coaching nudge */}
+      <SparkNudgeCard />
+
       {/* Leadership action this week */}
       <WeeklyActionCard showJourneyLink />
-
-
 
       {/* KPI Cards */}
       <div className="grid gap-4 md:grid-cols-4">
