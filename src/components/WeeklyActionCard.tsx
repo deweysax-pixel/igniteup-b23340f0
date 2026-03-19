@@ -66,6 +66,7 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
   const navigate = useNavigate();
   const { state, dispatch } = useDemo();
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [showReflectNudge, setShowReflectNudge] = useState(false);
 
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
   const currentUser = state.users.find(u => u.role === 'participant') ?? state.users[0];
