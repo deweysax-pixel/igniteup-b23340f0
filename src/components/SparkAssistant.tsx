@@ -192,20 +192,6 @@ export function SparkAssistant() {
     }
   }, [open, view]);
 
-  // Listen for external open-with-prompt events
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail;
-      handleNewConversation();
-      setOpen(true);
-      if (detail?.prompt) {
-        setTimeout(() => send(detail.prompt), 400);
-      }
-    };
-    window.addEventListener('spark:open', handler);
-    return () => window.removeEventListener('spark:open', handler);
-  }, [handleNewConversation]);
-
   const handleNewConversation = useCallback(() => {
     conversationIdRef.current = null;
     setMessages([]);
