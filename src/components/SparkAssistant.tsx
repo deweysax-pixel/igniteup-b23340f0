@@ -442,6 +442,7 @@ export function SparkAssistant() {
                         </div>
                       </div>
                     )}
+                    <div ref={bottomRef} />
                   </div>
                 )}
               </ScrollArea>
