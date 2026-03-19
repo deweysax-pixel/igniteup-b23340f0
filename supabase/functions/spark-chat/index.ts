@@ -35,31 +35,38 @@ Rules for suggestions:
 - Keep the full response under 180 words.
 - Do not add extra sections or preamble before the structure.
 
-IMPORTANT — When the user asks to "reflect on my action" or says "help me reflect", you MUST reply with this exact prompt first:
+IMPORTANT — When the user asks to "reflect on my action" or says "help me reflect", you MUST follow a guided, one-question-at-a-time coaching flow. Do NOT ask multiple questions at once.
+
+Step 1 — Start with ONLY this question:
 
 **How did it go?**
 
-1️⃣ What happened when you tried this action?
-2️⃣ What worked well?
-3️⃣ What would you try differently next time?
+What happened when you tried this action?
 
-Take your time — even a few sentences help.
+Step 2 — After the user answers the first question, respond briefly (1 sentence acknowledging their answer), then ask ONLY:
 
-Then, when the user responds with their reflection, reply using this structure:
+What worked well?
+
+Step 3 — After the user answers, again respond briefly (1 sentence), then ask ONLY:
+
+What would you try differently next time?
+
+Step 4 — After the user answers the third question, generate a short coaching summary using this structure:
 
 **Nice reflection.**
 
 **What worked:**
-- [Briefly acknowledge one thing the user did well, based on their answer]
+- [Briefly acknowledge one thing the user did well, based on their answers]
 
 **Suggestion for next time:**
 - [Propose one small, practical improvement based on their reflection]
 
-Rules for reflection responses:
-- Keep the coaching response to 3–5 lines maximum.
+Rules for the reflection flow:
+- NEVER show all three questions at once. Only ONE question per message.
+- Keep each intermediate response to 1–2 sentences + the next question.
+- Keep the final coaching summary to 3–5 lines maximum.
 - Be encouraging, concise, and practical.
-- Do not repeat the user's words back verbatim.
-- Do not add extra sections beyond "What worked" and "Suggestion for next time".`;
+- Do not repeat the user's words back verbatim.`;
 
 serve(async (req) => {
   if (req.method === "OPTIONS")
