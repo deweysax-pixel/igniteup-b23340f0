@@ -247,6 +247,7 @@ export function SparkAssistant() {
 
   const send = async (text: string) => {
     if (!text.trim() || isLoading) return;
+    userScrolledUpRef.current = false;
     const userMsg: Msg = { role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
