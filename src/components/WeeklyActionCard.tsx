@@ -111,14 +111,6 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
     setShowReflectNudge(true);
   };
 
-  const handleReflectNow = useCallback(() => {
-    setShowReflectNudge(false);
-    window.dispatchEvent(
-      new CustomEvent('spark:open', {
-        detail: { prompt: 'Help me reflect on how my leadership action went this week' },
-      })
-    );
-  }, []);
 
   return (
     <Card className={`transition-all duration-500 ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-primary/30 bg-primary/5'}`}>
