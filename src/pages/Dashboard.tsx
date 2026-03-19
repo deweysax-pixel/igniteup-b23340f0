@@ -13,6 +13,7 @@ import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { TeamAttentionCard } from '@/components/TeamAttentionCard';
 import { WeeklyActionCard } from '@/components/WeeklyActionCard';
 import { WeeklyReviewModal } from '@/components/WeeklyReviewModal';
+import { SparkNudgeCard } from '@/components/SparkNudgeCard';
 import { getWeekRange } from '@/lib/week-utils';
 
 /* ── Authenticated Dashboard (real DB data, team-scoped for managers) ── */
