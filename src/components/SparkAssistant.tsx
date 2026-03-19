@@ -257,6 +257,19 @@ export function SparkAssistant() {
       },
     });
   };
+  // Listen for external open-with-prompt events
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      handleNewConversation();
+      setOpen(true);
+      if (detail?.prompt) {
+        setTimeout(() => send(detail.prompt), 400);
+      }
+    };
+    window.addEventListener('spark:open', handler);
+    return () => window.removeEventListener('spark:open', handler);
+  }, [handleNewConversation]);
 
   const quickActions = [
     { label: 'Generate a suggestion', icon: Lightbulb, prompt: 'Generate a concrete suggestion for how I can execute my leadership action this week.' },
