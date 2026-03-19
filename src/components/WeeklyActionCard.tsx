@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, CheckCircle2, Flame } from 'lucide-react';
+import { ExternalLink, CheckCircle2, Flame, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { leadershipThemes } from '@/data/leadership-moments';
 
@@ -66,6 +66,16 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
   const navigate = useNavigate();
   const { state, dispatch } = useDemo();
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
+  const [showReflectNudge, setShowReflectNudge] = useState(false);
+
+  const handleReflectNow = useCallback(() => {
+    setShowReflectNudge(false);
+    window.dispatchEvent(
+      new CustomEvent('spark:open', {
+        detail: { prompt: 'Help me reflect on how my leadership action went this week' },
+      })
+    );
+  }, []);
 
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
   const currentUser = state.users.find(u => u.role === 'participant') ?? state.users[0];
@@ -98,7 +108,9 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
     });
 
     toast.success(`🎉 Action completed — +${currentAction.points} XP earned`);
+    setShowReflectNudge(true);
   };
+
 
   return (
     <Card className={`transition-all duration-500 ${isCompleted ? 'border-green-500/30 bg-green-500/5' : 'border-primary/30 bg-primary/5'}`}>
@@ -175,6 +187,28 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
             </Button>
           </div>
         </div>
+
+        {/* Reflection nudge after completion */}
+        {showReflectNudge && (
+          <div className="flex items-center gap-3 pt-3 mt-3 border-t border-border animate-fade-in">
+            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <Sparkles className="h-3.5 w-3.5 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium">👏 Nice — action completed</p>
+              <p className="text-xs text-muted-foreground">Want to take 30 sec to reflect on how it went?</p>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <Button size="sm" className="gap-1.5 text-xs" onClick={handleReflectNow}>
+                <Sparkles className="h-3 w-3" />
+                Reflect now
+              </Button>
+              <Button size="sm" variant="ghost" className="text-xs text-muted-foreground" onClick={() => setShowReflectNudge(false)}>
+                Skip
+              </Button>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
