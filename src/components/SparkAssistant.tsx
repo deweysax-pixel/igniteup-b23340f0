@@ -142,8 +142,10 @@ export function SparkAssistant() {
   const [view, setView] = useState<'chat' | 'history'>('chat');
   const [history, setHistory] = useState<SavedConversation[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const conversationIdRef = useRef<string | null>(null);
+  const userScrolledUpRef = useRef(false);
 
   const { state } = useDemo();
   const activeChallenge = state.challenges.find(ch => ch.status === 'active');
@@ -173,11 +175,27 @@ export function SparkAssistant() {
     }
   }
 
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  const scrollToBottom = useCallback(() => {
+    if (!userScrolledUpRef.current && bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages]);
+  }, []);
+
+  // Track if user manually scrolled up
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const handleScroll = () => {
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 60;
+      userScrolledUpRef.current = !atBottom;
+    };
+    el.addEventListener('scroll', handleScroll);
+    return () => el.removeEventListener('scroll', handleScroll);
+  }, [view]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   // Auto-save whenever messages change (after at least 1 message)
   useEffect(() => {
@@ -229,6 +247,7 @@ export function SparkAssistant() {
 
   const send = async (text: string) => {
     if (!text.trim() || isLoading) return;
+    userScrolledUpRef.current = false;
     const userMsg: Msg = { role: 'user', content: text };
     setMessages(prev => [...prev, userMsg]);
     setInput('');
@@ -424,6 +443,7 @@ export function SparkAssistant() {
                         </div>
                       </div>
                     )}
+                    <div ref={bottomRef} />
                   </div>
                 )}
               </ScrollArea>
