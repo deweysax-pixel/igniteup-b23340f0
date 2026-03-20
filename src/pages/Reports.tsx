@@ -491,6 +491,16 @@ function DemoReports() {
         </Select>
       </div>
 
+      {/* Team Action Panel — Manager only (demo) */}
+      {state.currentRole === 'manager' && (
+        <TeamActionPanel {...computeManagerActions(
+          filteredUsers.map(u => ({ id: u.id, streak: u.streak })),
+          activeIds,
+          behaviorBreakdown,
+          participationRate,
+        )} />
+      )}
+
       {/* 1. Activity & Consistency */}
       <Card>
         <CardContent className="pt-6">
