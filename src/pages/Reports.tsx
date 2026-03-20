@@ -157,8 +157,10 @@ function generateInsights(
 function AuthenticatedReports() {
   const navigate = useNavigate();
   const { user, role } = useAuth();
-  const { members, teams, checkIns, loading } = useTeamData();
+  const isOrgWide = role === 'admin' || role === 'sponsor';
+  const { members, teams, checkIns, loading } = useTeamData({ forceOrgWide: isOrgWide });
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
+  const showTeamSelector = isOrgWide && teams.length > 0;
 
   const filteredMembers = useMemo(() => {
     if (selectedTeam === 'all') return members;
@@ -256,11 +258,11 @@ function AuthenticatedReports() {
         </div>
       </div>
 
-      {/* Scope selector */}
-      {teams.length > 1 && (
+      {/* Scope selector — visible for Admin & Sponsor only */}
+      {showTeamSelector && (
         <div className="print:hidden">
           <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Team" /></SelectTrigger>
+            <SelectTrigger className="w-[200px]"><SelectValue placeholder="All Teams" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Teams</SelectItem>
               {teams.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
