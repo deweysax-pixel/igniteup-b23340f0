@@ -157,8 +157,10 @@ function generateInsights(
 function AuthenticatedReports() {
   const navigate = useNavigate();
   const { user, role } = useAuth();
-  const { members, teams, checkIns, loading } = useTeamData();
+  const isOrgWide = role === 'admin' || role === 'sponsor';
+  const { members, teams, checkIns, loading } = useTeamData({ forceOrgWide: isOrgWide });
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
+  const showTeamSelector = isOrgWide && teams.length > 0;
 
   const filteredMembers = useMemo(() => {
     if (selectedTeam === 'all') return members;
