@@ -9,53 +9,156 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Progress } from '@/components/ui/progress';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
-import { FileDown, Printer, Map as MapIcon, BookOpen, ClipboardCheck, Users, TrendingUp, Activity, Flame, ArrowUp, ArrowDown } from 'lucide-react';
-import { getLevelColor } from '@/types/demo';
-import type { Level } from '@/types/demo';
-import { IGNITE_PACKS, computePackStatusForUser } from '@/pages/Ignite';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
+import {
+  FileDown, Printer, Map as MapIcon,
+  Users, TrendingUp, Activity, Flame,
+  ArrowUp, ArrowDown, Minus,
+  Lightbulb, BarChart3, Target, Zap,
+} from 'lucide-react';
 import { getSeededUnitProgressForUser } from '@/data/demo-seed';
 
-function KPICard({ icon: Icon, label, value, sub }: { icon: React.ElementType; label: string; value: string; sub?: string }) {
+/* ── Shared helpers ── */
+
+function ConsistencyBadge({ level }: { level: 'Low' | 'Medium' | 'High' }) {
+  const colors = {
+    Low: 'bg-destructive/15 text-destructive border-destructive/30',
+    Medium: 'bg-warning/15 text-warning border-warning/30',
+    High: 'bg-success/15 text-success border-success/30',
+  };
   return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <Icon className="h-5 w-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">{label}</p>
-            <p className="text-xl font-bold">{value}</p>
-            {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-function DeltaBadge({ current, previous, suffix = '' }: { current: number; previous: number | null; suffix?: string }) {
-  if (previous === null) return <span className="text-xs text-muted-foreground">—</span>;
-  const delta = current - previous;
-  if (delta === 0) return <span className="text-xs text-muted-foreground">No change</span>;
-  const isUp = delta > 0;
-  return (
-    <span className={`inline-flex items-center gap-0.5 text-xs font-medium ${isUp ? 'text-green-400' : 'text-red-400'}`}>
-      {isUp ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}
-      {Math.abs(delta)}{suffix}
+    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${colors[level]}`}>
+      {level}
     </span>
   );
 }
 
-/* ── Authenticated Reports (DB-backed, org-wide for admin, team-scoped for manager) ── */
+function TrendIndicator({ trend }: { trend: 'increasing' | 'stable' | 'decreasing' }) {
+  if (trend === 'increasing') return <span className="inline-flex items-center gap-1 text-xs font-medium text-success"><ArrowUp className="h-3 w-3" /> Increasing</span>;
+  if (trend === 'decreasing') return <span className="inline-flex items-center gap-1 text-xs font-medium text-destructive"><ArrowDown className="h-3 w-3" /> Decreasing</span>;
+  return <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground"><Minus className="h-3 w-3" /> Stable</span>;
+}
+
+function SectionHeader({ icon: Icon, title }: { icon: React.ElementType; title: string }) {
+  return (
+    <div className="flex items-center gap-2 mb-4">
+      <div className="p-1.5 rounded-lg bg-primary/10">
+        <Icon className="h-4 w-4 text-primary" />
+      </div>
+      <h2 className="text-lg font-semibold tracking-tight">{title}</h2>
+    </div>
+  );
+}
+
+function MetricTile({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="space-y-1">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
+      {sub && <p className="text-xs text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
+function BehaviorBar({ label, pct, color }: { label: string; pct: number; color: string }) {
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm text-muted-foreground">{pct}%</span>
+      </div>
+      <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+        <div className={`h-full rounded-full transition-all ${color}`} style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function InsightRow({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-3 py-2.5 border-b border-border/50 last:border-0">
+      <Lightbulb className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+      <p className="text-sm leading-relaxed">{text}</p>
+    </div>
+  );
+}
+
+/* ── Compute behavior distribution from check-in data ── */
+function computeBehaviorBreakdown(checkIns: { note: string | null }[]) {
+  const categories = { Recognition: 0, Feedback: 0, Delegation: 0, Communication: 0 };
+  const keywords: Record<string, string[]> = {
+    Recognition: ['recogni', 'appreciat', 'thank', 'praise', 'shout', 'kudos', 'celebrated'],
+    Feedback: ['feedback', 'review', 'improv', 'suggest', 'constructive', 'coaching'],
+    Delegation: ['delegat', 'assign', 'empower', 'responsib', 'ownership', 'entrust'],
+    Communication: ['communicat', 'align', 'clari', 'share', 'explain', 'discuss', 'update'],
+  };
+
+  checkIns.forEach(ci => {
+    const text = (ci.note ?? '').toLowerCase();
+    if (!text) return;
+    for (const [cat, kws] of Object.entries(keywords)) {
+      if (kws.some(kw => text.includes(kw))) {
+        categories[cat as keyof typeof categories]++;
+      }
+    }
+  });
+
+  const total = Object.values(categories).reduce((s, v) => s + v, 0) || 1;
+  return Object.entries(categories).map(([label, count]) => ({
+    label,
+    pct: Math.round((count / total) * 100),
+  }));
+}
+
+/* ── Compute AI-style insights ── */
+function generateInsights(
+  participationRate: number,
+  avgStreak: number,
+  behaviorBreakdown: { label: string; pct: number }[],
+  weeklyTrend: 'increasing' | 'stable' | 'decreasing',
+  consistency: 'Low' | 'Medium' | 'High',
+) {
+  const insights: string[] = [];
+
+  const topBehavior = [...behaviorBreakdown].sort((a, b) => b.pct - a.pct)[0];
+  const bottomBehavior = [...behaviorBreakdown].sort((a, b) => a.pct - b.pct)[0];
+
+  if (topBehavior && topBehavior.pct > 30) {
+    insights.push(`${topBehavior.label} is the most practiced leadership behavior across the team.`);
+  }
+  if (bottomBehavior && bottomBehavior.pct < 15) {
+    insights.push(`${bottomBehavior.label} is underused — consider introducing targeted actions.`);
+  }
+  if (participationRate >= 80) {
+    insights.push('Participation is strong — the team is consistently engaged.');
+  } else if (participationRate < 50) {
+    insights.push('Participation is below 50% — consider nudging inactive members.');
+  }
+  if (weeklyTrend === 'increasing') {
+    insights.push('Weekly activity is trending upward — momentum is building.');
+  } else if (weeklyTrend === 'decreasing') {
+    insights.push('Weekly activity is declining — a mid-journey boost may help.');
+  }
+  if (avgStreak >= 3) {
+    insights.push('Strong streak consistency indicates developing leadership habits.');
+  } else if (avgStreak < 1) {
+    insights.push('Low streak average suggests difficulty maintaining weekly habits.');
+  }
+  if (consistency === 'High') {
+    insights.push('Team consistency is high — leadership practice is becoming routine.');
+  }
+
+  return insights.slice(0, 5);
+}
+
+/* ── Authenticated Reports ── */
 function AuthenticatedReports() {
   const navigate = useNavigate();
   const { user, role } = useAuth();
   const { members, teams, checkIns, loading } = useTeamData();
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
-  const [dateRange, setDateRange] = useState<string>('whole');
 
   const filteredMembers = useMemo(() => {
     if (selectedTeam === 'all') return members;
@@ -65,19 +168,10 @@ function AuthenticatedReports() {
   const filteredMemberIds = useMemo(() => new Set(filteredMembers.map(m => m.id)), [filteredMembers]);
 
   const filteredCheckIns = useMemo(() => {
-    const now = new Date();
-    let cutoff: Date | null = null;
-    if (dateRange === '7') cutoff = new Date(now.getTime() - 7 * 86400000);
-    else if (dateRange === '30') cutoff = new Date(now.getTime() - 30 * 86400000);
-    return checkIns.filter(ci => {
-      if (!filteredMemberIds.has(ci.userId)) return false;
-      if (cutoff && new Date(ci.createdAt) < cutoff) return false;
-      return true;
-    });
-  }, [checkIns, filteredMemberIds, dateRange]);
+    return checkIns.filter(ci => filteredMemberIds.has(ci.userId));
+  }, [checkIns, filteredMemberIds]);
 
   const thisWeek = getWeekRange();
-  const lastWeek = getLastWeekRange();
 
   const ciThisWeek = useMemo(() => {
     return new Set(filteredCheckIns.filter(ci => {
@@ -86,15 +180,17 @@ function AuthenticatedReports() {
     }).map(ci => ci.userId));
   }, [filteredCheckIns, thisWeek]);
 
-  const ciLastWeek = useMemo(() => {
-    return new Set(checkIns.filter(ci => {
-      if (!filteredMemberIds.has(ci.userId)) return false;
-      const d = new Date(ci.createdAt).getTime();
-      return d >= lastWeek.start.getTime() && d <= lastWeek.end.getTime();
-    }).map(ci => ci.userId));
-  }, [checkIns, filteredMemberIds, lastWeek]);
+  const participationRate = filteredMembers.length > 0 ? Math.round((ciThisWeek.size / filteredMembers.length) * 100) : 0;
+  const avgActionsPerWeek = filteredCheckIns.length > 0 && filteredMembers.length > 0
+    ? (filteredCheckIns.length / Math.max(filteredMembers.length, 1)).toFixed(1)
+    : '0';
+  const avgStreak = filteredMembers.length > 0
+    ? +(filteredMembers.reduce((s, m) => s + m.streak, 0) / filteredMembers.length).toFixed(1)
+    : 0;
+  const consistency: 'Low' | 'Medium' | 'High' = avgStreak >= 3 ? 'High' : avgStreak >= 1 ? 'Medium' : 'Low';
 
-  const activeStreaks = useMemo(() => filteredMembers.filter(m => m.streak > 0).length, [filteredMembers]);
+  const behaviorBreakdown = useMemo(() => computeBehaviorBreakdown(filteredCheckIns), [filteredCheckIns]);
+  const behaviorColors = ['bg-primary', 'bg-blue-500', 'bg-amber-500', 'bg-pink-500'];
 
   const checkInsByWeek = useMemo(() => {
     const map: Record<number, number> = {};
@@ -102,42 +198,40 @@ function AuthenticatedReports() {
       const wn = ci.weekNumber ?? 0;
       map[wn] = (map[wn] || 0) + 1;
     });
-    return Object.entries(map).sort(([a], [b]) => +a - +b).map(([week, count]) => ({ week: `Week ${week}`, count }));
+    return Object.entries(map).sort(([a], [b]) => +a - +b).map(([week, count]) => ({ week: `W${week}`, count }));
   }, [filteredCheckIns]);
 
-  const learnerData = useMemo(() => {
-    return filteredMembers.map(m => {
-      const userCIs = checkIns.filter(ci => ci.userId === m.id);
-      const lastActivity = userCIs.length > 0
-        ? new Date(Math.max(...userCIs.map(ci => new Date(ci.createdAt).getTime()))).toLocaleDateString()
-        : 'N/A';
-      return { name: m.fullName, role: m.role, xp: m.xp, streak: m.streak, level: m.level, lastActivity, teamName: m.teamName };
-    });
-  }, [filteredMembers, checkIns]);
+  const weeklyTrend = useMemo<'increasing' | 'stable' | 'decreasing'>(() => {
+    if (checkInsByWeek.length < 2) return 'stable';
+    const half = Math.floor(checkInsByWeek.length / 2);
+    const firstHalf = checkInsByWeek.slice(0, half).reduce((s, w) => s + w.count, 0) / half;
+    const secondHalf = checkInsByWeek.slice(half).reduce((s, w) => s + w.count, 0) / (checkInsByWeek.length - half);
+    if (secondHalf > firstHalf * 1.15) return 'increasing';
+    if (secondHalf < firstHalf * 0.85) return 'decreasing';
+    return 'stable';
+  }, [checkInsByWeek]);
 
-  const activeRate = filteredMembers.length > 0
-    ? Math.round((ciThisWeek.size / filteredMembers.length) * 100)
-    : 0;
-  const lastWeekActiveRate = filteredMembers.length > 0 && ciLastWeek.size > 0
-    ? Math.round((ciLastWeek.size / filteredMembers.length) * 100)
-    : null;
+  const insights = useMemo(
+    () => generateInsights(participationRate, avgStreak, behaviorBreakdown, weeklyTrend, consistency),
+    [participationRate, avgStreak, behaviorBreakdown, weeklyTrend, consistency],
+  );
+
+  const chartConfig = {
+    count: { label: 'Actions', color: 'hsl(var(--primary))' },
+  };
 
   const exportCSV = () => {
     const csv = [
-      'Name,Role,Team,XP,Streak,Level,Last Activity',
-      ...learnerData.map(l => `${l.name},${l.role},${l.teamName},${l.xp},${l.streak},${l.level},${l.lastActivity}`),
+      'Name,Role,Team,XP,Streak,Level',
+      ...filteredMembers.map(m => `${m.fullName},${m.role},${m.teamName},${m.xp},${m.streak},${m.level}`),
     ].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'igniteup-report.csv';
+    a.download = 'leadership-report.csv';
     a.click();
     URL.revokeObjectURL(url);
-  };
-
-  const chartConfig = {
-    count: { label: 'Check-ins', color: 'hsl(var(--primary))' },
   };
 
   if (loading) {
@@ -149,156 +243,98 @@ function AuthenticatedReports() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground mt-1">Progress, practice signals, and team snapshot.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Leadership Diagnostic</h1>
+          <p className="text-muted-foreground mt-1">Behavior patterns, consistency, and actionable insights.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-2" /> Print report
+            <Printer className="h-4 w-4 mr-2" /> Print
           </Button>
           <Button variant="outline" size="sm" onClick={exportCSV}>
-            <FileDown className="h-4 w-4 mr-2" /> Export CSV
+            <FileDown className="h-4 w-4 mr-2" /> Export
           </Button>
         </div>
-      </div>
-
-      {/* Print header */}
-      <div className="hidden print:block">
-        <h1 className="text-2xl font-bold text-black">IgniteUp — Reporting Pack</h1>
-        <p className="text-sm text-gray-500">Generated on {new Date().toLocaleDateString()}</p>
       </div>
 
       {/* Scope selector */}
       {teams.length > 1 && (
-        <div className="flex gap-3 print:hidden">
+        <div className="print:hidden">
           <Select value={selectedTeam} onValueChange={setSelectedTeam}>
             <SelectTrigger className="w-[180px]"><SelectValue placeholder="Team" /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All My Teams</SelectItem>
+              <SelectItem value="all">All Teams</SelectItem>
               {teams.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
             </SelectContent>
           </Select>
-          <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Date range" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">Last 7 days</SelectItem>
-              <SelectItem value="30">Last 30 days</SelectItem>
-              <SelectItem value="whole">Whole journey</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      )}
-      {teams.length <= 1 && (
-        <div className="flex gap-3 print:hidden">
-          <Select value={dateRange} onValueChange={setDateRange}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Date range" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">Last 7 days</SelectItem>
-              <SelectItem value="30">Last 30 days</SelectItem>
-              <SelectItem value="whole">Whole journey</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       )}
 
-      {/* Executive Summary */}
-      <div className="space-y-2">
-        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Executive summary</h3>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Card className="border-primary/20">
-            <CardContent className="pt-5">
-              <p className="text-xs text-muted-foreground">Participation (7d)</p>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold">{activeRate}%</span>
-                <DeltaBadge current={activeRate} previous={lastWeekActiveRate} suffix="%" />
+      {/* 1. Activity & Consistency */}
+      <Card>
+        <CardContent className="pt-6">
+          <SectionHeader icon={Activity} title="Activity & Consistency" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <MetricTile label="Participation rate" value={`${participationRate}%`} />
+            <MetricTile label="Avg actions / week" value={avgActionsPerWeek} />
+            <MetricTile label="Avg streak" value={String(avgStreak)} />
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">Consistency</p>
+              <div className="pt-1">
+                <ConsistencyBadge level={consistency} />
               </div>
-            </CardContent>
-          </Card>
-          <Card className="border-primary/20">
-            <CardContent className="pt-5">
-              <p className="text-xs text-muted-foreground">Check-ins (7d)</p>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold">{ciThisWeek.size}/{filteredMembers.length}</span>
-                <DeltaBadge current={ciThisWeek.size} previous={ciLastWeek.size > 0 ? ciLastWeek.size : null} />
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-primary/20">
-            <CardContent className="pt-5">
-              <p className="text-xs text-muted-foreground">Active Streaks</p>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-2xl font-bold">{activeStreaks}/{filteredMembers.length}</span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 print:grid-cols-4">
-        <KPICard icon={Users} label="Team Members" value={String(filteredMembers.length)} />
-        <KPICard icon={Activity} label="Total Check-ins" value={String(filteredCheckIns.length)} />
-        <KPICard icon={Flame} label="Avg XP" value={filteredMembers.length > 0 ? String(Math.round(filteredMembers.reduce((s, m) => s + m.xp, 0) / filteredMembers.length)) : '0'} />
-        <KPICard icon={TrendingUp} label="Avg Streak" value={filteredMembers.length > 0 ? String(Math.round(filteredMembers.reduce((s, m) => s + m.streak, 0) / filteredMembers.length)) : '0'} />
-      </div>
+      {/* 2. Behavior Breakdown */}
+      <Card>
+        <CardContent className="pt-6">
+          <SectionHeader icon={BarChart3} title="Behavior Breakdown" />
+          <div className="space-y-4 max-w-lg">
+            {behaviorBreakdown.map((b, i) => (
+              <BehaviorBar key={b.label} label={b.label} pct={b.pct} color={behaviorColors[i % behaviorColors.length]} />
+            ))}
+          </div>
+          {behaviorBreakdown.every(b => b.pct === 25) && (
+            <p className="text-xs text-muted-foreground mt-4">Distribution is even — no dominant behavior pattern detected yet.</p>
+          )}
+        </CardContent>
+      </Card>
 
-      {/* Practice Activity Chart */}
-      {checkInsByWeek.length > 0 ? (
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-lg">Practice Activity by Week</CardTitle></CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[250px] w-full">
+      {/* 3. Progress Over Time */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <SectionHeader icon={TrendingUp} title="Progress Over Time" />
+            <TrendIndicator trend={weeklyTrend} />
+          </div>
+          {checkInsByWeek.length > 0 ? (
+            <ChartContainer config={chartConfig} className="h-[220px] w-full">
               <BarChart data={checkInsByWeek}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="week" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ChartContainer>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground text-center py-8">No check-in activity yet. Data will appear as team members submit check-ins.</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Learner Progress Table */}
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-lg">Team Members</CardTitle></CardHeader>
-        <CardContent>
-          {learnerData.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Team</TableHead>
-                  <TableHead className="text-center">XP</TableHead>
-                  <TableHead className="text-center">Streak</TableHead>
-                  <TableHead>Level</TableHead>
-                  <TableHead>Last Activity</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {learnerData.map(l => (
-                  <TableRow key={l.name}>
-                    <TableCell className="font-medium">{l.name}</TableCell>
-                    <TableCell><Badge variant="secondary" className="capitalize">{l.role}</Badge></TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{l.teamName}</TableCell>
-                    <TableCell className="text-center">{l.xp}</TableCell>
-                    <TableCell className="text-center">{l.streak}</TableCell>
-                    <TableCell><span className={getLevelColor(l.level as Level)}>{l.level}</span></TableCell>
-                    <TableCell>{l.lastActivity}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
           ) : (
-            <p className="text-sm text-muted-foreground text-center py-8">No team members found.</p>
+            <p className="text-sm text-muted-foreground text-center py-8">No activity data yet.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* 4. Leadership Insights */}
+      <Card>
+        <CardContent className="pt-6">
+          <SectionHeader icon={Zap} title="Leadership Insights" />
+          {insights.length > 0 ? (
+            <div className="divide-y divide-border/50">
+              {insights.map((text, i) => <InsightRow key={i} text={text} />)}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-6">Not enough data to generate insights yet.</p>
           )}
         </CardContent>
       </Card>
@@ -306,267 +342,98 @@ function AuthenticatedReports() {
   );
 }
 
-/* ── Demo Executive Summary (unchanged) ── */
-function DemoExecutiveSummary({ users, checkIns }: { users: { id: string }[]; checkIns: { userId: string; createdAt: string }[] }) {
-  const sevenDaysAgo = Date.now() - 7 * 86400000;
-  const fourteenDaysAgo = Date.now() - 14 * 86400000;
-
-  // Active = has check-in OR unit completion in last 7 days
-  const activeIds = new Set<string>();
-  const prevActiveIds = new Set<string>();
-
-  checkIns.forEach(ci => {
-    const t = new Date(ci.createdAt).getTime();
-    const uid = ci.userId;
-    if (users.some(u => u.id === uid)) {
-      if (t >= sevenDaysAgo) activeIds.add(uid);
-      if (t >= fourteenDaysAgo && t < sevenDaysAgo) prevActiveIds.add(uid);
-    }
-  });
-
-  users.forEach(user => {
-    const userUnitProg = getSeededUnitProgressForUser(user.id);
-    Object.values(userUnitProg).forEach(p => {
-      if (p.completedAt) {
-        const t = new Date(p.completedAt).getTime();
-        if (t >= sevenDaysAgo) activeIds.add(user.id);
-        if (t >= fourteenDaysAgo && t < sevenDaysAgo) prevActiveIds.add(user.id);
-      }
-    });
-  });
-
-  const activeRate = users.length > 0 ? Math.round((activeIds.size / users.length) * 100) : 0;
-  const prevActiveRate = users.length > 0 ? Math.round((prevActiveIds.size / users.length) * 100) : null;
-  const dueCount = users.length - activeIds.size;
-  const prevDueCount = prevActiveIds.size > 0 ? users.length - prevActiveIds.size : null;
-
-  return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Executive summary</h3>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card className="border-primary/20">
-          <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground">Active rate (7d)</p>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold">{activeRate}%</span>
-              <DeltaBadge current={activeRate} previous={prevActiveRate} suffix="%" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/20">
-          <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground">Due</p>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold">{dueCount}</span>
-              <DeltaBadge current={dueCount} previous={prevDueCount} />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border-primary/20">
-          <CardContent className="pt-5">
-            <p className="text-xs text-muted-foreground">Active users (7d)</p>
-            <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold">{activeIds.size}/{users.length}</span>
-              <DeltaBadge current={activeIds.size} previous={prevActiveIds.size > 0 ? prevActiveIds.size : null} />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      <p className="text-xs text-muted-foreground">Deltas compare last 7 days vs previous 7 days.</p>
-    </div>
-  );
-}
-
-/* ── Demo Reports (original, untouched logic) ── */
+/* ── Demo Reports ── */
 function DemoReports() {
   const { state } = useDemo();
   const { modules, journey, moduleProgress, unitProgress } = useJourney();
   const navigate = useNavigate();
   const [selectedTeam, setSelectedTeam] = useState<string>('all');
-  const [dateRange, setDateRange] = useState<string>('whole');
+
   const isManager = state.currentRole === 'manager' || state.currentRole === 'admin' || state.currentRole === 'sponsor';
   const activeUsers = state.users.filter(u => u.role !== 'admin' && u.role !== 'sponsor');
 
   const filteredUsers = useMemo(() => {
-    if (selectedTeam === 'all') return state.users;
-    return state.users.filter(u => u.teamId === selectedTeam);
-  }, [selectedTeam, state.users]);
+    if (selectedTeam === 'all') return activeUsers;
+    return activeUsers.filter(u => u.teamId === selectedTeam);
+  }, [selectedTeam, activeUsers]);
 
   const filteredUserIds = useMemo(() => new Set(filteredUsers.map(u => u.id)), [filteredUsers]);
 
   const filteredCheckIns = useMemo(() => {
-    const now = new Date();
-    let cutoff: Date | null = null;
-    if (dateRange === '7') cutoff = new Date(now.getTime() - 7 * 86400000);
-    else if (dateRange === '30') cutoff = new Date(now.getTime() - 30 * 86400000);
-    return state.checkIns.filter(ci => {
-      if (!filteredUserIds.has(ci.userId)) return false;
-      if (cutoff && new Date(ci.createdAt) < cutoff) return false;
-      return true;
-    });
-  }, [state.checkIns, filteredUserIds, dateRange]);
+    return state.checkIns.filter(ci => filteredUserIds.has(ci.userId));
+  }, [state.checkIns, filteredUserIds]);
 
-  /* ── Per-user unit progress aggregation ── */
-  const perUserProgress = useMemo(() => {
-    const teamPerformanceModules = modules.filter(m => m.id.startsWith('tp-'));
-    const allTPUnitIds = teamPerformanceModules.flatMap(m => (m.units || []).map(u => u.unitId));
-    const totalUnitsAll = allTPUnitIds.length;
-    const totalModulesAll = teamPerformanceModules.length;
-
-    return filteredUsers.map(user => {
-      const userUnitProg = getSeededUnitProgressForUser(user.id);
-      const completedUnitIds = allTPUnitIds.filter(uid => userUnitProg[uid]?.status === 'completed');
-      const unitsCount = completedUnitIds.length;
-
-      // A module is "completed" if all its units are done
-      const modulesCount = teamPerformanceModules.filter(mod => {
-        const modUnits = mod.units || [];
-        if (modUnits.length === 0) return false;
-        return modUnits.every(u => userUnitProg[u.unitId]?.status === 'completed');
-      }).length;
-
-      return { userId: user.id, unitsCompleted: unitsCount, modulesCompleted: modulesCount, totalUnits: totalUnitsAll, totalModules: totalModulesAll };
-    });
-  }, [filteredUsers, modules]);
-
-  const totalUnits = perUserProgress.length > 0 ? perUserProgress[0].totalUnits : 0;
-  const totalModules = perUserProgress.length > 0 ? perUserProgress[0].totalModules : 0;
-  const avgUnitsCompleted = perUserProgress.length > 0 ? Math.round(perUserProgress.reduce((s, p) => s + p.unitsCompleted, 0) / perUserProgress.length) : 0;
-  const avgModulesCompleted = perUserProgress.length > 0 ? Math.round(perUserProgress.reduce((s, p) => s + p.modulesCompleted, 0) / perUserProgress.length * 10) / 10 : 0;
-
-  const checkInsCompleted = filteredCheckIns.length;
-  const activeStreaks = useMemo(() => filteredUsers.filter(u => u.streak > 0).length, [filteredUsers]);
-
-  const activeUsersCount = useMemo(() => {
-    const sevenDaysAgo = Date.now() - 7 * 86400000;
-    // Check both check-ins and unit completions within 7 days
-    const activeIds = new Set<string>();
+  // Activity & Consistency
+  const sevenDaysAgo = Date.now() - 7 * 86400000;
+  const activeIds = useMemo(() => {
+    const ids = new Set<string>();
     state.checkIns.forEach(ci => {
       if (filteredUserIds.has(ci.userId) && new Date(ci.createdAt).getTime() >= sevenDaysAgo) {
-        activeIds.add(ci.userId);
+        ids.add(ci.userId);
       }
     });
-    // Also count users with recent unit completions
     filteredUsers.forEach(user => {
       const userUnitProg = getSeededUnitProgressForUser(user.id);
-      const hasRecentUnit = Object.values(userUnitProg).some(
+      const hasRecent = Object.values(userUnitProg).some(
         p => p.status === 'completed' && p.completedAt && new Date(p.completedAt).getTime() >= sevenDaysAgo
       );
-      if (hasRecentUnit) activeIds.add(user.id);
+      if (hasRecent) ids.add(user.id);
     });
-    return activeIds.size;
-  }, [state.checkIns, filteredUserIds, filteredUsers]);
+    return ids;
+  }, [state.checkIns, filteredUserIds, filteredUsers, sevenDaysAgo]);
 
-  const filteredBarometer = useMemo(() => state.barometerResponses.filter(br => filteredUserIds.has(br.userId)), [state.barometerResponses, filteredUserIds]);
+  const participationRate = filteredUsers.length > 0 ? Math.round((activeIds.size / filteredUsers.length) * 100) : 0;
+  const avgActionsPerWeek = filteredCheckIns.length > 0 && filteredUsers.length > 0
+    ? (filteredCheckIns.length / Math.max(filteredUsers.length, 1)).toFixed(1)
+    : '0';
+  const avgStreak = filteredUsers.length > 0
+    ? +(filteredUsers.reduce((s, u) => s + u.streak, 0) / filteredUsers.length).toFixed(1)
+    : 0;
+  const consistency: 'Low' | 'Medium' | 'High' = avgStreak >= 3 ? 'High' : avgStreak >= 1 ? 'Medium' : 'Low';
 
-  const barometerAgg = useMemo(() => {
-    const dims = ['confidence', 'engagement', 'clarity'] as const;
-    const maxWeek = filteredBarometer.length > 0 ? Math.max(...filteredBarometer.map(b => b.weekNumber)) : 1;
-    return dims.map(dim => {
-      const week1 = filteredBarometer.filter(br => br.weekNumber === 1);
-      const latest = filteredBarometer.filter(br => br.weekNumber === maxWeek);
-      const baseline = week1.length > 0 ? week1.reduce((s, br) => s + br.scores[dim], 0) / week1.length : 0;
-      const current = latest.length > 0 ? latest.reduce((s, br) => s + br.scores[dim], 0) / latest.length : 0;
-      return { dimension: dim, baseline: +baseline.toFixed(1), current: +current.toFixed(1), delta: +(current - baseline).toFixed(1) };
-    });
-  }, [filteredBarometer]);
+  // Behavior Breakdown
+  const behaviorBreakdown = useMemo(() => computeBehaviorBreakdown(filteredCheckIns), [filteredCheckIns]);
+  const behaviorColors = ['bg-primary', 'bg-blue-500', 'bg-amber-500', 'bg-pink-500'];
 
+  // Progress Over Time
   const checkInsByWeek = useMemo(() => {
     const map: Record<number, number> = {};
     filteredCheckIns.forEach(ci => { map[ci.weekNumber] = (map[ci.weekNumber] || 0) + 1; });
-    return Object.entries(map).sort(([a], [b]) => +a - +b).map(([week, count]) => ({ week: `Week ${week}`, count }));
+    return Object.entries(map).sort(([a], [b]) => +a - +b).map(([week, count]) => ({ week: `W${week}`, count }));
   }, [filteredCheckIns]);
 
-  const unitCompletionByWeek = useMemo(() => {
-    const weekMap: Record<number, { total: number; completed: number }> = {};
-    journey.steps.forEach(step => {
-      const mod = modules.find(m => m.id === step.moduleId);
-      const units = mod?.units || [];
-      if (!weekMap[step.weekNumber]) weekMap[step.weekNumber] = { total: 0, completed: 0 };
-      weekMap[step.weekNumber].total += units.length || 1;
-      if (units.length > 0) {
-        weekMap[step.weekNumber].completed += units.filter(u => unitProgress[u.unitId]?.status === 'completed').length;
-      } else if (moduleProgress[step.moduleId]?.status === 'completed') {
-        weekMap[step.weekNumber].completed += 1;
-      }
-    });
-    return Object.entries(weekMap).sort(([a], [b]) => +a - +b).map(([w, d]) => ({ week: `Week ${w}`, completed: d.completed, total: d.total }));
-  }, [journey, modules, moduleProgress, unitProgress]);
+  const weeklyTrend = useMemo<'increasing' | 'stable' | 'decreasing'>(() => {
+    if (checkInsByWeek.length < 2) return 'stable';
+    const half = Math.floor(checkInsByWeek.length / 2);
+    const firstHalf = checkInsByWeek.slice(0, half).reduce((s, w) => s + w.count, 0) / half;
+    const secondHalf = checkInsByWeek.slice(half).reduce((s, w) => s + w.count, 0) / (checkInsByWeek.length - half);
+    if (secondHalf > firstHalf * 1.15) return 'increasing';
+    if (secondHalf < firstHalf * 0.85) return 'decreasing';
+    return 'stable';
+  }, [checkInsByWeek]);
 
-  const learnerData = useMemo(() => {
-    return filteredUsers.map(user => {
-      const userCheckIns = state.checkIns.filter(ci => ci.userId === user.id);
-      const userUnitProg = getSeededUnitProgressForUser(user.id);
+  // Insights
+  const insights = useMemo(
+    () => generateInsights(participationRate, avgStreak, behaviorBreakdown, weeklyTrend, consistency),
+    [participationRate, avgStreak, behaviorBreakdown, weeklyTrend, consistency],
+  );
 
-      // Find latest activity: max of check-in dates and unit completion dates
-      const allDates: number[] = [];
-      userCheckIns.forEach(ci => allDates.push(new Date(ci.createdAt).getTime()));
-      Object.values(userUnitProg).forEach(p => {
-        if (p.completedAt) allDates.push(new Date(p.completedAt).getTime());
-      });
-      const lastActivity = allDates.length > 0
-        ? new Date(Math.max(...allDates)).toLocaleDateString()
-        : 'N/A';
-
-      const pp = perUserProgress.find(p => p.userId === user.id);
-      return {
-        name: user.name, role: user.role,
-        modulesCompleted: pp?.modulesCompleted ?? 0,
-        unitsCompleted: pp?.unitsCompleted ?? 0,
-        lastActivity, level: user.level,
-      };
-    });
-  }, [filteredUsers, state.checkIns, perUserProgress]);
-
-  /* Module completion — aggregated across all filtered users */
-  const moduleData = useMemo(() => {
-    const teamPerformanceModules = modules.filter(m => m.id.startsWith('tp-'));
-    return teamPerformanceModules.map(mod => {
-      const units = mod.units || [];
-      if (units.length === 0) return null;
-
-      // For each user, compute % of this module's units completed
-      const userCompletionRates = filteredUsers.map(user => {
-        const userUnitProg = getSeededUnitProgressForUser(user.id);
-        const done = units.filter(u => userUnitProg[u.unitId]?.status === 'completed').length;
-        return done / units.length;
-      });
-
-      // % learners who completed ALL units of this module
-      const fullyCompleted = userCompletionRates.filter(r => r >= 1).length;
-      const pctLearners = filteredUsers.length > 0 ? Math.round((fullyCompleted / filteredUsers.length) * 100) : 0;
-
-      // Avg unit completion across all users
-      const avgUnitCompletion = userCompletionRates.length > 0
-        ? Math.round((userCompletionRates.reduce((s, r) => s + r, 0) / userCompletionRates.length) * 100)
-        : 0;
-
-      return { title: mod.title, pctLearners, avgUnitCompletion };
-    }).filter(Boolean) as { title: string; pctLearners: number; avgUnitCompletion: number }[];
-  }, [modules, filteredUsers]);
+  const chartConfig = {
+    count: { label: 'Actions', color: 'hsl(var(--primary))' },
+  };
 
   const exportCSV = () => {
     const csv = [
-      'Name,Role,Modules Completed,Units Completed,Last Activity,Level',
-      ...learnerData.map(l => `${l.name},${l.role},${l.modulesCompleted},${l.unitsCompleted},${l.lastActivity},${l.level}`),
-      '',
-      'Module Completion',
-      'Module Title,% Learners Completed,Avg Unit Completion',
-      ...moduleData.map(m => `${m.title},${m.pctLearners}%,${m.avgUnitCompletion}%`),
+      'Name,Role,XP,Streak,Level',
+      ...filteredUsers.map(u => `${u.name},${u.role},${u.xp},${u.streak},${u.level}`),
     ].join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'igniteup-report.csv';
+    a.download = 'leadership-report.csv';
     a.click();
     URL.revokeObjectURL(url);
-  };
-
-  const chartConfig = {
-    count: { label: 'Check-ins', color: 'hsl(var(--primary))' },
-    completed: { label: 'Completed', color: 'hsl(var(--primary))' },
-    total: { label: 'Total', color: 'hsl(var(--muted-foreground))' },
   };
 
   if (state.currentRole === 'participant') {
@@ -581,167 +448,114 @@ function DemoReports() {
 
   return (
     <div className="space-y-8 print:space-y-4">
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 print:hidden">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Reports</h1>
-          <p className="text-muted-foreground mt-1">Progress, practice signals, and ROI snapshot.</p>
+          <h1 className="text-3xl font-bold tracking-tight">Leadership Diagnostic</h1>
+          <p className="text-muted-foreground mt-1">Behavior patterns, consistency, and actionable insights.</p>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-2" /> Print report
+            <Printer className="h-4 w-4 mr-2" /> Print
           </Button>
           <Button variant="outline" size="sm" onClick={exportCSV}>
-            <FileDown className="h-4 w-4 mr-2" /> Export CSV
+            <FileDown className="h-4 w-4 mr-2" /> Export
           </Button>
         </div>
       </div>
 
+      {/* Print header */}
       <div className="hidden print:block">
-        <h1 className="text-2xl font-bold text-black">IgniteUp — Reporting Pack</h1>
+        <h1 className="text-2xl font-bold text-black">IgniteUp — Leadership Diagnostic</h1>
         <p className="text-sm text-gray-500">Generated on {new Date().toLocaleDateString()}</p>
       </div>
 
-      <div className="flex gap-3 print:hidden">
+      {/* Scope selector */}
+      <div className="print:hidden">
         <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-          <SelectTrigger className="w-[180px]"><SelectValue placeholder="Team / Cohort" /></SelectTrigger>
+          <SelectTrigger className="w-[180px]"><SelectValue placeholder="Team" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Teams</SelectItem>
             {state.teams.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Select value={dateRange} onValueChange={setDateRange}>
-          <SelectTrigger className="w-[180px]"><SelectValue placeholder="Date range" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7">Last 7 days</SelectItem>
-            <SelectItem value="30">Last 30 days</SelectItem>
-            <SelectItem value="whole">Whole journey</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
 
-      {isManager && <DemoExecutiveSummary users={activeUsers} checkIns={state.checkIns} />}
-
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 print:grid-cols-5">
-        <KPICard icon={BookOpen} label="Avg Modules Done" value={`${avgModulesCompleted} / ${totalModules}`} />
-        <KPICard icon={ClipboardCheck} label="Avg Units Done" value={`${avgUnitsCompleted} / ${totalUnits}`} />
-        <KPICard icon={Activity} label="Check-ins" value={String(checkInsCompleted)} sub={`${activeStreaks} active streaks`} />
-        <KPICard icon={Users} label="Active Users (7d)" value={String(activeUsersCount)} sub={`of ${filteredUsers.length} total`} />
-        <KPICard icon={Flame} label="Ignite Status" value={`${activeUsersCount} Active`} sub={`${filteredUsers.length - activeUsersCount} Due`} />
-      </div>
-
+      {/* 1. Activity & Consistency */}
       <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg flex items-center gap-2"><TrendingUp className="h-5 w-5" /> ROI Barometer Snapshot</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-6">
-            {barometerAgg.map(d => (
-              <div key={d.dimension} className="text-center space-y-1">
-                <p className="text-xs uppercase tracking-wider text-muted-foreground capitalize">{d.dimension}</p>
-                <p className="text-2xl font-bold">{d.current}<span className="text-sm text-muted-foreground"> / 5</span></p>
-                <p className={`text-sm font-medium ${d.delta >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {d.delta >= 0 ? '+' : ''}{d.delta} from baseline ({d.baseline})
-                </p>
+        <CardContent className="pt-6">
+          <SectionHeader icon={Activity} title="Activity & Consistency" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <MetricTile label="Participation rate" value={`${participationRate}%`} />
+            <MetricTile label="Avg actions / week" value={avgActionsPerWeek} />
+            <MetricTile label="Avg streak" value={String(avgStreak)} />
+            <div className="space-y-1">
+              <p className="text-xs text-muted-foreground">Consistency</p>
+              <div className="pt-1">
+                <ConsistencyBadge level={consistency} />
               </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 2. Behavior Breakdown */}
+      <Card>
+        <CardContent className="pt-6">
+          <SectionHeader icon={BarChart3} title="Behavior Breakdown" />
+          <div className="space-y-4 max-w-lg">
+            {behaviorBreakdown.map((b, i) => (
+              <BehaviorBar key={b.label} label={b.label} pct={b.pct} color={behaviorColors[i % behaviorColors.length]} />
             ))}
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-lg">Unit Completion by Week</CardTitle></CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[250px] w-full">
-              <BarChart data={unitCompletionByWeek}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis />
+      {/* 3. Progress Over Time */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <SectionHeader icon={TrendingUp} title="Progress Over Time" />
+            <TrendIndicator trend={weeklyTrend} />
+          </div>
+          {checkInsByWeek.length > 0 ? (
+            <ChartContainer config={chartConfig} className="h-[220px] w-full">
+              <BarChart data={checkInsByWeek}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="week" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="completed" fill="var(--color-completed)" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="total" fill="var(--color-total)" radius={[4, 4, 0, 0]} opacity={0.3} />
+                <Bar dataKey="count" fill="var(--color-count)" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ChartContainer>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2"><CardTitle className="text-lg">Practice Activity by Week</CardTitle></CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[250px] w-full">
-              <LineChart data={checkInsByWeek}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line type="monotone" dataKey="count" stroke="var(--color-count)" strokeWidth={2} dot={{ r: 4 }} />
-              </LineChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-lg">Learner Progress</CardTitle></CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-center">Modules</TableHead>
-                <TableHead className="text-center">Units</TableHead>
-                <TableHead>Last Activity</TableHead>
-                <TableHead>Level</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {learnerData.map(l => (
-                <TableRow key={l.name}>
-                  <TableCell className="font-medium">{l.name}</TableCell>
-                  <TableCell><Badge variant="secondary" className="capitalize">{l.role}</Badge></TableCell>
-                  <TableCell className="text-center">{l.modulesCompleted}</TableCell>
-                  <TableCell className="text-center">{l.unitsCompleted}</TableCell>
-                  <TableCell>{l.lastActivity}</TableCell>
-                  <TableCell><span className={getLevelColor(l.level as Level)}>{l.level}</span></TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-8">No activity data yet.</p>
+          )}
         </CardContent>
       </Card>
 
+      {/* 4. Leadership Insights */}
       <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-lg">Module Completion</CardTitle></CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Module</TableHead>
-                <TableHead className="text-center">% Learners Completed</TableHead>
-                <TableHead className="text-center">Avg Unit Completion</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {moduleData.map((m, i) => (
-                <TableRow key={i}>
-                  <TableCell className="font-medium">{m.title}</TableCell>
-                  <TableCell className="text-center">{m.pctLearners}%</TableCell>
-                  <TableCell className="text-center">{m.avgUnitCompletion}%</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+        <CardContent className="pt-6">
+          <SectionHeader icon={Zap} title="Leadership Insights" />
+          {insights.length > 0 ? (
+            <div className="divide-y divide-border/50">
+              {insights.map((text, i) => <InsightRow key={i} text={text} />)}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-6">Not enough data to generate insights yet.</p>
+          )}
         </CardContent>
       </Card>
     </div>
   );
 }
 
-/* ── Router: pick authenticated vs demo ── */
+/* ── Router ── */
 export default function Reports() {
   const { user } = useAuth();
   const { isDemoSession } = useDemo();
-  
+
   if (isDemoSession || !user) return <DemoReports />;
   return <AuthenticatedReports />;
 }
