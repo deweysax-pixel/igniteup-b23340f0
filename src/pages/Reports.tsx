@@ -273,6 +273,11 @@ function AuthenticatedReports() {
         </div>
       )}
 
+      {/* Key Takeaway — Sponsor & Admin only */}
+      {(role === 'admin' || role === 'sponsor') && (
+        <KeyTakeaway takeaways={computeKeyTakeaways(participationRate, behaviorBreakdown, avgStreak, consistency, weeklyTrend)} />
+      )}
+
       {/* Team Action Panel — Manager only */}
       {role === 'manager' && (
         <TeamActionPanel {...computeManagerActions(filteredMembers, ciThisWeek, behaviorBreakdown, participationRate)} />
