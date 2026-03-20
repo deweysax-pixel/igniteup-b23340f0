@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { getSeededUnitProgressForUser } from '@/data/demo-seed';
 import { TeamActionPanel, computeManagerActions } from '@/components/reports/TeamActionPanel';
+import { KeyTakeaway, computeKeyTakeaways } from '@/components/reports/KeyTakeaway';
 
 /* ── Shared helpers ── */
 
