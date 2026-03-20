@@ -19,6 +19,7 @@ import {
   Lightbulb, BarChart3, Target, Zap,
 } from 'lucide-react';
 import { getSeededUnitProgressForUser } from '@/data/demo-seed';
+import { TeamActionPanel, computeManagerActions } from '@/components/reports/TeamActionPanel';
 
 /* ── Shared helpers ── */
 
