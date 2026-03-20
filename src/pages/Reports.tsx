@@ -497,6 +497,11 @@ function DemoReports() {
         </Select>
       </div>
 
+      {/* Key Takeaway — Sponsor & Admin only (demo) */}
+      {(state.currentRole === 'admin' || state.currentRole === 'sponsor') && (
+        <KeyTakeaway takeaways={computeKeyTakeaways(participationRate, behaviorBreakdown, avgStreak, consistency, weeklyTrend)} />
+      )}
+
       {/* Team Action Panel — Manager only (demo) */}
       {state.currentRole === 'manager' && (
         <TeamActionPanel {...computeManagerActions(
