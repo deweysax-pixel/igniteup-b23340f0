@@ -258,11 +258,11 @@ function AuthenticatedReports() {
         </div>
       </div>
 
-      {/* Scope selector */}
-      {teams.length > 1 && (
+      {/* Scope selector — visible for Admin & Sponsor only */}
+      {showTeamSelector && (
         <div className="print:hidden">
           <Select value={selectedTeam} onValueChange={setSelectedTeam}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Team" /></SelectTrigger>
+            <SelectTrigger className="w-[200px]"><SelectValue placeholder="All Teams" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Teams</SelectItem>
               {teams.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}
