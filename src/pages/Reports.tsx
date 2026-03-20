@@ -347,10 +347,7 @@ function AuthenticatedReports() {
         </CardContent>
       </Card>
 
-      {/* 5. Team Action Panel — Manager only */}
-      {role === 'manager' && (
-        <TeamActionPanel {...computeManagerActions(filteredMembers, ciThisWeek, behaviorBreakdown, participationRate)} />
-      )}
+      {/* (Team Action Panel moved to top for Managers) */}
     </div>
   );
 }
