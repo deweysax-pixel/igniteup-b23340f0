@@ -272,6 +272,11 @@ function AuthenticatedReports() {
         </div>
       )}
 
+      {/* Team Action Panel — Manager only */}
+      {role === 'manager' && (
+        <TeamActionPanel {...computeManagerActions(filteredMembers, ciThisWeek, behaviorBreakdown, participationRate)} />
+      )}
+
       {/* 1. Activity & Consistency */}
       <Card>
         <CardContent className="pt-6">
@@ -342,10 +347,7 @@ function AuthenticatedReports() {
         </CardContent>
       </Card>
 
-      {/* 5. Team Action Panel — Manager only */}
-      {role === 'manager' && (
-        <TeamActionPanel {...computeManagerActions(filteredMembers, ciThisWeek, behaviorBreakdown, participationRate)} />
-      )}
+      {/* (Team Action Panel moved to top for Managers) */}
     </div>
   );
 }
@@ -489,6 +491,16 @@ function DemoReports() {
         </Select>
       </div>
 
+      {/* Team Action Panel — Manager only (demo) */}
+      {state.currentRole === 'manager' && (
+        <TeamActionPanel {...computeManagerActions(
+          filteredUsers.map(u => ({ id: u.id, streak: u.streak })),
+          activeIds,
+          behaviorBreakdown,
+          participationRate,
+        )} />
+      )}
+
       {/* 1. Activity & Consistency */}
       <Card>
         <CardContent className="pt-6">
@@ -556,15 +568,7 @@ function DemoReports() {
         </CardContent>
       </Card>
 
-      {/* 5. Team Action Panel — Manager only (demo) */}
-      {state.currentRole === 'manager' && (
-        <TeamActionPanel {...computeManagerActions(
-          filteredUsers.map(u => ({ id: u.id, streak: u.streak })),
-          activeIds,
-          behaviorBreakdown,
-          participationRate,
-        )} />
-      )}
+      {/* (Team Action Panel moved to top for Managers) */}
     </div>
   );
 }
