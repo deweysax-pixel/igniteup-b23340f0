@@ -558,15 +558,7 @@ function DemoReports() {
         </CardContent>
       </Card>
 
-      {/* 5. Team Action Panel — Manager only (demo) */}
-      {state.currentRole === 'manager' && (
-        <TeamActionPanel {...computeManagerActions(
-          filteredUsers.map(u => ({ id: u.id, streak: u.streak })),
-          activeIds,
-          behaviorBreakdown,
-          participationRate,
-        )} />
-      )}
+      {/* (Team Action Panel moved to top for Managers) */}
     </div>
   );
 }
