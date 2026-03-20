@@ -19,6 +19,7 @@ import {
   Lightbulb, BarChart3, Target, Zap,
 } from 'lucide-react';
 import { getSeededUnitProgressForUser } from '@/data/demo-seed';
+import { TeamActionPanel, computeManagerActions } from '@/components/reports/TeamActionPanel';
 
 /* ── Shared helpers ── */
 
@@ -340,6 +341,11 @@ function AuthenticatedReports() {
           )}
         </CardContent>
       </Card>
+
+      {/* 5. Team Action Panel — Manager only */}
+      {role === 'manager' && (
+        <TeamActionPanel {...computeManagerActions(filteredMembers, ciThisWeek, behaviorBreakdown, participationRate)} />
+      )}
     </div>
   );
 }
@@ -549,6 +555,16 @@ function DemoReports() {
           )}
         </CardContent>
       </Card>
+
+      {/* 5. Team Action Panel — Manager only (demo) */}
+      {state.currentRole === 'manager' && (
+        <TeamActionPanel {...computeManagerActions(
+          filteredUsers.map(u => ({ id: u.id, streak: u.streak })),
+          activeIds,
+          behaviorBreakdown,
+          participationRate,
+        )} />
+      )}
     </div>
   );
 }
