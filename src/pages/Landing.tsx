@@ -61,19 +61,19 @@ export default function Landing() {
             </Badge>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
-              Your managers don't lack training.
+              Training doesn't change behavior.
               <br />
-              <span className="text-primary">They lack execution.</span>
+              <span className="text-primary">Execution does.</span>
             </h1>
 
             <p className="max-w-2xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed">
-              IgniteUp turns leadership into weekly actions your managers actually perform — with measurable impact.
+              IgniteUp forces leadership into weekly action — and makes it measurable across your teams.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/fit-check">
                 <Button size="lg" className="text-base px-8 gap-2 group">
-                  Run your 90-sec Leadership Fit Check
+                  Reveal your execution score
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
@@ -84,8 +84,13 @@ export default function Landing() {
               </a>
             </div>
 
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
+              <span className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />3× more consistent leadership actions in 6 weeks</span>
+              <span className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />72% manager adoption in 6 weeks</span>
+            </div>
+
             <p className="text-xs text-muted-foreground">
-              See how many of your managers actually apply what they learned last week.
+              How many of your managers actually applied what they learned last week?
             </p>
           </div>
 
@@ -105,6 +110,9 @@ export default function Landing() {
         <section className="py-20 border-t border-border/40">
           <div className="max-w-3xl mx-auto px-6 text-center space-y-10">
             <div className="space-y-3">
+              <p className="text-lg text-muted-foreground font-medium">
+                You invest in leadership training.<br />But nothing really changes.
+              </p>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Leadership training doesn't fail.
                 <br />
@@ -230,7 +238,7 @@ export default function Landing() {
               <Card className="border-primary/30 bg-primary/5">
                 <CardContent className="p-6 space-y-4">
                   <h3 className="text-sm font-semibold text-primary uppercase tracking-wider">IgniteUp</h3>
-                  {['Action-driven', 'Weekly execution loops', 'Measurable behavior change'].map((t) => (
+                  {['Action-driven', 'Forces managers to act every week', 'Measurable behavior change'].map((t) => (
                     <div key={t} className="flex items-center gap-2">
                       <Check className="h-3.5 w-3.5 text-primary shrink-0" />
                       <span className="text-sm text-foreground">{t}</span>
@@ -253,11 +261,22 @@ export default function Landing() {
             </p>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
-                Run your Fit Check
+                Reveal your execution score
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground">No signup required</p>
+          </div>
+        </section>
+
+        {/* ── TRUST MICRO-BLOCK ── */}
+        <section className="py-12 border-t border-border/40">
+          <div className="max-w-2xl mx-auto px-6 text-center space-y-2">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Trusted by teams serious about execution</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Used by managers to turn training into real behavior.<br />
+              Designed for teams that care about measurable impact.
+            </p>
           </div>
         </section>
 
@@ -271,7 +290,7 @@ export default function Landing() {
             </h2>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
-                Run your Fit Check
+                Reveal your execution score
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
