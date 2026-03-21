@@ -61,13 +61,13 @@ export default function Landing() {
             </Badge>
 
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
-              Your managers don't lack training.
+              Training doesn't change behavior.
               <br />
-              <span className="text-primary">They lack execution.</span>
+              <span className="text-primary">Execution does.</span>
             </h1>
 
             <p className="max-w-2xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed">
-              IgniteUp turns leadership into weekly actions your managers actually perform — with measurable impact.
+              IgniteUp forces leadership into weekly action — and makes it measurable across your teams.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
