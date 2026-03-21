@@ -70,6 +70,10 @@ export default function Landing() {
               IgniteUp forces leadership into weekly action — and makes it measurable across your teams.
             </p>
 
+            <p className="text-xs text-muted-foreground">
+              How many of your managers actually applied what they learned last week?
+            </p>
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/fit-check">
                 <Button size="lg" className="text-base px-8 gap-2 group">
@@ -84,13 +88,8 @@ export default function Landing() {
               </a>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />3× more consistent leadership actions in 6 weeks</span>
-              <span className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />72% manager adoption in 6 weeks</span>
-            </div>
-
-            <p className="text-xs text-muted-foreground">
-              How many of your managers actually applied what they learned last week?
+            <p className="flex items-center justify-center gap-2 text-sm font-medium text-foreground/70">
+              <Check className="h-4 w-4 text-primary" />3× more consistent leadership actions in 6 weeks — 72% manager adoption
             </p>
           </div>
 
@@ -286,7 +285,7 @@ export default function Landing() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
           <div className="relative max-w-2xl mx-auto px-6 text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Stop guessing. <span className="text-primary">Start seeing.</span>
+              Stop guessing. <span className="text-primary">See what's really happening.</span>
             </h2>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">

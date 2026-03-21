@@ -106,7 +106,7 @@ export default function ProductPreviewSection() {
     <section className="w-full max-w-4xl py-16 space-y-8 animate-fade-in">
       <div className="text-center space-y-2">
         <h3 className="text-xl font-semibold tracking-tight">See IgniteUp in action</h3>
-        <p className="text-sm text-muted-foreground">A simple system to activate leadership habits across your managers.</p>
+        <p className="text-sm text-muted-foreground"><p className="text-sm text-muted-foreground">See what your managers actually do — in real time</p></p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
