@@ -238,7 +238,7 @@ export default function Landing() {
               <Card className="border-primary/30 bg-primary/5">
                 <CardContent className="p-6 space-y-4">
                   <h3 className="text-sm font-semibold text-primary uppercase tracking-wider">IgniteUp</h3>
-                  {['Action-driven', 'Weekly execution loops', 'Measurable behavior change'].map((t) => (
+                  {['Action-driven', 'Forces managers to act every week', 'Measurable behavior change'].map((t) => (
                     <div key={t} className="flex items-center gap-2">
                       <Check className="h-3.5 w-3.5 text-primary shrink-0" />
                       <span className="text-sm text-foreground">{t}</span>
