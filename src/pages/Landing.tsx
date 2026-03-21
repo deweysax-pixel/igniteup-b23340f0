@@ -60,6 +60,10 @@ export default function Landing() {
               Leadership Activation System
             </Badge>
 
+            <p className="text-lg sm:text-xl text-muted-foreground font-medium">
+              Most leadership training is forgotten.
+            </p>
+
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
               Training doesn't change behavior.
               <br />
@@ -77,7 +81,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/fit-check">
                 <Button size="lg" className="text-base px-8 gap-2 group">
-                  Reveal your execution score
+                  Reveal your managers' execution score
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
@@ -256,11 +260,11 @@ export default function Landing() {
               How strong is your <span className="text-primary">leadership execution</span>?
             </h2>
             <p className="text-muted-foreground">
-              Take the 90-second Fit Check and get instant insights.
+              See exactly where your managers are not executing.
             </p>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
-                Reveal your execution score
+                Reveal your managers' execution score
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
@@ -289,7 +293,7 @@ export default function Landing() {
             </h2>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
-                Reveal your execution score
+                Reveal your managers' execution score
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
