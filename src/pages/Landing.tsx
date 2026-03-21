@@ -60,6 +60,10 @@ export default function Landing() {
               Leadership Activation System
             </Badge>
 
+            <p className="text-lg sm:text-xl text-muted-foreground font-medium">
+              Most leadership training is forgotten.
+            </p>
+
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
               Training doesn't change behavior.
               <br />
