@@ -113,7 +113,7 @@ export default function Landing() {
             </div>
             <div className="grid gap-4 sm:grid-cols-3">
               {[
-                'Managers attend training but don't apply it',
+                'Managers attend training but don\'t apply it',
                 'No visibility on real behavior change',
                 'No measurable ROI after programs',
               ].map((item) => (
