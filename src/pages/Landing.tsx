@@ -110,6 +110,9 @@ export default function Landing() {
         <section className="py-20 border-t border-border/40">
           <div className="max-w-3xl mx-auto px-6 text-center space-y-10">
             <div className="space-y-3">
+              <p className="text-lg text-muted-foreground font-medium">
+                You invest in leadership training.<br />But nothing really changes.
+              </p>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
                 Leadership training doesn't fail.
                 <br />
