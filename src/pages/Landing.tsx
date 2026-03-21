@@ -285,7 +285,7 @@ export default function Landing() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
           <div className="relative max-w-2xl mx-auto px-6 text-center space-y-6">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
-              Stop guessing. <span className="text-primary">Start seeing.</span>
+              Stop guessing. <span className="text-primary">See what's really happening.</span>
             </h2>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
