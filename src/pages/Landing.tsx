@@ -260,7 +260,7 @@ export default function Landing() {
               How strong is your <span className="text-primary">leadership execution</span>?
             </h2>
             <p className="text-muted-foreground">
-              Take the 90-second Fit Check and get instant insights.
+              See exactly where your managers are not executing.
             </p>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
