@@ -264,7 +264,7 @@ export default function Landing() {
             </p>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
-                Reveal your execution score
+                Reveal your managers' execution score
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
