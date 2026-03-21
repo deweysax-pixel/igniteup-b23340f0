@@ -73,7 +73,7 @@ export default function Landing() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <Link to="/fit-check">
                 <Button size="lg" className="text-base px-8 gap-2 group">
-                  Run your 90-sec Leadership Fit Check
+                  Reveal your execution score
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
@@ -84,8 +84,13 @@ export default function Landing() {
               </a>
             </div>
 
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-muted-foreground">
+              <span className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />3× more consistent leadership actions in 6 weeks</span>
+              <span className="flex items-center gap-2"><Check className="h-4 w-4 text-primary" />72% manager adoption in 6 weeks</span>
+            </div>
+
             <p className="text-xs text-muted-foreground">
-              See how many of your managers actually apply what they learned last week.
+              How many of your managers actually applied what they learned last week?
             </p>
           </div>
 
