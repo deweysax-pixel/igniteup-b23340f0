@@ -171,7 +171,7 @@ export default function Landing() {
         </section>
 
         {/* ── PRODUCT ── */}
-        <section id="product" className="py-20 border-t border-border/40 scroll-mt-20">
+        <section id="product" className="py-20 border-t border-border/40 scroll-mt-20 flex flex-col items-center">
           <ProductPreviewSection />
           <p className="text-center text-sm text-muted-foreground mt-6">
             No more guessing. You see what managers actually do.
