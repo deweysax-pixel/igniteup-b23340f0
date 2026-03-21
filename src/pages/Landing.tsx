@@ -261,11 +261,22 @@ export default function Landing() {
             </p>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
-                Run your Fit Check
+                Reveal your execution score
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
             <p className="text-xs text-muted-foreground">No signup required</p>
+          </div>
+        </section>
+
+        {/* ── TRUST MICRO-BLOCK ── */}
+        <section className="py-12 border-t border-border/40">
+          <div className="max-w-2xl mx-auto px-6 text-center space-y-2">
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Trusted by teams serious about execution</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Used by managers to turn training into real behavior.<br />
+              Designed for teams that care about measurable impact.
+            </p>
           </div>
         </section>
 
@@ -279,7 +290,7 @@ export default function Landing() {
             </h2>
             <Link to="/fit-check">
               <Button size="lg" className="text-base px-10 gap-2 group">
-                Run your Fit Check
+                Reveal your execution score
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
