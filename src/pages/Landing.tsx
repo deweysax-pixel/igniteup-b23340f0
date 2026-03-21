@@ -31,8 +31,9 @@ export default function Landing() {
             : 'bg-transparent'
         }`}
       >
-        <Link to="/">
+        <Link to="/" className="flex items-center gap-2.5">
           <img src={igniteupLogo} alt="IgniteUp" className="h-10 w-auto object-contain" />
+          <span className="text-lg font-bold tracking-tight text-foreground">IgniteUp</span>
         </Link>
         <div className="flex items-center gap-2 sm:gap-3">
           <Link to="/pricing" className="hidden sm:block">
