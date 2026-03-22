@@ -88,7 +88,7 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
     label: 'High',
     color: 'text-emerald-400',
     message: 'You have a system but can optimize.',
-    diagnostic: 'Your leadership execution is strong — now it's about fine-tuning and maximizing ROI.',
+    diagnostic: "Your leadership execution is strong — now it's about fine-tuning and maximizing ROI.",
     gap: 'The gap is between good execution and continuous, data-driven optimization.',
   },
 };
