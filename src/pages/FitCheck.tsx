@@ -103,6 +103,7 @@ const TOTAL_SECTIONS = sections.length;
 export default function FitCheck() {
   const navigate = useNavigate();
   const { setFitCheckAnswers } = usePreview();
+  const [demoOpen, setDemoOpen] = useState(false);
   const [sectionIndex, setSectionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
