@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, ArrowLeft, Sparkles, Target, BarChart3, Eye, Zap } from 'lucide-react';
 import { usePreview } from '@/contexts/PreviewContext';
+import { RequestDemoModal } from '@/components/RequestDemoModal';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const sections = [
