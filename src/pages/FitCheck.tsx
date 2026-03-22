@@ -74,8 +74,8 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
     label: 'Inconsistent',
     color: 'text-amber-400',
     message: 'You have effort but no system.',
-    diagnostic: 'Some managers try, but without structure, leadership habits don't stick.',
-    gap: 'The gap is between intention and consistency — effort exists but isn't sustained or tracked.',
+    diagnostic: "Some managers try, but without structure, leadership habits don't stick.",
+    gap: "The gap is between intention and consistency — effort exists but isn't sustained or tracked.",
   },
   structured: {
     label: 'Structured',
