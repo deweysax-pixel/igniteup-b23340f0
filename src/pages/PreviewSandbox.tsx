@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, BookOpen, ClipboardCheck, BarChart3, ArrowRight, Sparkles, RotateCcw } from 'lucide-react';
+import { RequestDemoModal } from '@/components/RequestDemoModal';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const DEFAULT_UNIT = {
