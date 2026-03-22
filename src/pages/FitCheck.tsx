@@ -265,7 +265,7 @@ export default function FitCheck() {
                     <Button className="w-full gap-2" size="lg" onClick={handleSeeFix}>
                       See how top teams fix this <ArrowRight className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" className="w-full" size="lg" onClick={() => navigate('/pricing')}>
+                    <Button variant="outline" className="w-full" size="lg" onClick={() => setDemoOpen(true)}>
                       Book a 20-min execution demo
                     </Button>
                   </div>

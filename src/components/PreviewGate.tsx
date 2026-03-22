@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { RequestDemoModal } from '@/components/RequestDemoModal';
 import { Lock } from 'lucide-react';
 
 export function PreviewGate() {
   const navigate = useNavigate();
+  const [demoOpen, setDemoOpen] = useState(false);
 
   return (
     <div className="flex-1 flex items-center justify-center px-6">
@@ -16,10 +19,11 @@ export function PreviewGate() {
           This section is part of the full IgniteUp workspace.
         </p>
         <div className="flex gap-3 justify-center pt-2">
-          <Button onClick={() => navigate('/pricing')}>Request a demo</Button>
+          <Button onClick={() => setDemoOpen(true)}>Request a demo</Button>
           <Button variant="outline" onClick={() => navigate('/app/journey')}>Back to My Journey</Button>
         </div>
       </div>
+      <RequestDemoModal open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }

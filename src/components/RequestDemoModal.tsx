@@ -110,8 +110,9 @@ export function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpen
               </Select>
               <Textarea placeholder="Notes (optional)" value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value.slice(0, 500) }))} rows={2} className="resize-none" maxLength={500} />
               <Button className="w-full gap-2" disabled={!isValid} onClick={handleSubmit}>
-                Submit request <ArrowRight className="h-4 w-4" />
+                Book my execution demo <ArrowRight className="h-4 w-4" />
               </Button>
+              <p className="text-[11px] text-muted-foreground text-center">20 min · No prep needed</p>
             </div>
           </>
         ) : (

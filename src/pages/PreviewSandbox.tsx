@@ -221,7 +221,7 @@ export default function PreviewSandbox() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-            <Button size="lg" onClick={() => navigate('/pricing')}>
+            <Button size="lg" onClick={() => setDemoOpen(true)}>
               Request a demo
             </Button>
             <Button size="lg" variant="outline" className="gap-2" onClick={() => navigate('/preview/journey')}>
