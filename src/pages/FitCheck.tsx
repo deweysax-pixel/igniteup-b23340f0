@@ -62,10 +62,11 @@ function getCategory(score: number): ScoreCategory {
   return 'high';
 }
 
-const categoryConfig: Record<ScoreCategory, { label: string; color: string; message: string; diagnostic: string; gap: string }> = {
+const categoryConfig: Record<ScoreCategory, { label: string; color: string; headline: string; message: string; diagnostic: string; gap: string }> = {
   weak: {
     label: 'Weak',
     color: 'text-red-400',
+    headline: 'Your managers are not executing.',
     message: 'Training is not translating into action.',
     diagnostic: 'Your managers lack a structured system to turn learning into weekly leadership behaviors.',
     gap: 'The gap is between training delivery and on-the-ground execution — nothing bridges the two.',
@@ -73,6 +74,7 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
   inconsistent: {
     label: 'Inconsistent',
     color: 'text-amber-400',
+    headline: 'Your managers are not executing consistently.',
     message: 'You have effort but no system.',
     diagnostic: "Some managers try, but without structure, leadership habits don't stick.",
     gap: "The gap is between intention and consistency — effort exists but isn't sustained or tracked.",
@@ -80,6 +82,7 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
   structured: {
     label: 'Structured',
     color: 'text-blue-400',
+    headline: 'Your managers execute — but it doesn\'t scale.',
     message: "You're close but not scalable.",
     diagnostic: 'You have foundations in place, but scaling leadership activation requires better visibility and tooling.',
     gap: 'The gap is between individual effort and organizational-level measurable impact.',
@@ -87,6 +90,7 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
   high: {
     label: 'High',
     color: 'text-emerald-400',
+    headline: 'Your managers execute — now optimize.',
     message: 'You have a system but can optimize.',
     diagnostic: "Your leadership execution is strong — now it's about fine-tuning and maximizing ROI.",
     gap: 'The gap is between good execution and continuous, data-driven optimization.',
@@ -226,7 +230,7 @@ export default function FitCheck() {
                   <div className="text-center space-y-2">
                     <p className="text-5xl font-bold tracking-tight">{totalScore}<span className="text-lg text-muted-foreground font-normal">/32</span></p>
                     <p className={`text-lg font-semibold ${config.color}`}>{config.label}</p>
-                    <p className="text-base font-medium text-foreground">{config.message}</p>
+                    <p className="text-base font-bold text-foreground">{config.headline}</p>
                   </div>
 
                   {/* Score bar */}
@@ -245,15 +249,23 @@ export default function FitCheck() {
                     <p className="text-sm font-medium text-foreground">Diagnostic</p>
                     <p className="text-sm text-muted-foreground">{config.diagnostic}</p>
                     <p className="text-sm text-muted-foreground">{config.gap}</p>
+                    <p className="text-sm font-medium text-primary">This is why you don't see measurable impact.</p>
+                  </div>
+
+                  {/* Reality check */}
+                  <div className="p-4 rounded-lg border border-primary/30 bg-primary/5 text-center">
+                    <p className="text-sm font-medium text-foreground italic">
+                      Last week, how many of your managers actually applied what they learned?
+                    </p>
                   </div>
 
                   {/* CTAs */}
                   <div className="flex flex-col gap-2 pt-2">
                     <Button className="w-full gap-2" size="lg" onClick={handleSeeFix}>
-                      See how to fix this <ArrowRight className="h-4 w-4" />
+                      See how top teams fix this <ArrowRight className="h-4 w-4" />
                     </Button>
                     <Button variant="outline" className="w-full" size="lg" onClick={() => navigate('/pricing')}>
-                      Request a demo
+                      Book a 20-min execution demo
                     </Button>
                   </div>
 
