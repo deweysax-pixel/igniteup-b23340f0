@@ -280,6 +280,7 @@ export default function FitCheck() {
           )}
         </div>
       </main>
+      <RequestDemoModal open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }

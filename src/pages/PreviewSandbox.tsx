@@ -241,6 +241,7 @@ export default function PreviewSandbox() {
           </div>
         </div>
       </main>
+      <RequestDemoModal open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }
