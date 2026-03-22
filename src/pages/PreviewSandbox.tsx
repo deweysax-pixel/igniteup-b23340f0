@@ -68,6 +68,7 @@ export default function PreviewSandbox() {
   const unit = challengeUnits[challenge] || DEFAULT_UNIT;
 
   const [unitOpened, setUnitOpened] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
   const [unitCompleted, setUnitCompleted] = useState(false);
   const [feedbackCount, setFeedbackCount] = useState([1]);
   const [note, setNote] = useState('');
