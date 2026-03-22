@@ -90,6 +90,27 @@ export default function PreviewJourney() {
 
       <main className="flex-1 px-6 py-12">
         <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+          {/* Section 0 — What high-execution teams do */}
+          <Card className="border-primary/30 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="text-lg">What high-execution teams do differently</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2">
+                {[
+                  'They force weekly action',
+                  'They track behavior, not attendance',
+                  'They make execution visible',
+                ].map(item => (
+                  <li key={item} className="flex items-start gap-2 text-sm font-medium text-foreground">
+                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+
           {/* Section 1 — Title */}
           <div className="text-center space-y-3">
             <h1 className="text-3xl font-bold tracking-tight">Your Leadership Transformation Profile</h1>
