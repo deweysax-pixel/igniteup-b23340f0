@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { ArrowRight, ArrowLeft, Sparkles, Target, BarChart3, Eye, Zap } from 'lucide-react';
 import { usePreview } from '@/contexts/PreviewContext';
+import { RequestDemoModal } from '@/components/RequestDemoModal';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const sections = [
@@ -102,6 +103,7 @@ const TOTAL_SECTIONS = sections.length;
 export default function FitCheck() {
   const navigate = useNavigate();
   const { setFitCheckAnswers } = usePreview();
+  const [demoOpen, setDemoOpen] = useState(false);
   const [sectionIndex, setSectionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [showResults, setShowResults] = useState(false);
@@ -264,7 +266,7 @@ export default function FitCheck() {
                     <Button className="w-full gap-2" size="lg" onClick={handleSeeFix}>
                       See how top teams fix this <ArrowRight className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" className="w-full" size="lg" onClick={() => navigate('/pricing')}>
+                    <Button variant="outline" className="w-full" size="lg" onClick={() => setDemoOpen(true)}>
                       Book a 20-min execution demo
                     </Button>
                   </div>
@@ -278,6 +280,7 @@ export default function FitCheck() {
           )}
         </div>
       </main>
+      <RequestDemoModal open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }

@@ -78,9 +78,14 @@ export function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpen
         {!submitted ? (
           <>
             <DialogHeader>
-              <DialogTitle>Request a demo</DialogTitle>
-              <DialogDescription>Tell us about your team and we'll reach out within 24–48 hours.</DialogDescription>
+              <DialogTitle>See how IgniteUp drives real execution</DialogTitle>
+              <DialogDescription>We'll show you how to make your managers act every week — and measure it.</DialogDescription>
             </DialogHeader>
+            <ul className="text-sm text-muted-foreground space-y-1.5 pt-1 pl-1">
+              <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" /> Identify your execution gaps</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" /> Activate weekly leadership behaviors</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary shrink-0" /> Track real behavior change</li>
+            </ul>
             <div className="space-y-3 pt-2">
               <Input placeholder="Full name *" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value.slice(0, 100) }))} maxLength={100} />
               <Input placeholder="Work email *" type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value.slice(0, 255) }))} maxLength={255} />
@@ -105,8 +110,9 @@ export function RequestDemoModal({ open, onOpenChange }: { open: boolean; onOpen
               </Select>
               <Textarea placeholder="Notes (optional)" value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value.slice(0, 500) }))} rows={2} className="resize-none" maxLength={500} />
               <Button className="w-full gap-2" disabled={!isValid} onClick={handleSubmit}>
-                Submit request <ArrowRight className="h-4 w-4" />
+                Book my execution demo <ArrowRight className="h-4 w-4" />
               </Button>
+              <p className="text-[11px] text-muted-foreground text-center">20 min · No prep needed</p>
             </div>
           </>
         ) : (

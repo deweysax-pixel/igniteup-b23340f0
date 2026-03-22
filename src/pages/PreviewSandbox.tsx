@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Slider } from '@/components/ui/slider';
 import { Textarea } from '@/components/ui/textarea';
 import { CheckCircle2, BookOpen, ClipboardCheck, BarChart3, ArrowRight, Sparkles, RotateCcw } from 'lucide-react';
+import { RequestDemoModal } from '@/components/RequestDemoModal';
 import igniteupLogo from '@/assets/igniteup-logo.png';
 
 const DEFAULT_UNIT = {
@@ -67,6 +68,7 @@ export default function PreviewSandbox() {
   const unit = challengeUnits[challenge] || DEFAULT_UNIT;
 
   const [unitOpened, setUnitOpened] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
   const [unitCompleted, setUnitCompleted] = useState(false);
   const [feedbackCount, setFeedbackCount] = useState([1]);
   const [note, setNote] = useState('');
@@ -79,7 +81,7 @@ export default function PreviewSandbox() {
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border">
         <img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
-        <Button size="sm" onClick={() => navigate('/pricing')}>Request a demo</Button>
+        <Button size="sm" onClick={() => setDemoOpen(true)}>Request a demo</Button>
       </header>
 
       <main className="flex-1 px-6 py-10">
@@ -220,7 +222,7 @@ export default function PreviewSandbox() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-            <Button size="lg" onClick={() => navigate('/pricing')}>
+            <Button size="lg" onClick={() => setDemoOpen(true)}>
               Request a demo
             </Button>
             <Button size="lg" variant="outline" className="gap-2" onClick={() => navigate('/preview/journey')}>
@@ -239,6 +241,7 @@ export default function PreviewSandbox() {
           </div>
         </div>
       </main>
+      <RequestDemoModal open={demoOpen} onOpenChange={setDemoOpen} />
     </div>
   );
 }
