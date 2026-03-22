@@ -62,10 +62,11 @@ function getCategory(score: number): ScoreCategory {
   return 'high';
 }
 
-const categoryConfig: Record<ScoreCategory, { label: string; color: string; message: string; diagnostic: string; gap: string }> = {
+const categoryConfig: Record<ScoreCategory, { label: string; color: string; headline: string; message: string; diagnostic: string; gap: string }> = {
   weak: {
     label: 'Weak',
     color: 'text-red-400',
+    headline: 'Your managers are not executing.',
     message: 'Training is not translating into action.',
     diagnostic: 'Your managers lack a structured system to turn learning into weekly leadership behaviors.',
     gap: 'The gap is between training delivery and on-the-ground execution — nothing bridges the two.',
@@ -73,6 +74,7 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
   inconsistent: {
     label: 'Inconsistent',
     color: 'text-amber-400',
+    headline: 'Your managers are not executing consistently.',
     message: 'You have effort but no system.',
     diagnostic: "Some managers try, but without structure, leadership habits don't stick.",
     gap: "The gap is between intention and consistency — effort exists but isn't sustained or tracked.",
@@ -80,6 +82,7 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
   structured: {
     label: 'Structured',
     color: 'text-blue-400',
+    headline: 'Your managers execute — but it doesn\'t scale.',
     message: "You're close but not scalable.",
     diagnostic: 'You have foundations in place, but scaling leadership activation requires better visibility and tooling.',
     gap: 'The gap is between individual effort and organizational-level measurable impact.',
@@ -87,6 +90,7 @@ const categoryConfig: Record<ScoreCategory, { label: string; color: string; mess
   high: {
     label: 'High',
     color: 'text-emerald-400',
+    headline: 'Your managers execute — now optimize.',
     message: 'You have a system but can optimize.',
     diagnostic: "Your leadership execution is strong — now it's about fine-tuning and maximizing ROI.",
     gap: 'The gap is between good execution and continuous, data-driven optimization.',
