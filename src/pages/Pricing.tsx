@@ -53,7 +53,7 @@ const plans = [
       'Execution score aggregation',
       'Cross-team comparison',
     ],
-    contrast: 'Know exactly where execution is failing. Full visibility across teams.',
+    contrast: 'Know exactly where execution is failing.\nFull visibility across teams.',
     outcomes: [
       'Alignment across teams',
       'Faster adoption',
