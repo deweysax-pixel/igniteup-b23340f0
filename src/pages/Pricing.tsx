@@ -46,7 +46,7 @@ const plans = [
     highlighted: true,
     highlightLabel: 'Most companies start here',
     tagline: 'See who is executing — and who is not.',
-    price: '€19',
+    price: '€39',
     includesLabel: 'Everything in ACTIVATE, plus:',
     features: [
       'Team & organization dashboards',
