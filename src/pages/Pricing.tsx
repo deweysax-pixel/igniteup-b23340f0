@@ -77,10 +77,10 @@ const plans = [
 ];
 
 const addons = [
-  { icon: MessageSquare, title: 'Coaching Credits (monthly pool)', desc: 'A monthly pool of coaching sessions to unlock tough situations.' },
-  { icon: GraduationCap, title: 'Team Workshops', desc: 'Live workshops (kick-off, feedback, accountability, team performance).' },
-  { icon: Lightbulb, title: 'Expert Q&A (monthly)', desc: "Monthly 'Ask an expert' session + async Q&A support." },
-  { icon: Puzzle, title: 'Custom Module / Playbook', desc: 'We adapt content to your context (your cases, your language, your reality).' },
+  { icon: MessageSquare, title: 'Coaching Credits', desc: 'On-demand coaching to unblock real leadership situations fast.' },
+  { icon: GraduationCap, title: 'Team Activation Workshops', desc: 'Live sessions to accelerate adoption and drive immediate action.' },
+  { icon: Lightbulb, title: 'Expert Q&A', desc: 'Monthly expert access to solve recurring leadership challenges.' },
+  { icon: Puzzle, title: 'Custom Execution Playbook', desc: 'Tailored actions designed for your context, your teams, your reality.' },
 ];
 
 const addonDetails: Record<string, { bullets: string[]; bestFor: string }> = {
