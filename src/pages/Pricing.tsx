@@ -235,11 +235,18 @@ export default function PricingPage() {
                           </li>
                         ))}
                       </ul>
-                      {('limitation' in plan && plan.limitation) && (
-                        <p className="text-xs text-destructive/80 mt-3">{plan.limitation}</p>
+                      {'limitations' in plan && (plan as any).limitations && (
+                        <ul className="mt-3 space-y-1">
+                          {(plan as any).limitations.map((l: string) => (
+                            <li key={l} className="text-xs text-destructive/80">• {l}</li>
+                          ))}
+                        </ul>
                       )}
                       {('contrast' in plan && plan.contrast) && (
                         <p className="text-xs font-semibold text-primary mt-3">{plan.contrast}</p>
+                      )}
+                      {'scoreHint' in plan && (plan as any).scoreHint && (
+                        <p className="text-xs text-muted-foreground italic mt-2">{(plan as any).scoreHint}</p>
                       )}
                       {'outcomes' in plan && plan.outcomes && (
                         <div className="mt-4 pt-3 border-t border-border">
