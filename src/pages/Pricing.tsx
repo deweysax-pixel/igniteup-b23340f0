@@ -230,6 +230,12 @@ export default function PricingPage() {
                           </li>
                         ))}
                       </ul>
+                      {('limitation' in plan && plan.limitation) && (
+                        <p className="text-xs text-destructive/80 mt-3">{plan.limitation}</p>
+                      )}
+                      {('contrast' in plan && plan.contrast) && (
+                        <p className="text-xs font-semibold text-primary mt-3">{plan.contrast}</p>
+                      )}
                       {'outcomes' in plan && plan.outcomes && (
                         <div className="mt-4 pt-3 border-t border-border">
                           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Expected outcomes</p>
