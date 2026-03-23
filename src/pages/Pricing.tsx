@@ -178,12 +178,12 @@ export default function PricingPage() {
               Pricing
             </Badge>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Choose the level of support you need
+              Choose your execution level
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              All plans include the same secure platform. The difference is scale and support.
+              All plans include the same platform. The difference is scale, visibility, and support.
             </p>
-            <p className="text-xs text-muted-foreground">Billing: per user / month (monthly or annual).</p>
+            <p className="text-xs text-muted-foreground">Starting at €9 / manager / month.</p>
           </div>
 
           {/* Plan cards */}
