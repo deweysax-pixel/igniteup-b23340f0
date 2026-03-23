@@ -21,14 +21,18 @@ const plans = [
     title: 'ACTIVATE',
     icon: Users,
     tagline: 'Make your managers act every week.',
-    price: '€9',
+    price: '€19',
     features: [
       'Weekly leadership actions',
       'Nudges & reminders',
       'Individual execution tracking',
       'Gamified consistency',
     ],
-    limitation: 'No team or organization visibility.',
+    limitations: [
+      'No team or organization visibility',
+      'No performance comparison across managers',
+      'No execution insights beyond individual level',
+    ],
     outcomes: [
       'Managers take action every week',
       'First visible behavior change',
