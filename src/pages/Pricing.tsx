@@ -21,14 +21,18 @@ const plans = [
     title: 'ACTIVATE',
     icon: Users,
     tagline: 'Make your managers act every week.',
-    price: '€9',
+    price: '€19',
     features: [
       'Weekly leadership actions',
       'Nudges & reminders',
       'Individual execution tracking',
       'Gamified consistency',
     ],
-    limitation: 'No team or organization visibility.',
+    limitations: [
+      'No team or organization visibility',
+      'No performance comparison across managers',
+      'No execution insights beyond individual level',
+    ],
     outcomes: [
       'Managers take action every week',
       'First visible behavior change',
@@ -42,7 +46,7 @@ const plans = [
     highlighted: true,
     highlightLabel: 'Most companies start here',
     tagline: 'See who is executing — and who is not.',
-    price: '€19',
+    price: '€39',
     includesLabel: 'Everything in ACTIVATE, plus:',
     features: [
       'Team & organization dashboards',
@@ -55,6 +59,7 @@ const plans = [
       'Faster adoption',
       'Visibility for leadership',
     ],
+    scoreHint: 'Most organizations below 20/32 execution score start here.',
     bestFor: 'Best for: HR/L&D rolling out across multiple teams.',
   },
   {
@@ -62,7 +67,7 @@ const plans = [
     title: 'TRANSFORM',
     icon: Handshake,
     tagline: 'Turn execution into a leadership system.',
-    price: '€39',
+    price: '€79',
     includesLabel: 'Everything in SCALE, plus:',
     features: [
       'ROI tracking',
@@ -70,7 +75,7 @@ const plans = [
       'Leadership journeys',
       'Coaching & support',
     ],
-    contrast: 'Company-wide execution control and ROI tracking.',
+    contrast: 'Turn execution into a managed leadership system. Company-wide execution control and ROI tracking.',
     outcomes: [
       'Measurable ROI',
       'Standardized execution culture',
@@ -187,7 +192,7 @@ export default function PricingPage() {
             <p className="text-muted-foreground max-w-xl mx-auto">
               All plans include the same platform. The difference is scale, visibility, and support.
             </p>
-            <p className="text-xs text-muted-foreground">Starting at €9 / manager / month.</p>
+            <p className="text-xs text-muted-foreground">Pricing based on execution activation level.</p>
           </div>
 
           {/* Plan cards */}
@@ -230,11 +235,18 @@ export default function PricingPage() {
                           </li>
                         ))}
                       </ul>
-                      {('limitation' in plan && plan.limitation) && (
-                        <p className="text-xs text-destructive/80 mt-3">{plan.limitation}</p>
+                      {'limitations' in plan && (plan as any).limitations && (
+                        <ul className="mt-3 space-y-1">
+                          {(plan as any).limitations.map((l: string) => (
+                            <li key={l} className="text-xs text-destructive/80">• {l}</li>
+                          ))}
+                        </ul>
                       )}
                       {('contrast' in plan && plan.contrast) && (
                         <p className="text-xs font-semibold text-primary mt-3">{plan.contrast}</p>
+                      )}
+                      {'scoreHint' in plan && (plan as any).scoreHint && (
+                        <p className="text-xs text-muted-foreground italic mt-2">{(plan as any).scoreHint}</p>
                       )}
                       {'outcomes' in plan && plan.outcomes && (
                         <div className="mt-4 pt-3 border-t border-border">
