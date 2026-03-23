@@ -243,7 +243,11 @@ export default function PricingPage() {
                         </ul>
                       )}
                       {('contrast' in plan && plan.contrast) && (
-                        <p className="text-xs font-semibold text-primary mt-3">{plan.contrast}</p>
+                        <div className="text-xs font-semibold text-primary mt-3 space-y-1">
+                          {plan.contrast.split('\n').map((line, i) => (
+                            <p key={i}>{line}</p>
+                          ))}
+                        </div>
                       )}
                       {'scoreHint' in plan && (plan as any).scoreHint && (
                         <p className="text-xs text-muted-foreground italic mt-2">{(plan as any).scoreHint}</p>
