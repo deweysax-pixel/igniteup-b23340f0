@@ -75,7 +75,7 @@ const plans = [
       'Leadership journeys',
       'Coaching & support',
     ],
-    contrast: 'Company-wide execution control and ROI tracking.',
+    contrast: 'Turn execution into a managed leadership system. Company-wide execution control and ROI tracking.',
     outcomes: [
       'Measurable ROI',
       'Standardized execution culture',
