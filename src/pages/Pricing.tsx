@@ -20,7 +20,7 @@ const plans = [
     id: 'activate',
     title: 'ACTIVATE',
     icon: Users,
-    tagline: 'Start leadership execution in one team.',
+    tagline: 'Make your managers act every week.',
     price: '€9',
     features: [
       'Weekly leadership actions',
@@ -28,6 +28,7 @@ const plans = [
       'Individual execution tracking',
       'Gamified consistency',
     ],
+    limitation: 'No team or organization visibility.',
     outcomes: [
       'Managers take action every week',
       'First visible behavior change',
@@ -39,7 +40,8 @@ const plans = [
     title: 'SCALE',
     icon: Building2,
     highlighted: true,
-    tagline: 'Make execution visible across teams.',
+    highlightLabel: 'Most companies start here',
+    tagline: 'See who is executing — and who is not.',
     price: '€19',
     includesLabel: 'Everything in ACTIVATE, plus:',
     features: [
@@ -47,6 +49,7 @@ const plans = [
       'Execution score aggregation',
       'Cross-team comparison',
     ],
+    contrast: 'Full visibility across teams.',
     outcomes: [
       'Alignment across teams',
       'Faster adoption',
@@ -58,7 +61,7 @@ const plans = [
     id: 'transform',
     title: 'TRANSFORM',
     icon: Handshake,
-    tagline: 'Drive measurable leadership transformation.',
+    tagline: 'Turn execution into a leadership system.',
     price: '€39',
     includesLabel: 'Everything in SCALE, plus:',
     features: [
@@ -67,6 +70,7 @@ const plans = [
       'Leadership journeys',
       'Coaching & support',
     ],
+    contrast: 'Company-wide execution control and ROI tracking.',
     outcomes: [
       'Measurable ROI',
       'Standardized execution culture',
@@ -198,7 +202,7 @@ export default function PricingPage() {
                 >
                   {plan.highlighted && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="text-[10px] tracking-wider uppercase px-2.5">Most popular</Badge>
+                      <Badge className="text-[10px] tracking-wider uppercase px-2.5">{plan.highlightLabel || 'Most popular'}</Badge>
                     </div>
                   )}
                   <CardHeader className="pb-3">
@@ -226,6 +230,12 @@ export default function PricingPage() {
                           </li>
                         ))}
                       </ul>
+                      {('limitation' in plan && plan.limitation) && (
+                        <p className="text-xs text-destructive/80 mt-3">{plan.limitation}</p>
+                      )}
+                      {('contrast' in plan && plan.contrast) && (
+                        <p className="text-xs font-semibold text-primary mt-3">{plan.contrast}</p>
+                      )}
                       {'outcomes' in plan && plan.outcomes && (
                         <div className="mt-4 pt-3 border-t border-border">
                           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Expected outcomes</p>
