@@ -53,20 +53,20 @@ const plans = [
       'Execution score aggregation',
       'Cross-team comparison',
     ],
-    contrast: 'Full visibility across teams.',
+    contrast: 'Know exactly where execution is failing. Full visibility across teams.',
     outcomes: [
       'Alignment across teams',
       'Faster adoption',
       'Visibility for leadership',
     ],
-    scoreHint: 'Most organizations below 20/32 execution score start here.',
+    scoreHint: 'Most companies start here when execution is inconsistent.',
     bestFor: 'Best for: HR/L&D rolling out across multiple teams.',
   },
   {
     id: 'transform',
     title: 'TRANSFORM',
     icon: Handshake,
-    tagline: 'Turn execution into a leadership system.',
+    tagline: 'From tracking execution to owning it.',
     price: '€79',
     includesLabel: 'Everything in SCALE, plus:',
     features: [
