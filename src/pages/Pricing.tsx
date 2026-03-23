@@ -17,90 +17,102 @@ import igniteupLogo from '@/assets/igniteup-logo.png';
 /* ── Plan data ── */
 const plans = [
   {
-    id: 'team',
-    title: 'TEAM',
+    id: 'activate',
+    title: 'ACTIVATE',
     icon: Users,
-    tagline: 'For one team that wants stronger habits fast.',
+    tagline: 'Start leadership execution in one team.',
+    price: '€9',
     features: [
-      'Today (Human Skills OS): what to do now, every day',
-      'Journeys (2–24 weeks): build a clear path',
-      '3h+ modules, split into units: easy to follow',
-      'Playbooks + copy scripts: ready-to-use',
-      'Practice + 60s check-ins: keep momentum',
-      'Ignite status (Active / Due): based on real action',
-      'Manager cockpit: Weekly Review + action heatmap + nudges',
-      'ROI barometer + essential reports',
+      'Weekly leadership actions',
+      'Nudges & reminders',
+      'Individual execution tracking',
+      'Gamified consistency',
     ],
-    bestFor: 'Best for: 1 manager, 1 team, one clear rollout.',
+    outcomes: [
+      'Managers take action every week',
+      'First visible behavior change',
+    ],
+    bestFor: 'Best for: 1 manager, 1 team, one clear starting point.',
   },
   {
-    id: 'business',
-    title: 'BUSINESS',
+    id: 'scale',
+    title: 'SCALE',
     icon: Building2,
     highlighted: true,
-    tagline: 'For several teams — with consolidated reporting.',
-    includesLabel: 'Everything in TEAM, plus:',
+    tagline: 'Make execution visible across teams.',
+    price: '€19',
+    includesLabel: 'Everything in ACTIVATE, plus:',
     features: [
-      'Multi-teams / multi-cohorts: deploy to multiple groups',
-      'Journey templates: standardize what works',
-      'Consolidated reporting: company view + team view',
-      'Exports (CSV / print): share internally',
-      'Common cadence: simple governance across teams',
+      'Team & organization dashboards',
+      'Execution score aggregation',
+      'Cross-team comparison',
+    ],
+    outcomes: [
+      'Alignment across teams',
+      'Faster adoption',
+      'Visibility for leadership',
     ],
     bestFor: 'Best for: HR/L&D rolling out across multiple teams.',
   },
   {
-    id: 'enterprise',
-    title: 'ENTERPRISE (SUCCESS PARTNERSHIP)',
+    id: 'transform',
+    title: 'TRANSFORM',
     icon: Handshake,
-    tagline: 'For guaranteed adoption and ROI — with hands-on support.',
-    includesLabel: 'Everything in BUSINESS, plus:',
+    tagline: 'Drive measurable leadership transformation.',
+    price: '€39',
+    includesLabel: 'Everything in SCALE, plus:',
     features: [
-      'Success Manager (monthly): monthly steering, adoption review, and next actions',
-      '90-day rollout plan (one-time): rollout steps + manager kit',
-      'Quarterly Executive Review: leadership-ready summary and next plan',
+      'ROI tracking',
+      'Executive reporting',
+      'Leadership journeys',
+      'Coaching & support',
+    ],
+    outcomes: [
+      'Measurable ROI',
+      'Standardized execution culture',
+      'Executive-level visibility',
     ],
     bestFor: 'Best for: organizations that want results, not just a tool.',
   },
 ];
 
 const addons = [
-  { icon: MessageSquare, title: 'Coaching Credits (monthly pool)', desc: 'A monthly pool of coaching sessions to unlock tough situations.' },
-  { icon: GraduationCap, title: 'Team Workshops', desc: 'Live workshops (kick-off, feedback, accountability, team performance).' },
-  { icon: Lightbulb, title: 'Expert Q&A (monthly)', desc: "Monthly 'Ask an expert' session + async Q&A support." },
-  { icon: Puzzle, title: 'Custom Module / Playbook', desc: 'We adapt content to your context (your cases, your language, your reality).' },
+  { icon: MessageSquare, title: 'Coaching Credits', desc: 'On-demand coaching to unblock real leadership situations fast.' },
+  { icon: GraduationCap, title: 'Team Activation Workshops', desc: 'Live sessions to accelerate adoption and drive immediate action.' },
+  { icon: Lightbulb, title: 'Expert Q&A', desc: 'Monthly expert access to solve recurring leadership challenges.' },
+  { icon: Puzzle, title: 'Custom Execution Playbook', desc: 'Tailored actions designed for your context, your teams, your reality.' },
 ];
 
 const addonDetails: Record<string, { bullets: string[]; bestFor: string }> = {
-  'Coaching Credits (monthly pool)': {
+  'Coaching Credits': {
     bullets: [
-      'A monthly pool of coaching sessions for real situations.',
-      'Use credits when a manager or team gets stuck.',
+      'On-demand sessions for real leadership situations.',
+      'Use when a manager or team gets stuck.',
       'Turn challenges into action fast.',
     ],
     bestFor: 'Teams that want support on demand.',
   },
-  'Team Workshops': {
+  'Team Activation Workshops': {
     bullets: [
       'Live sessions to accelerate adoption and alignment.',
       'Kick-off, feedback, accountability, team performance.',
-      'Designed to trigger practice immediately.',
+      'Designed to trigger immediate action.',
     ],
     bestFor: 'Fast rollout and culture shifts.',
   },
-  'Expert Q&A (monthly)': {
+  'Expert Q&A': {
     bullets: [
-      "Monthly 'Ask an expert' session + async Q&A support.",
+      'Monthly expert session + async Q&A support.',
       'Get answers when timing matters.',
-      'Help managers handle real cases.',
+      'Help managers handle real situations.',
     ],
     bestFor: 'Managers facing recurring people challenges.',
   },
-  'Custom Module / Playbook': {
+  'Custom Execution Playbook': {
     bullets: [
-      'Adapt content to your context (your cases, your language).',
+      'Actions tailored to your context and teams.',
       'Increase relevance and adoption.',
-      "Make training feel 'made for us'.",
+      "Make execution feel 'made for us'.",
     ],
     bestFor: 'Organizations with specific scenarios.',
   },
@@ -166,19 +178,19 @@ export default function PricingPage() {
               Pricing
             </Badge>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Choose the level of support you need
+              Choose your execution level
             </h1>
             <p className="text-muted-foreground max-w-xl mx-auto">
-              All plans include the same secure platform. The difference is scale and support.
+              All plans include the same platform. The difference is scale, visibility, and support.
             </p>
-            <p className="text-xs text-muted-foreground">Billing: per user / month (monthly or annual).</p>
+            <p className="text-xs text-muted-foreground">Starting at €9 / manager / month.</p>
           </div>
 
           {/* Plan cards */}
           <div className="grid gap-6 md:grid-cols-3">
             {plans.map(plan => {
               const Icon = plan.icon;
-              const isEnterprise = plan.id === 'enterprise';
+              const isTransform = plan.id === 'transform';
               return (
                 <Card
                   key={plan.id}
@@ -197,6 +209,9 @@ export default function PricingPage() {
                       <CardTitle className="text-lg">{plan.title}</CardTitle>
                     </div>
                     <p className="text-sm text-muted-foreground pt-1">{plan.tagline}</p>
+                    {'price' in plan && (
+                      <p className="text-lg font-bold pt-2">{plan.price}<span className="text-xs font-normal text-muted-foreground"> / manager / month</span></p>
+                    )}
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
                     <div className="flex-1">
@@ -211,14 +226,27 @@ export default function PricingPage() {
                           </li>
                         ))}
                       </ul>
+                      {'outcomes' in plan && plan.outcomes && (
+                        <div className="mt-4 pt-3 border-t border-border">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Expected outcomes</p>
+                          <ul className="space-y-1.5">
+                            {plan.outcomes.map(o => (
+                              <li key={o} className="flex items-start gap-2 text-sm">
+                                <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                                <span className="text-foreground">{o}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <p className="text-xs font-medium text-primary mt-4">{plan.bestFor}</p>
                     </div>
                     <div className="space-y-2 pt-6">
                       <Button className="w-full gap-2" onClick={() => setDemoOpen(true)}>
                         Request a demo <ArrowRight className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" className="w-full gap-2" onClick={() => isEnterprise ? setDemoOpen(true) : navigate('/fit-check')}>
-                        {isEnterprise ? 'Talk to us' : 'Open demo'}
+                      <Button variant="outline" className="w-full gap-2" onClick={() => isTransform ? setDemoOpen(true) : navigate('/fit-check')}>
+                        {isTransform ? 'Talk to us' : 'Try the Fit Check'}
                       </Button>
                     </div>
                   </CardContent>
@@ -230,7 +258,7 @@ export default function PricingPage() {
           {/* Add-ons */}
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-semibold tracking-tight">Add-ons (Boosters)</h2>
+              <h2 className="text-xl font-semibold tracking-tight">Execution Boosters</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {addons.map(a => (
