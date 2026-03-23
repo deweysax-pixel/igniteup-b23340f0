@@ -66,7 +66,7 @@ const plans = [
     id: 'transform',
     title: 'TRANSFORM',
     icon: Handshake,
-    tagline: 'From tracking execution to owning it.',
+    tagline: 'From tracking execution → to owning it.',
     price: '€79',
     includesLabel: 'Everything in SCALE, plus:',
     features: [
