@@ -20,7 +20,7 @@ const plans = [
     id: 'activate',
     title: 'ACTIVATE',
     icon: Users,
-    tagline: 'Start leadership execution in one team.',
+    tagline: 'Make your managers act every week.',
     price: '€9',
     features: [
       'Weekly leadership actions',
@@ -28,6 +28,7 @@ const plans = [
       'Individual execution tracking',
       'Gamified consistency',
     ],
+    limitation: 'No team or organization visibility.',
     outcomes: [
       'Managers take action every week',
       'First visible behavior change',
@@ -39,7 +40,8 @@ const plans = [
     title: 'SCALE',
     icon: Building2,
     highlighted: true,
-    tagline: 'Make execution visible across teams.',
+    highlightLabel: 'Most companies start here',
+    tagline: 'See who is executing — and who is not.',
     price: '€19',
     includesLabel: 'Everything in ACTIVATE, plus:',
     features: [
@@ -47,6 +49,7 @@ const plans = [
       'Execution score aggregation',
       'Cross-team comparison',
     ],
+    contrast: 'Full visibility across teams.',
     outcomes: [
       'Alignment across teams',
       'Faster adoption',
@@ -58,7 +61,7 @@ const plans = [
     id: 'transform',
     title: 'TRANSFORM',
     icon: Handshake,
-    tagline: 'Drive measurable leadership transformation.',
+    tagline: 'Turn execution into a leadership system.',
     price: '€39',
     includesLabel: 'Everything in SCALE, plus:',
     features: [
@@ -67,6 +70,7 @@ const plans = [
       'Leadership journeys',
       'Coaching & support',
     ],
+    contrast: 'Company-wide execution control and ROI tracking.',
     outcomes: [
       'Measurable ROI',
       'Standardized execution culture',
