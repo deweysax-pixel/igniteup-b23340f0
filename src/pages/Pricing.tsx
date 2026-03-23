@@ -67,7 +67,7 @@ const plans = [
     title: 'TRANSFORM',
     icon: Handshake,
     tagline: 'Turn execution into a leadership system.',
-    price: '€39',
+    price: '€79',
     includesLabel: 'Everything in SCALE, plus:',
     features: [
       'ROI tracking',
