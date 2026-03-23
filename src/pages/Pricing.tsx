@@ -190,7 +190,7 @@ export default function PricingPage() {
           <div className="grid gap-6 md:grid-cols-3">
             {plans.map(plan => {
               const Icon = plan.icon;
-              const isEnterprise = plan.id === 'enterprise';
+              const isTransform = plan.id === 'transform';
               return (
                 <Card
                   key={plan.id}
@@ -209,6 +209,9 @@ export default function PricingPage() {
                       <CardTitle className="text-lg">{plan.title}</CardTitle>
                     </div>
                     <p className="text-sm text-muted-foreground pt-1">{plan.tagline}</p>
+                    {'price' in plan && (
+                      <p className="text-lg font-bold pt-2">{plan.price}<span className="text-xs font-normal text-muted-foreground"> / manager / month</span></p>
+                    )}
                   </CardHeader>
                   <CardContent className="flex-1 flex flex-col">
                     <div className="flex-1">
@@ -223,14 +226,27 @@ export default function PricingPage() {
                           </li>
                         ))}
                       </ul>
+                      {'outcomes' in plan && plan.outcomes && (
+                        <div className="mt-4 pt-3 border-t border-border">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Expected outcomes</p>
+                          <ul className="space-y-1.5">
+                            {plan.outcomes.map(o => (
+                              <li key={o} className="flex items-start gap-2 text-sm">
+                                <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                                <span className="text-foreground">{o}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                       <p className="text-xs font-medium text-primary mt-4">{plan.bestFor}</p>
                     </div>
                     <div className="space-y-2 pt-6">
                       <Button className="w-full gap-2" onClick={() => setDemoOpen(true)}>
                         Request a demo <ArrowRight className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" className="w-full gap-2" onClick={() => isEnterprise ? setDemoOpen(true) : navigate('/fit-check')}>
-                        {isEnterprise ? 'Talk to us' : 'Open demo'}
+                      <Button variant="outline" className="w-full gap-2" onClick={() => isTransform ? setDemoOpen(true) : navigate('/fit-check')}>
+                        {isTransform ? 'Talk to us' : 'Try the Fit Check'}
                       </Button>
                     </div>
                   </CardContent>
