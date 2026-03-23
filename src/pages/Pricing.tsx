@@ -84,35 +84,35 @@ const addons = [
 ];
 
 const addonDetails: Record<string, { bullets: string[]; bestFor: string }> = {
-  'Coaching Credits (monthly pool)': {
+  'Coaching Credits': {
     bullets: [
-      'A monthly pool of coaching sessions for real situations.',
-      'Use credits when a manager or team gets stuck.',
+      'On-demand sessions for real leadership situations.',
+      'Use when a manager or team gets stuck.',
       'Turn challenges into action fast.',
     ],
     bestFor: 'Teams that want support on demand.',
   },
-  'Team Workshops': {
+  'Team Activation Workshops': {
     bullets: [
       'Live sessions to accelerate adoption and alignment.',
       'Kick-off, feedback, accountability, team performance.',
-      'Designed to trigger practice immediately.',
+      'Designed to trigger immediate action.',
     ],
     bestFor: 'Fast rollout and culture shifts.',
   },
-  'Expert Q&A (monthly)': {
+  'Expert Q&A': {
     bullets: [
-      "Monthly 'Ask an expert' session + async Q&A support.",
+      'Monthly expert session + async Q&A support.',
       'Get answers when timing matters.',
-      'Help managers handle real cases.',
+      'Help managers handle real situations.',
     ],
     bestFor: 'Managers facing recurring people challenges.',
   },
-  'Custom Module / Playbook': {
+  'Custom Execution Playbook': {
     bullets: [
-      'Adapt content to your context (your cases, your language).',
+      'Actions tailored to your context and teams.',
       'Increase relevance and adoption.',
-      "Make training feel 'made for us'.",
+      "Make execution feel 'made for us'.",
     ],
     bestFor: 'Organizations with specific scenarios.',
   },
