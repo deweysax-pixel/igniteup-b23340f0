@@ -53,7 +53,7 @@ const plans = [
       'Execution score aggregation',
       'Cross-team comparison',
     ],
-    contrast: 'Know exactly where execution is failing. Full visibility across teams.',
+    contrast: 'Know exactly where execution is failing.\nFull visibility across teams.',
     outcomes: [
       'Alignment across teams',
       'Faster adoption',
@@ -66,7 +66,7 @@ const plans = [
     id: 'transform',
     title: 'TRANSFORM',
     icon: Handshake,
-    tagline: 'From tracking execution to owning it.',
+    tagline: 'From tracking execution → to owning it.',
     price: '€79',
     includesLabel: 'Everything in SCALE, plus:',
     features: [
@@ -243,7 +243,11 @@ export default function PricingPage() {
                         </ul>
                       )}
                       {('contrast' in plan && plan.contrast) && (
-                        <p className="text-xs font-semibold text-primary mt-3">{plan.contrast}</p>
+                        <div className="text-xs font-semibold text-primary mt-3 space-y-1">
+                          {plan.contrast.split('\n').map((line, i) => (
+                            <p key={i}>{line}</p>
+                          ))}
+                        </div>
                       )}
                       {'scoreHint' in plan && (plan as any).scoreHint && (
                         <p className="text-xs text-muted-foreground italic mt-2">{(plan as any).scoreHint}</p>
