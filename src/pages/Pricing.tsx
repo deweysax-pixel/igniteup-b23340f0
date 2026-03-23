@@ -207,7 +207,7 @@ export default function PricingPage() {
                 >
                   {plan.highlighted && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="text-[10px] tracking-wider uppercase px-2.5">{plan.highlightLabel || 'Most popular'}</Badge>
+                      <Badge className="text-[10px] tracking-wider uppercase px-2.5 whitespace-nowrap">{plan.highlightLabel || 'Most popular'}</Badge>
                     </div>
                   )}
                   <CardHeader className="pb-3">
