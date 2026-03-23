@@ -59,6 +59,7 @@ const plans = [
       'Faster adoption',
       'Visibility for leadership',
     ],
+    scoreHint: 'Most organizations below 20/32 execution score start here.',
     bestFor: 'Best for: HR/L&D rolling out across multiple teams.',
   },
   {
