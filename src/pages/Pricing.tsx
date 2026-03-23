@@ -258,7 +258,7 @@ export default function PricingPage() {
           {/* Add-ons */}
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-xl font-semibold tracking-tight">Add-ons (Boosters)</h2>
+              <h2 className="text-xl font-semibold tracking-tight">Execution Boosters</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {addons.map(a => (
