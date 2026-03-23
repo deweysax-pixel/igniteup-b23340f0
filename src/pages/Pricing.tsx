@@ -192,7 +192,7 @@ export default function PricingPage() {
             <p className="text-muted-foreground max-w-xl mx-auto">
               All plans include the same platform. The difference is scale, visibility, and support.
             </p>
-            <p className="text-xs text-muted-foreground">Starting at €9 / manager / month.</p>
+            <p className="text-xs text-muted-foreground">Pricing based on execution activation level.</p>
           </div>
 
           {/* Plan cards */}
