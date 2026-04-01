@@ -148,6 +148,7 @@ export default function Challenges() {
                     )}
                   </div>
                   <CardTitle className="text-lg">{ch.title}</CardTitle>
+                  <p className="text-sm text-muted-foreground/80 italic">Become the manager your team actually needs — one action per week.</p>
                   {ch.description && <CardDescription>{ch.description}</CardDescription>}
 
                   {/* Sprint Progress */}
