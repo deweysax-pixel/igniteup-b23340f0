@@ -18,23 +18,32 @@ export type Database = {
         Row: {
           assigned_at: string
           challenge_id: string
+          completed_at: string | null
           id: string
+          status: string | null
           team_id: string | null
           user_id: string | null
+          xp_earned: number | null
         }
         Insert: {
           assigned_at?: string
           challenge_id: string
+          completed_at?: string | null
           id?: string
+          status?: string | null
           team_id?: string | null
           user_id?: string | null
+          xp_earned?: number | null
         }
         Update: {
           assigned_at?: string
           challenge_id?: string
+          completed_at?: string | null
           id?: string
+          status?: string | null
           team_id?: string | null
           user_id?: string | null
+          xp_earned?: number | null
         }
         Relationships: [
           {
@@ -63,6 +72,7 @@ export type Database = {
           start_date: string | null
           status: string
           title: string
+          xp_reward: number | null
         }
         Insert: {
           created_at?: string
@@ -73,6 +83,7 @@ export type Database = {
           start_date?: string | null
           status?: string
           title: string
+          xp_reward?: number | null
         }
         Update: {
           created_at?: string
@@ -83,6 +94,7 @@ export type Database = {
           start_date?: string | null
           status?: string
           title?: string
+          xp_reward?: number | null
         }
         Relationships: [
           {
