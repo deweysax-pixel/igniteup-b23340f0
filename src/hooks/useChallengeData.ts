@@ -9,6 +9,7 @@ export interface ChallengeAction {
   label: string;
   points: number;
   moment_id: string | null;
+  description: string | null;
 }
 
 export interface ChallengeRow {
