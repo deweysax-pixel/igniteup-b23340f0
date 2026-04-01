@@ -28,6 +28,14 @@ export interface ActionCompletion {
   xp_earned: number;
 }
 
+export interface ChallengeAssignmentRow {
+  user_id: string | null;
+  challenge_id: string;
+  status: string | null;
+  assigned_at: string;
+  team_id: string | null;
+}
+
 export function getCurrentWeekFromDates(startDate: string, endDate: string, totalWeeks: number): number {
   const now = new Date();
   const start = new Date(startDate);
@@ -41,22 +49,66 @@ export function getCurrentWeekFromDates(startDate: string, endDate: string, tota
 }
 
 export function useChallengeData() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [challenges, setChallenges] = useState<ChallengeRow[]>([]);
   const [completions, setCompletions] = useState<ActionCompletion[]>([]);
+  const [assignments, setAssignments] = useState<ChallengeAssignmentRow[]>([]);
+  const [teamIds, setTeamIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     if (!user) {
+      setChallenges([]);
+      setCompletions([]);
+      setAssignments([]);
+      setTeamIds([]);
       setLoading(false);
       return;
     }
 
-    const [{ data: challengeRows }, { data: actionRows }, { data: completionRows }] = await Promise.all([
-      supabase.from('challenges').select('id, title, description, status, start_date, end_date, xp_reward').order('created_at', { ascending: false }),
-      supabase.from('challenge_actions').select('id, challenge_id, week_number, label, points, moment_id').order('week_number'),
+    setLoading(true);
+
+    const [{ data: teamRows }, { data: ownAssignmentRows }, { data: completionRows }] = await Promise.all([
+      supabase.from('team_members').select('team_id').eq('user_id', user.id),
+      supabase
+        .from('challenge_assignments')
+        .select('user_id, challenge_id, status, assigned_at, team_id')
+        .eq('user_id', user.id),
       supabase.from('challenge_action_completions').select('challenge_action_id, status, xp_earned').eq('user_id', user.id),
     ]);
+
+    const currentTeamIds = (teamRows ?? []).map(row => row.team_id);
+
+    const { data: teamAssignmentRows } = currentTeamIds.length > 0
+      ? await supabase
+          .from('challenge_assignments')
+          .select('user_id, challenge_id, status, assigned_at, team_id')
+          .in('team_id', currentTeamIds)
+      : { data: [] as ChallengeAssignmentRow[] };
+
+    const mergedAssignments = [...(ownAssignmentRows ?? []), ...(teamAssignmentRows ?? [])] as ChallengeAssignmentRow[];
+    const dedupedAssignments = Array.from(
+      new Map(
+        mergedAssignments.map(row => [`${row.challenge_id}:${row.user_id ?? 'team'}:${row.team_id ?? 'none'}`, row]),
+      ).values(),
+    );
+
+    const challengeIds = Array.from(new Set(dedupedAssignments.map(row => row.challenge_id)));
+
+    const [{ data: challengeRows }, { data: actionRows }] = challengeIds.length > 0
+      ? await Promise.all([
+          supabase
+            .from('challenges')
+            .select('id, title, description, status, start_date, end_date, xp_reward')
+            .in('id', challengeIds)
+            .order('created_at', { ascending: false }),
+          supabase
+            .from('challenge_actions')
+            .select('id, challenge_id, week_number, label, points, moment_id')
+            .in('challenge_id', challengeIds)
+            .order('week_number'),
+        ])
+      : [{ data: [] as ChallengeRow[] }, { data: [] as ChallengeAction[] }];
 
     const actions = (actionRows ?? []) as ChallengeAction[];
     const merged: ChallengeRow[] = (challengeRows ?? []).map(ch => ({
@@ -64,10 +116,20 @@ export function useChallengeData() {
       actions: actions.filter(a => a.challenge_id === ch.id),
     }));
 
+    console.log('[useChallengeData] resolved data', {
+      currentUserId: user.id,
+      currentOrganizationId: profile?.organization_id ?? null,
+      currentTeamIds,
+      challengeRows: merged,
+      assignmentRows: dedupedAssignments,
+    });
+
     setChallenges(merged);
     setCompletions((completionRows ?? []) as ActionCompletion[]);
+    setAssignments(dedupedAssignments);
+    setTeamIds(currentTeamIds);
     setLoading(false);
-  }, [user]);
+  }, [profile?.organization_id, user]);
 
   useEffect(() => {
     fetchData();
@@ -105,6 +167,8 @@ export function useChallengeData() {
     challenges,
     activeChallenge,
     completions,
+    assignments,
+    teamIds,
     loading,
     markActionDone,
     isActionCompleted,
