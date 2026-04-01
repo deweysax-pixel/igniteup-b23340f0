@@ -67,8 +67,18 @@ const statusVariant = (s: string) => s === 'active' ? 'default' as const : 'seco
 
 export default function Challenges() {
   const navigate = useNavigate();
-  const { challenges, isActionCompleted, loading } = useChallengeData();
+  const { challenges, assignments, teamIds, isActionCompleted, loading } = useChallengeData();
   const [justCreatedId, setJustCreatedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    console.log('[Challenges page] data', {
+      currentUserId: assignments.find((row) => row.user_id)?.user_id ?? null,
+      currentOrganizationId: null,
+      currentTeamId: teamIds[0] ?? null,
+      challengeRows: challenges,
+      assignmentRows: assignments,
+    });
+  }, [assignments, challenges, teamIds]);
 
   useEffect(() => {
     const id = sessionStorage.getItem('justCreatedChallengeId');
