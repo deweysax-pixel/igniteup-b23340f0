@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useChallengeData, getCurrentWeekFromDates } from '@/hooks/useChallengeData';
 import { useAuth } from '@/hooks/useAuth';
@@ -51,13 +52,15 @@ export default function MyJourney() {
   const { user, profile } = useAuth();
   const { activeChallenge, assignments, teamIds, isActionCompleted, markActionDone, totalXpEarned, loading } = useChallengeData();
 
-  console.log('[My Journey page] data', {
-    currentUserId: user?.id ?? null,
-    currentOrganizationId: profile?.organization_id ?? null,
-    currentTeamId: teamIds[0] ?? null,
-    challengeRows: activeChallenge ? [activeChallenge] : [],
-    assignmentRows: assignments,
-  });
+  useEffect(() => {
+    console.log('[My Journey page] data', {
+      currentUserId: user?.id ?? null,
+      currentOrganizationId: profile?.organization_id ?? null,
+      currentTeamId: teamIds[0] ?? null,
+      challengeRows: activeChallenge ? [activeChallenge] : [],
+      assignmentRows: assignments,
+    });
+  }, [activeChallenge, assignments, profile?.organization_id, teamIds, user?.id]);
 
   if (loading) {
     return (

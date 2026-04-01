@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useChallengeData, getCurrentWeekFromDates } from '@/hooks/useChallengeData';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -67,18 +68,19 @@ const statusVariant = (s: string) => s === 'active' ? 'default' as const : 'seco
 
 export default function Challenges() {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const { challenges, assignments, teamIds, isActionCompleted, loading } = useChallengeData();
   const [justCreatedId, setJustCreatedId] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('[Challenges page] data', {
-      currentUserId: assignments.find((row) => row.user_id)?.user_id ?? null,
-      currentOrganizationId: null,
+      currentUserId: user?.id ?? null,
+      currentOrganizationId: profile?.organization_id ?? null,
       currentTeamId: teamIds[0] ?? null,
       challengeRows: challenges,
       assignmentRows: assignments,
     });
-  }, [assignments, challenges, teamIds]);
+  }, [assignments, challenges, profile?.organization_id, teamIds, user?.id]);
 
   useEffect(() => {
     const id = sessionStorage.getItem('justCreatedChallengeId');
