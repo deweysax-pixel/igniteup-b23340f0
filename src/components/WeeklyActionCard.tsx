@@ -67,6 +67,7 @@ interface WeeklyActionCardProps {
 export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardProps) {
   const navigate = useNavigate();
   const { state, dispatch } = useDemo();
+  const { user } = useAuth();
   const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
   const [showReflectNudge, setShowReflectNudge] = useState(false);
 
