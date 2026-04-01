@@ -95,7 +95,7 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
   const currentMoment = currentAction.momentId ? momentLookup[currentAction.momentId] : null;
   const currentInstruction = currentAction.momentId ? momentInstructions[currentAction.momentId] : null;
 
-  const handleMarkDone = () => {
+  const handleMarkDone = async () => {
     if (!currentUser || isCompleted) return;
     setCompletedIds(prev => new Set(prev).add(currentAction.id));
 
@@ -109,6 +109,54 @@ export function WeeklyActionCard({ showJourneyLink = false }: WeeklyActionCardPr
         note: 'Completed from dashboard',
       },
     });
+
+    // Persist to Supabase if authenticated
+    if (user) {
+      try {
+        // Fetch active challenge and its xp_reward
+        const { data: challenge } = await supabase
+          .from('challenges')
+          .select('id, xp_reward')
+          .eq('status', 'active')
+          .limit(1)
+          .maybeSingle();
+
+        if (challenge) {
+          const xpReward = challenge.xp_reward ?? 0;
+
+          // Check if assignment already exists
+          const { data: existing } = await supabase
+            .from('challenge_assignments')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('challenge_id', challenge.id)
+            .maybeSingle();
+
+          if (existing) {
+            await supabase
+              .from('challenge_assignments')
+              .update({
+                status: 'completed',
+                xp_earned: xpReward,
+                completed_at: new Date().toISOString(),
+              })
+              .eq('id', existing.id);
+          } else {
+            await supabase
+              .from('challenge_assignments')
+              .insert({
+                user_id: user.id,
+                challenge_id: challenge.id,
+                status: 'completed',
+                xp_earned: xpReward,
+                completed_at: new Date().toISOString(),
+              });
+          }
+        }
+      } catch (err) {
+        console.error('Failed to persist challenge completion:', err);
+      }
+    }
 
     toast.success(`🎉 Action completed — +${currentAction.points} XP earned`);
     setShowReflectNudge(true);
