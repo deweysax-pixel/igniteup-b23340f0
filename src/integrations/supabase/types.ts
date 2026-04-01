@@ -619,6 +619,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_challenge: {
+        Args: { _challenge_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_access_challenge_action: {
+        Args: { _challenge_action_id: string; _user_id: string }
+        Returns: boolean
+      }
       get_invite_info: { Args: { _token: string }; Returns: Json }
       get_user_role: {
         Args: { _user_id: string }
