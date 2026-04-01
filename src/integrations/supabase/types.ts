@@ -14,6 +14,82 @@ export type Database = {
   }
   public: {
     Tables: {
+      challenge_action_completions: {
+        Row: {
+          challenge_action_id: string
+          completed_at: string
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+          xp_earned: number
+        }
+        Insert: {
+          challenge_action_id: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id: string
+          xp_earned?: number
+        }
+        Update: {
+          challenge_action_id?: string
+          completed_at?: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+          xp_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_action_completions_challenge_action_id_fkey"
+            columns: ["challenge_action_id"]
+            isOneToOne: false
+            referencedRelation: "challenge_actions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenge_actions: {
+        Row: {
+          challenge_id: string
+          created_at: string
+          id: string
+          label: string
+          moment_id: string | null
+          points: number
+          week_number: number
+        }
+        Insert: {
+          challenge_id: string
+          created_at?: string
+          id?: string
+          label: string
+          moment_id?: string | null
+          points?: number
+          week_number: number
+        }
+        Update: {
+          challenge_id?: string
+          created_at?: string
+          id?: string
+          label?: string
+          moment_id?: string | null
+          points?: number
+          week_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_actions_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenge_assignments: {
         Row: {
           assigned_at: string
