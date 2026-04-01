@@ -1,0 +1,1 @@
+ALTER TABLE public.challenge_actions ADD COLUMN IF NOT EXISTS description text;
