@@ -173,7 +173,7 @@ export default function Challenges() {
                     <p className="text-sm font-semibold">Leadership Actions</p>
                     {ch.actions.map(a => {
                       const moment = a.moment_id ? momentLookup[a.moment_id] : null;
-                      const instruction = a.moment_id ? momentInstructions[a.moment_id] : null;
+                      const instruction = a.description || (a.moment_id ? momentInstructions[a.moment_id] : null);
                       const isCurrentWeek = ch.status === 'active' && a.week_number === currentWeek;
                       const done = isActionCompleted(a.id);
 
