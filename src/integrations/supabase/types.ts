@@ -56,6 +56,7 @@ export type Database = {
         Row: {
           challenge_id: string
           created_at: string
+          description: string | null
           id: string
           label: string
           moment_id: string | null
@@ -65,6 +66,7 @@ export type Database = {
         Insert: {
           challenge_id: string
           created_at?: string
+          description?: string | null
           id?: string
           label: string
           moment_id?: string | null
@@ -74,6 +76,7 @@ export type Database = {
         Update: {
           challenge_id?: string
           created_at?: string
+          description?: string | null
           id?: string
           label?: string
           moment_id?: string | null

@@ -9,6 +9,7 @@ export interface ChallengeAction {
   label: string;
   points: number;
   moment_id: string | null;
+  description: string | null;
 }
 
 export interface ChallengeRow {
@@ -104,7 +105,7 @@ export function useChallengeData() {
             .order('created_at', { ascending: false }),
           supabase
             .from('challenge_actions')
-            .select('id, challenge_id, week_number, label, points, moment_id')
+            .select('id, challenge_id, week_number, label, points, moment_id, description')
             .in('challenge_id', challengeIds)
             .order('week_number'),
         ])

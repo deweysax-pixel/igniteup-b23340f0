@@ -173,7 +173,7 @@ export default function Challenges() {
                     <p className="text-sm font-semibold">Leadership Actions</p>
                     {ch.actions.map(a => {
                       const moment = a.moment_id ? momentLookup[a.moment_id] : null;
-                      const instruction = a.moment_id ? momentInstructions[a.moment_id] : null;
+                      const instruction = a.description || (a.moment_id ? momentInstructions[a.moment_id] : null);
                       const isCurrentWeek = ch.status === 'active' && a.week_number === currentWeek;
                       const done = isActionCompleted(a.id);
 
@@ -215,7 +215,7 @@ export default function Challenges() {
                               </div>
                               <p className="font-medium">{a.label}</p>
                               {instruction && (
-                                <p className="text-xs text-muted-foreground">{instruction}</p>
+                                <p className="text-xs text-muted-foreground whitespace-pre-line">{instruction}</p>
                               )}
                             </div>
                             <div className="flex flex-col items-end gap-1.5 shrink-0 pt-0.5">
