@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useChallengeData, getCurrentWeekFromDates } from '@/hooks/useChallengeData';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -47,7 +49,18 @@ const momentLookup = (() => {
 
 export default function MyJourney() {
   const navigate = useNavigate();
-  const { activeChallenge, isActionCompleted, markActionDone, totalXpEarned, loading } = useChallengeData();
+  const { user, profile } = useAuth();
+  const { activeChallenge, assignments, teamIds, isActionCompleted, markActionDone, totalXpEarned, loading } = useChallengeData();
+
+  useEffect(() => {
+    console.log('[My Journey page] data', {
+      currentUserId: user?.id ?? null,
+      currentOrganizationId: profile?.organization_id ?? null,
+      currentTeamId: teamIds[0] ?? null,
+      challengeRows: activeChallenge ? [activeChallenge] : [],
+      assignmentRows: assignments,
+    });
+  }, [activeChallenge, assignments, profile?.organization_id, teamIds, user?.id]);
 
   if (loading) {
     return (
