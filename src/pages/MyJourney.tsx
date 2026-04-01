@@ -1,14 +1,12 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDemo } from '@/contexts/DemoContext';
+import { useChallengeData, getCurrentWeekFromDates } from '@/hooks/useChallengeData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { ExternalLink, CheckCircle2, Flame, Trophy } from 'lucide-react';
+import { ExternalLink, CheckCircle2, Flame, Trophy, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { leadershipThemes } from '@/data/leadership-moments';
-import { getCurrentWeek } from '@/components/WeeklyActionCard';
 
 const themeLabels: Record<string, string> = {
   direction: 'Direction',
@@ -22,13 +20,6 @@ const themeBadgeStyles: Record<string, string> = {
   alignment: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
   ownership: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
   energy: 'bg-pink-500/10 text-pink-400 border-pink-500/20',
-};
-
-const themeProgressColors: Record<string, string> = {
-  direction: '[&>div]:bg-purple-500',
-  alignment: '[&>div]:bg-blue-500',
-  ownership: '[&>div]:bg-amber-500',
-  energy: '[&>div]:bg-pink-500',
 };
 
 const momentInstructions: Record<string, string> = {
@@ -56,50 +47,38 @@ const momentLookup = (() => {
 
 export default function MyJourney() {
   const navigate = useNavigate();
-  const { state, dispatch } = useDemo();
-  const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
-  const [bonusXp, setBonusXp] = useState(0);
+  const { activeChallenge, isActionCompleted, markActionDone, totalXpEarned, loading } = useChallengeData();
 
-  const activeChallenge = state.challenges.find(ch => ch.status === 'active');
-  const currentUser = state.users.find(u => u.role === 'participant') ?? state.users[0];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
-  const totalWeeks = activeChallenge?.weeklyActions.length ?? 0;
-  const currentWeek = activeChallenge
-    ? getCurrentWeek(activeChallenge.startDate, activeChallenge.endDate, totalWeeks)
-    : 0;
-  const progressColor = activeChallenge?.themeId ? themeProgressColors[activeChallenge.themeId] : '';
-
-  const currentAction = activeChallenge?.weeklyActions[currentWeek - 1];
-  const isCompleted = currentAction ? completedIds.has(currentAction.id) : false;
-  const currentMoment = currentAction?.momentId ? momentLookup[currentAction.momentId] : null;
-  const currentInstruction = currentAction?.momentId ? momentInstructions[currentAction.momentId] : null;
-
-  const completedWeeks = activeChallenge
-    ? activeChallenge.weeklyActions.filter((_, i) => {
-        const weekNum = i + 1;
-        return weekNum < currentWeek || (weekNum === currentWeek && isCompleted);
-      }).length
-    : 0;
-  const dynamicProgressPct = activeChallenge
-    ? Math.round((completedWeeks / totalWeeks) * 100)
+  const totalWeeks = activeChallenge?.actions.length ?? 0;
+  const currentWeek = activeChallenge?.start_date && activeChallenge?.end_date
+    ? getCurrentWeekFromDates(activeChallenge.start_date, activeChallenge.end_date, totalWeeks)
     : 0;
 
-  const handleMarkDone = () => {
-    if (!currentAction || !activeChallenge || !currentUser || isCompleted) return;
-    setCompletedIds(prev => new Set(prev).add(currentAction.id));
-    setBonusXp(prev => prev + currentAction.points);
+  const currentAction = activeChallenge?.actions.find(a => a.week_number === currentWeek) ?? null;
+  const isCompleted = currentAction ? isActionCompleted(currentAction.id) : false;
+  const currentMoment = currentAction?.moment_id ? momentLookup[currentAction.moment_id] : null;
+  const currentInstruction = currentAction?.moment_id ? momentInstructions[currentAction.moment_id] : null;
 
-    dispatch({
-      type: 'CHECK_IN',
-      payload: {
-        userId: currentUser.id,
-        challengeId: activeChallenge.id,
-        weekNumber: currentWeek,
-        completedActionIds: [currentAction.id],
-        note: 'Completed from My Journey',
-      },
-    });
+  const completedCount = activeChallenge
+    ? activeChallenge.actions.filter(a => isActionCompleted(a.id)).length
+    : 0;
+  const dynamicProgressPct = totalWeeks > 0 ? Math.round((completedCount / totalWeeks) * 100) : 0;
 
+  const handleMarkDone = async () => {
+    if (!currentAction || isCompleted) return;
+    const { error } = (await markActionDone(currentAction.id, currentAction.points)) ?? {};
+    if (error) {
+      toast.error('Failed to save — please try again.');
+      return;
+    }
     toast.success(`🎉 Action completed — +${currentAction.points} XP earned`);
   };
 
@@ -166,7 +145,7 @@ export default function MyJourney() {
                 <div className="flex items-center justify-between pt-1">
                   <span className={`font-semibold text-sm ${isCompleted ? 'text-green-500' : 'text-primary'}`}>+{currentAction.points} XP</span>
                   <div className="flex flex-wrap gap-2">
-                    {currentAction.momentId && (
+                    {currentAction.moment_id && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -202,7 +181,7 @@ export default function MyJourney() {
                 <span>{activeChallenge.title}</span>
                 <span>Week {currentWeek} / {totalWeeks}</span>
               </div>
-              <Progress value={dynamicProgressPct} className={`h-2 bg-secondary ${progressColor}`} />
+              <Progress value={dynamicProgressPct} className="h-2 bg-secondary" />
             </CardContent>
           </Card>
 
@@ -214,7 +193,7 @@ export default function MyJourney() {
               </div>
               <div>
                 <p className="text-sm font-medium">Your XP</p>
-                <p className="text-2xl font-bold text-primary">{(currentUser?.xp ?? 0) + bonusXp} <span className="text-sm font-normal text-muted-foreground">XP earned</span></p>
+                <p className="text-2xl font-bold text-primary">{totalXpEarned} <span className="text-sm font-normal text-muted-foreground">XP earned</span></p>
               </div>
             </CardContent>
           </Card>

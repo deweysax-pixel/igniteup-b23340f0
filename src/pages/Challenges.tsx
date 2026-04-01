@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDemo } from '@/contexts/DemoContext';
-import { useJourney } from '@/contexts/JourneyContext';
+import { useChallengeData, getCurrentWeekFromDates } from '@/hooks/useChallengeData';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Copy, Map, BookOpen, ExternalLink } from 'lucide-react';
+import { Copy, Map, BookOpen, ExternalLink, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 import { leadershipThemes } from '@/data/leadership-moments';
-import type { LeadershipThemeId } from '@/types/demo';
 
 const themeLabels: Record<string, string> = {
   direction: 'Direction',
@@ -33,7 +31,6 @@ const themeProgressColors: Record<string, string> = {
   energy: '[&>div]:bg-pink-500',
 };
 
-// Short action instructions per moment (replaces vague preview text)
 const momentInstructions: Record<string, string> = {
   'give-sbi-feedback': 'Use the SBI template to give one short piece of feedback this week.',
   'check-real-understanding': 'Ask a team member to explain the objective in their own words.',
@@ -45,7 +42,6 @@ const momentInstructions: Record<string, string> = {
   'ask-for-proposal': 'Instead of solving a problem yourself, ask someone: what do you propose?',
 };
 
-// Build a flat lookup of momentId → moment data
 const momentLookup = (() => {
   const map: Record<string, { title: string; action: string; themeId: string }> = {};
   for (const theme of leadershipThemes) {
@@ -58,23 +54,20 @@ const momentLookup = (() => {
   return map;
 })();
 
-// Determine current week of a challenge based on dates
-function getCurrentWeek(startDate: string, endDate: string, totalWeeks: number): number {
-  const now = new Date();
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-  if (now < start) return 0;
-  if (now > end) return totalWeeks;
-  const elapsed = now.getTime() - start.getTime();
-  const total = end.getTime() - start.getTime();
-  const weekLen = total / totalWeeks;
-  return Math.min(Math.floor(elapsed / weekLen) + 1, totalWeeks);
-}
+const statusLabel = (s: string) => {
+  switch (s) {
+    case 'active': return 'Active';
+    case 'upcoming': return 'Upcoming';
+    case 'completed': return 'Completed';
+    default: return s;
+  }
+};
+
+const statusVariant = (s: string) => s === 'active' ? 'default' as const : 'secondary' as const;
 
 export default function Challenges() {
   const navigate = useNavigate();
-  const { state } = useDemo();
-  const { journey, modules } = useJourney();
+  const { challenges, isActionCompleted, loading } = useChallengeData();
   const [justCreatedId, setJustCreatedId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -87,40 +80,37 @@ export default function Challenges() {
     }
   }, []);
 
-  const feedbackModule = modules.find(m => m.id === 'mod-1');
-  const isLinkedToJourney = journey.steps.some(s => s.moduleId === 'mod-1');
-
-  const statusLabel = (s: string) => {
-    switch (s) {
-      case 'active': return 'Active';
-      case 'upcoming': return 'Upcoming';
-      case 'completed': return 'Completed';
-      default: return s;
-    }
-  };
-
-  const statusVariant = (s: string) => {
-    return s === 'active' ? 'default' : 'secondary';
-  };
-
   const handleCopySBI = async () => {
     await copyToClipboard(SBI_TEMPLATE);
     toast.success('Copied to clipboard');
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 animate-fade-in">
       <h2 className="text-2xl font-bold tracking-tight">Challenges</h2>
 
-      {state.challenges.length === 0 ? (
+      {challenges.length === 0 ? (
         <p className="text-muted-foreground">No active challenge at the moment. Create one to kick things off.</p>
       ) : (
         <div className="grid gap-4">
-          {state.challenges.map(ch => {
-            const totalWeeks = ch.weeklyActions.length;
-            const currentWeek = getCurrentWeek(ch.startDate, ch.endDate, totalWeeks);
-            const progressPct = ch.status === 'completed' ? 100 : ch.status === 'upcoming' ? 0 : Math.round((currentWeek / totalWeeks) * 100);
-            const progressColorClass = ch.themeId ? themeProgressColors[ch.themeId] : '';
+          {challenges.map(ch => {
+            const totalWeeks = ch.actions.length;
+            const currentWeek = ch.start_date && ch.end_date
+              ? getCurrentWeekFromDates(ch.start_date, ch.end_date, totalWeeks)
+              : 0;
+
+            const completedCount = ch.actions.filter(a => isActionCompleted(a.id)).length;
+            const progressPct = ch.status === 'completed' ? 100
+              : ch.status === 'upcoming' ? 0
+              : totalWeeks > 0 ? Math.round((completedCount / totalWeeks) * 100) : 0;
 
             const isJustCreated = ch.id === justCreatedId;
 
@@ -132,11 +122,6 @@ export default function Challenges() {
                 <CardHeader className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      {ch.themeId && (
-                        <Badge variant="outline" className={`text-[10px] px-2 py-0 ${themeBadgeStyles[ch.themeId]}`}>
-                          {themeLabels[ch.themeId]}
-                        </Badge>
-                      )}
                       <Badge variant={statusVariant(ch.status)}>{statusLabel(ch.status)}</Badge>
                       {isJustCreated && (
                         <Badge variant="outline" className="text-[10px] px-2 py-0 bg-primary/10 text-primary border-primary/20 animate-pulse">
@@ -144,12 +129,14 @@ export default function Challenges() {
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {ch.startDate} → {ch.endDate}
-                    </p>
+                    {ch.start_date && ch.end_date && (
+                      <p className="text-xs text-muted-foreground">
+                        {ch.start_date} → {ch.end_date}
+                      </p>
+                    )}
                   </div>
                   <CardTitle className="text-lg">{ch.title}</CardTitle>
-                  <CardDescription>{ch.description}</CardDescription>
+                  {ch.description && <CardDescription>{ch.description}</CardDescription>}
 
                   {/* Sprint Progress */}
                   <div className="space-y-1.5 pt-1">
@@ -163,7 +150,7 @@ export default function Challenges() {
                             : `Week ${currentWeek} / ${totalWeeks}`}
                       </span>
                     </div>
-                    <Progress value={progressPct} className={`h-1.5 bg-secondary ${progressColorClass}`} />
+                    <Progress value={progressPct} className="h-1.5 bg-secondary" />
                   </div>
                 </CardHeader>
 
@@ -171,51 +158,56 @@ export default function Challenges() {
                   {/* Leadership Actions */}
                   <div className="space-y-3">
                     <p className="text-sm font-semibold">Leadership Actions</p>
-                    {ch.weeklyActions.map((a, idx) => {
-                      const moment = a.momentId ? momentLookup[a.momentId] : null;
-                      const instruction = a.momentId ? momentInstructions[a.momentId] : null;
-                      const isCurrentWeek = ch.status === 'active' && idx + 1 === currentWeek;
+                    {ch.actions.map(a => {
+                      const moment = a.moment_id ? momentLookup[a.moment_id] : null;
+                      const instruction = a.moment_id ? momentInstructions[a.moment_id] : null;
+                      const isCurrentWeek = ch.status === 'active' && a.week_number === currentWeek;
+                      const done = isActionCompleted(a.id);
 
                       return (
                         <div
                           key={a.id}
                           className={`text-sm border rounded-lg p-3 transition-colors ${
-                            isCurrentWeek
-                              ? 'border-primary/30 bg-primary/5'
-                              : 'border-border/50'
+                            done
+                              ? 'border-green-500/30 bg-green-500/5'
+                              : isCurrentWeek
+                                ? 'border-primary/30 bg-primary/5'
+                                : 'border-border/50'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1 min-w-0 space-y-1.5">
-                            {/* Week + Theme + This week */}
-                            <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-xs text-muted-foreground font-medium">Week {idx + 1}</span>
-                              {moment && (
-                                <>
-                                  <span className="text-xs text-muted-foreground">•</span>
-                                  <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${themeBadgeStyles[moment.themeId]}`}>
-                                    {themeLabels[moment.themeId]}
-                                  </Badge>
-                                </>
-                              )}
-                              {isCurrentWeek && (
-                                <>
-                                  <span className="text-xs text-muted-foreground">•</span>
-                                  <span className="text-xs font-medium text-primary">🔥 This week</span>
-                                </>
-                              )}
-                            </div>
-                              {/* Title */}
+                            <div className="flex-1 min-w-0 space-y-1.5">
+                              <div className="flex items-center gap-1.5 flex-wrap">
+                                <span className="text-xs text-muted-foreground font-medium">Week {a.week_number}</span>
+                                {moment && (
+                                  <>
+                                    <span className="text-xs text-muted-foreground">•</span>
+                                    <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${themeBadgeStyles[moment.themeId]}`}>
+                                      {themeLabels[moment.themeId]}
+                                    </Badge>
+                                  </>
+                                )}
+                                {isCurrentWeek && !done && (
+                                  <>
+                                    <span className="text-xs text-muted-foreground">•</span>
+                                    <span className="text-xs font-medium text-primary">🔥 This week</span>
+                                  </>
+                                )}
+                                {done && (
+                                  <>
+                                    <span className="text-xs text-muted-foreground">•</span>
+                                    <span className="text-xs font-medium text-green-500">✅ Done</span>
+                                  </>
+                                )}
+                              </div>
                               <p className="font-medium">{a.label}</p>
-                              {/* Instruction */}
                               {instruction && (
                                 <p className="text-xs text-muted-foreground">{instruction}</p>
                               )}
                             </div>
-                            {/* Right side: XP + link */}
                             <div className="flex flex-col items-end gap-1.5 shrink-0 pt-0.5">
-                              <span className="text-primary font-semibold text-xs">+{a.points} XP</span>
-                              {a.momentId && (
+                              <span className={`font-semibold text-xs ${done ? 'text-green-500' : 'text-primary'}`}>+{a.points} XP</span>
+                              {a.moment_id && (
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -243,24 +235,12 @@ export default function Challenges() {
                         <li>Keep it factual — no judgments, just observations.</li>
                         <li>Send it via chat, email, or say it face-to-face.</li>
                       </ul>
-                      {isLinkedToJourney && (
-                        <div className="flex items-center gap-2 text-xs text-primary">
-                          <Map className="h-3.5 w-3.5" />
-                          <span className="font-medium">Linked to your journey</span>
-                        </div>
-                      )}
                       <div className="flex flex-wrap gap-2">
                         <Button size="sm" variant="outline" className="gap-2" onClick={handleCopySBI}>
                           <Copy className="h-3.5 w-3.5" />
                           Copy SBI Template
                         </Button>
-                        {feedbackModule?.playbookRoute && (
-                          <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(feedbackModule.playbookRoute!)}>
-                            <BookOpen className="h-3.5 w-3.5" />
-                            Open Playbook
-                          </Button>
-                        )}
-                        <Button size="sm" variant="link" className="gap-1.5" onClick={() => navigate('/app/journey')}>
+                        <Button size="sm" variant="link" className="gap-1.5" onClick={() => navigate('/app/my-journey')}>
                           <Map className="h-3.5 w-3.5" />
                           Back to My Journey
                         </Button>
