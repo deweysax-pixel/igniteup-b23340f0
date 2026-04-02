@@ -232,7 +232,8 @@ function AuthenticatedDashboard() {
           <CardTitle className="text-base">Team Insight</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">{insight}</p>
+          <p className="text-sm font-medium">{insightData.headline}</p>
+          {insightData.detail && <p className="text-xs text-muted-foreground mt-1">{insightData.detail}</p>}
         </CardContent>
       </Card>
 
