@@ -105,10 +105,31 @@ function AuthenticatedDashboard() {
     calcMomentum();
   }, [activeChallenge, members, currentWeek]);
 
-  // Leaderboard — top 3
+  // Leaderboard — top 3, XP from challenge_action_completions
+  const [leaderboardXp, setLeaderboardXp] = useState<Map<string, number>>(new Map());
+  useEffect(() => {
+    async function fetchLeaderboardXp() {
+      if (members.length === 0) { setLeaderboardXp(new Map()); return; }
+      const memberIds = members.map(m => m.id);
+      const { data } = await supabase
+        .from('challenge_action_completions')
+        .select('user_id, xp_earned')
+        .in('user_id', memberIds);
+      const xpMap = new Map<string, number>();
+      for (const row of (data ?? [])) {
+        xpMap.set(row.user_id, (xpMap.get(row.user_id) ?? 0) + row.xp_earned);
+      }
+      setLeaderboardXp(xpMap);
+    }
+    fetchLeaderboardXp();
+  }, [members, teamCompletions]);
+
   const leaderboard = useMemo(() => {
-    return [...members].sort((a, b) => b.xp - a.xp).slice(0, 3);
-  }, [members]);
+    return [...members]
+      .map(m => ({ ...m, xp: leaderboardXp.get(m.id) ?? 0 }))
+      .sort((a, b) => b.xp - a.xp)
+      .slice(0, 3);
+  }, [members, leaderboardXp]);
 
   // Team Insight — dynamic text
   const insight = useMemo(() => {
