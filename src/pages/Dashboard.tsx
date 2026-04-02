@@ -131,14 +131,16 @@ function AuthenticatedDashboard() {
       .slice(0, 3);
   }, [members, leaderboardXp]);
 
-  // Team Insight — dynamic text
-  const insight = useMemo(() => {
-    if (totalMembers === 0) return 'No team members found yet.';
-    if (teamCompletionsLoading) return 'Loading team data…';
-    if (completedCount === 0) return `0 out of ${totalMembers} members completed this week's action. No activity yet this week.`;
-    if (completedCount === totalMembers) return `All ${totalMembers} members completed this week's action. Great execution!`;
-    if (completedCount / totalMembers >= 0.5) return `${completedCount} out of ${totalMembers} members completed this week's action. Engagement is growing.`;
-    return `${completedCount} out of ${totalMembers} members completed this week's action. Consider a follow-up nudge.`;
+  // Team Insight — headline + supporting sentence
+  const insightData = useMemo(() => {
+    if (totalMembers === 0) return { headline: 'No team configured yet', detail: 'Add members to start tracking team progress.' };
+    if (teamCompletionsLoading) return { headline: 'Loading team data…', detail: '' };
+    const ratio = completedCount / totalMembers;
+    if (completedCount === 0) return { headline: 'No movement yet this week', detail: 'Your team has not started this week\'s action yet.' };
+    if (ratio === 1) return { headline: 'Excellent team follow-through', detail: 'All team members completed this week\'s action.' };
+    if (ratio >= 0.75) return { headline: 'Your team is gaining traction', detail: `${completedCount} out of ${totalMembers} members completed this week's action.` };
+    if (ratio >= 0.4) return { headline: 'Momentum is building', detail: `${completedCount} out of ${totalMembers} members completed this week's action.` };
+    return { headline: 'Engagement is still low', detail: `Only ${completedCount} out of ${totalMembers} members completed this week's action.` };
   }, [completedCount, totalMembers, teamCompletionsLoading]);
 
   const loading = teamLoading || teamCompletionsLoading;
