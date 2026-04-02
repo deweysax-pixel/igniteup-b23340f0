@@ -8,8 +8,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getLevelColor } from '@/types/demo';
-import { Users, PlayCircle, Grid3X3, Building2, Loader2, CheckCircle2, TrendingUp, Lightbulb } from 'lucide-react';
+import { Users, PlayCircle, Grid3X3, Building2, Loader2, CheckCircle2, TrendingUp, Lightbulb, Flame, Trophy } from 'lucide-react';
+import { toast } from 'sonner';
+import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
+import { TeamAttentionCard } from '@/components/TeamAttentionCard';
+import { WeeklyActionCard } from '@/components/WeeklyActionCard';
 import { WeeklyReviewModal } from '@/components/WeeklyReviewModal';
+import { SparkNudgeCard } from '@/components/SparkNudgeCard';
 import { getWeekRange } from '@/lib/week-utils';
 import { supabase } from '@/integrations/supabase/client';
 
