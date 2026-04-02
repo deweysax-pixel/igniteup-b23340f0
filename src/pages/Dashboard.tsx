@@ -1,63 +1,121 @@
-import React, { useState, useMemo, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDemo } from '@/contexts/DemoContext';
 import { useAuth } from '@/hooks/useAuth';
 import { useTeamData } from '@/hooks/useTeamData';
+import { useChallengeData, getCurrentWeekFromDates } from '@/hooks/useChallengeData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { getLevelColor } from '@/types/demo';
-import { TrendingUp, Users, Flame, Trophy, Copy, BookOpen, PlayCircle, Grid3X3, FileBarChart, Building2, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
-import { TeamAttentionCard } from '@/components/TeamAttentionCard';
-import { WeeklyActionCard } from '@/components/WeeklyActionCard';
+import { Users, PlayCircle, Grid3X3, Building2, Loader2, CheckCircle2, TrendingUp, Lightbulb } from 'lucide-react';
 import { WeeklyReviewModal } from '@/components/WeeklyReviewModal';
-import { SparkNudgeCard } from '@/components/SparkNudgeCard';
 import { getWeekRange } from '@/lib/week-utils';
+import { supabase } from '@/integrations/supabase/client';
 
-/* ── Authenticated Dashboard (real DB data, team-scoped for managers) ── */
+/* ── Team Leadership Dashboard (real DB data, team-scoped) ── */
 function AuthenticatedDashboard() {
   const navigate = useNavigate();
-  const { role, profile } = useAuth();
-  const { members, teams, checkIns, loading } = useTeamData();
+  const { role, user } = useAuth();
+  const { members, teams, loading: teamLoading } = useTeamData();
+  const { activeChallenge, completions } = useChallengeData();
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [teamCompletions, setTeamCompletions] = useState<{ userId: string; actionId: string }[]>([]);
+  const [teamCompletionsLoading, setTeamCompletionsLoading] = useState(true);
+
   const isManager = role === 'manager';
   const isAdmin = role === 'admin';
   const isManagerOrAdmin = isManager || isAdmin;
   const weekLabel = getWeekRange().label;
   const teamName = teams.map(t => t.name).join(', ');
 
-  const participationRate = useMemo(() => {
-    if (members.length === 0) return 0;
-    const sevenDaysAgo = Date.now() - 7 * 86400000;
-    const withCheckIn = new Set(
-      checkIns
-        .filter(ci => new Date(ci.createdAt).getTime() >= sevenDaysAgo)
-        .map(ci => ci.userId)
-    );
-    const active = members.filter(m => withCheckIn.has(m.id)).length;
-    return Math.round((active / members.length) * 100);
-  }, [members, checkIns]);
+  // Determine current week number from challenge dates
+  const currentWeek = useMemo(() => {
+    if (!activeChallenge?.start_date || !activeChallenge?.end_date || !activeChallenge?.actions?.length) return 0;
+    const totalWeeks = Math.max(...activeChallenge.actions.map(a => a.week_number));
+    return getCurrentWeekFromDates(activeChallenge.start_date, activeChallenge.end_date, totalWeeks);
+  }, [activeChallenge]);
 
-  const avgStreak = useMemo(() => {
-    if (members.length === 0) return '0';
-    return (members.reduce((s, m) => s + m.streak, 0) / members.length).toFixed(1);
-  }, [members]);
+  // Current week's action
+  const currentAction = useMemo(() => {
+    if (!activeChallenge || currentWeek === 0) return null;
+    return activeChallenge.actions.find(a => a.week_number === currentWeek) ?? null;
+  }, [activeChallenge, currentWeek]);
 
-  const avgXP = useMemo(() => {
-    if (members.length === 0) return 0;
-    return Math.round(members.reduce((s, m) => s + m.xp, 0) / members.length);
-  }, [members]);
+  // Fetch all team members' completions for the current action
+  useEffect(() => {
+    async function fetchTeamCompletions() {
+      if (!currentAction || members.length === 0) {
+        setTeamCompletions([]);
+        setTeamCompletionsLoading(false);
+        return;
+      }
+      const memberIds = members.map(m => m.id);
+      const { data } = await supabase
+        .from('challenge_action_completions')
+        .select('user_id, challenge_action_id')
+        .eq('challenge_action_id', currentAction.id)
+        .in('user_id', memberIds);
+      setTeamCompletions((data ?? []).map(r => ({ userId: r.user_id, actionId: r.challenge_action_id })));
+      setTeamCompletionsLoading(false);
+    }
+    fetchTeamCompletions();
+  }, [currentAction, members]);
 
+  // KPI: Participation %
+  const completedCount = teamCompletions.length;
+  const totalMembers = members.length;
+  const participationRate = totalMembers > 0 ? Math.round((completedCount / totalMembers) * 100) : 0;
+
+  // KPI: Momentum — consecutive weeks with ≥1 completion (team level)
+  const [momentum, setMomentum] = useState(0);
+  useEffect(() => {
+    async function calcMomentum() {
+      if (!activeChallenge?.actions?.length || members.length === 0 || currentWeek === 0) {
+        setMomentum(0);
+        return;
+      }
+      const actionIds = activeChallenge.actions
+        .filter(a => a.week_number <= currentWeek)
+        .sort((a, b) => b.week_number - a.week_number)
+        .map(a => a.id);
+
+      if (actionIds.length === 0) { setMomentum(0); return; }
+
+      const memberIds = members.map(m => m.id);
+      const { data } = await supabase
+        .from('challenge_action_completions')
+        .select('challenge_action_id')
+        .in('challenge_action_id', actionIds)
+        .in('user_id', memberIds);
+
+      const completedActionIds = new Set((data ?? []).map(r => r.challenge_action_id));
+      let streak = 0;
+      for (const aid of actionIds) {
+        if (completedActionIds.has(aid)) streak++;
+        else break;
+      }
+      setMomentum(streak);
+    }
+    calcMomentum();
+  }, [activeChallenge, members, currentWeek]);
+
+  // Leaderboard — top 3
   const leaderboard = useMemo(() => {
-    return [...members].sort((a, b) => b.xp - a.xp).slice(0, 5);
+    return [...members].sort((a, b) => b.xp - a.xp).slice(0, 3);
   }, [members]);
 
-  const handleCopySBI = async () => {
-    await copyToClipboard(SBI_TEMPLATE);
-    toast.success('Copied to clipboard');
-  };
+  // Team Insight — dynamic text
+  const insight = useMemo(() => {
+    if (totalMembers === 0) return 'No team members found yet.';
+    if (teamCompletionsLoading) return 'Loading team data…';
+    if (completedCount === 0) return `0 out of ${totalMembers} members completed this week's action. No activity yet this week.`;
+    if (completedCount === totalMembers) return `All ${totalMembers} members completed this week's action. Great execution!`;
+    if (completedCount / totalMembers >= 0.5) return `${completedCount} out of ${totalMembers} members completed this week's action. Engagement is growing.`;
+    return `${completedCount} out of ${totalMembers} members completed this week's action. Consider a follow-up nudge.`;
+  }, [completedCount, totalMembers, teamCompletionsLoading]);
+
+  const loading = teamLoading || teamCompletionsLoading;
 
   if (loading) {
     return (
@@ -69,9 +127,10 @@ function AuthenticatedDashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
+          <h2 className="text-2xl font-bold tracking-tight">Team Leadership Dashboard</h2>
           <p className="text-xs text-muted-foreground mt-0.5">{weekLabel}</p>
           {teamName && <p className="text-sm text-muted-foreground mt-1">{isAdmin ? 'Organization-wide' : teamName}</p>}
         </div>
@@ -79,40 +138,23 @@ function AuthenticatedDashboard() {
           <div className="flex items-center gap-2 shrink-0">
             <Button className="gap-2" onClick={() => setReviewOpen(true)}>
               <PlayCircle className="h-4 w-4" />
-              Run weekly review (10 min)
+              Run weekly review
             </Button>
             <Button variant="outline" className="gap-2" onClick={() => navigate('/app/ignite-team?filter=due')}>
               <Grid3X3 className="h-4 w-4" />
-              Open Ignite heatmap
+              Ignite heatmap
             </Button>
             {isAdmin && (
               <Button variant="ghost" size="sm" className="gap-2" onClick={() => navigate('/app/workspace')}>
                 <Building2 className="h-4 w-4" />
-                Activate workspace
+                Workspace
               </Button>
             )}
           </div>
         )}
       </div>
 
-      {isManagerOrAdmin && (
-        <div className="flex items-center">
-          <button
-            onClick={() => navigate('/app/reports')}
-            className="text-xs text-muted-foreground hover:text-primary transition-colors underline underline-offset-2"
-          >
-            View what changed since last week →
-          </button>
-        </div>
-      )}
-
-      {/* Spark coaching nudge — only when action not yet done */}
-      <SparkNudgeCard />
-
-      {/* Leadership action this week */}
-      <WeeklyActionCard showJourneyLink />
-
-      {/* KPI Cards */}
+      {/* KPI Cards — 4 metrics */}
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -121,42 +163,55 @@ function AuthenticatedDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{participationRate}%</div>
-            <p className="text-xs text-muted-foreground">{members.length} {isAdmin ? 'member' : 'team member'}{members.length !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-muted-foreground">of team completed this week</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg. Streak</CardTitle>
-            <Flame className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Completion</CardTitle>
+            <CheckCircle2 className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgStreak} wk</div>
+            <div className="text-2xl font-bold">{completedCount} / {totalMembers}</div>
+            <p className="text-xs text-muted-foreground">members this week</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg. XP</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Momentum</CardTitle>
             <TrendingUp className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{avgXP}</div>
+            <div className="text-2xl font-bold">{momentum} wk</div>
+            <p className="text-xs text-muted-foreground">consecutive active weeks</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">{isAdmin ? 'Org Members' : 'Team Size'}</CardTitle>
-            <Trophy className="h-4 w-4 text-primary" />
+            <Users className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{members.length}</div>
+            <div className="text-2xl font-bold">{totalMembers}</div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Mini Leaderboard — team-scoped */}
+      {/* Team Insight */}
+      <Card>
+        <CardHeader className="flex flex-row items-center gap-2 pb-2">
+          <Lightbulb className="h-4 w-4 text-primary" />
+          <CardTitle className="text-base">Team Insight</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">{insight}</p>
+        </CardContent>
+      </Card>
+
+      {/* Leaderboard — top 3 */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Top 5 — Leaderboard</CardTitle>
+          <CardTitle className="text-base">Top 3 — Leaderboard</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           {leaderboard.length === 0 ? (
@@ -170,12 +225,7 @@ function AuthenticatedDashboard() {
                   </span>
                   <span className="text-sm">{member.fullName}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className={`${getLevelColor(member.level as any)} border-current text-xs`}>
-                    {member.level}
-                  </Badge>
-                  <span className="text-sm text-muted-foreground w-14 text-right">{member.xp} XP</span>
-                </div>
+                <span className="text-sm text-muted-foreground w-14 text-right">{member.xp} XP</span>
               </div>
             ))
           )}
