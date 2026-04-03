@@ -35,7 +35,8 @@ export default function Landing() {
         <Link to="/">
           <img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain" />
         </Link>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
+          <ThemeToggle />
           <Link to="/pricing" className="hidden sm:block">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               Pricing
