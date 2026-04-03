@@ -168,7 +168,7 @@ export default function PricingPage() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <Link to="/"><img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain" /></Link>
+        <Link to="/"><img src={igniteupLogo} alt="IgniteUp" className="h-16 w-auto object-contain" /></Link>
         <div className="flex items-center gap-3">
           <Link to="/fit-check">
             <Button variant="ghost" size="sm">Fit Check</Button>

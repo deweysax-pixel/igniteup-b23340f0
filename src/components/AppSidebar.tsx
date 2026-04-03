@@ -217,7 +217,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="border-r border-sidebar-border">
       <div className="p-4 border-b border-sidebar-border">
-        <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain cursor-pointer" /></a>
+        <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-16 w-auto object-contain cursor-pointer" /></a>
         <p className="text-xs text-muted-foreground mt-1 capitalize">
           Role: {displayRole}
         </p>

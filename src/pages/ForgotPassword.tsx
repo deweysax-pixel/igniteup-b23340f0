@@ -48,7 +48,7 @@ export default function ForgotPassword() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-6 animate-fade-in">
         <div className="text-center">
-          <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto cursor-pointer" /></a>
+          <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-32 w-auto object-contain mx-auto cursor-pointer" /></a>
         </div>
         <Card>
           <CardHeader className="pb-4">

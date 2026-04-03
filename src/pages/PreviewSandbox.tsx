@@ -80,7 +80,7 @@ export default function PreviewSandbox() {
     <div className="min-h-screen flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 border-b border-border">
-        <img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
+        <img src={igniteupLogo} alt="IgniteUp" className="h-16 w-auto object-contain cursor-pointer" onClick={() => navigate('/')} />
         <Button size="sm" onClick={() => setDemoOpen(true)}>Request a demo</Button>
       </header>
 

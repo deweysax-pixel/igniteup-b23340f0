@@ -32,7 +32,7 @@ export default function Landing() {
         }`}
       >
         <Link to="/">
-          <img src={igniteupLogo} alt="IgniteUp" className="h-12 w-auto object-contain" />
+          <img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain" />
         </Link>
         <div className="flex items-center gap-2 sm:gap-3">
           <Link to="/pricing" className="hidden sm:block">
