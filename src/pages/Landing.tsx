@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { RequestDemoModal } from '@/components/RequestDemoModal';
 import ProductPreviewSection from '@/components/ProductPreviewSection';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   Eye, Zap, Radio, Settings2, ArrowRight, Check, X,
   Flame, BarChart3, Users, TrendingUp, ChevronRight,
