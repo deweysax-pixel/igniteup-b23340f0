@@ -63,7 +63,7 @@ export default function Login() {
       <div className="min-h-screen flex items-center justify-center px-6">
         <div className="w-full max-w-sm space-y-8 animate-fade-in">
           <div className="text-center space-y-3">
-            <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto cursor-pointer" /></a>
+            <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-32 w-auto object-contain mx-auto cursor-pointer" /></a>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5">
               <Lock className="h-3.5 w-3.5 text-primary" />
               <span className="text-xs font-medium text-primary">Private Demo</span>
@@ -118,7 +118,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-lg space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
-           <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto cursor-pointer" /></a>
+           <a href="/"><img src={igniteupLogo} alt="IgniteUp" className="h-32 w-auto object-contain mx-auto cursor-pointer" /></a>
            <span className="block text-lg font-medium text-muted-foreground mt-2">Demo · Horizon Group</span>
           <p className="text-sm text-muted-foreground">
             Choose a perspective to explore the platform

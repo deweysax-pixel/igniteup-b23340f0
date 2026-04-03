@@ -111,7 +111,7 @@ export default function Bootstrap() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <div className="w-full max-w-sm space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
-          <img src={igniteupLogo} alt="IgniteUp" className="h-28 w-auto object-contain mx-auto" />
+          <img src={igniteupLogo} alt="IgniteUp" className="h-32 w-auto object-contain mx-auto" />
           <p className="text-sm text-muted-foreground">First-time setup — create your admin account</p>
         </div>
 
