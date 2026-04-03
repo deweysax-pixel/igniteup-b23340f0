@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { RequestDemoModal } from '@/components/RequestDemoModal';
 import ProductPreviewSection from '@/components/ProductPreviewSection';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import {
   Eye, Zap, Radio, Settings2, ArrowRight, Check, X,
   Flame, BarChart3, Users, TrendingUp, ChevronRight,
@@ -34,7 +35,8 @@ export default function Landing() {
         <Link to="/">
           <img src={igniteupLogo} alt="IgniteUp" className="h-14 w-auto object-contain" />
         </Link>
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-1 sm:gap-3">
+          <ThemeToggle />
           <Link to="/pricing" className="hidden sm:block">
             <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
               Pricing
