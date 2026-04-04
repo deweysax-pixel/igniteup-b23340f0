@@ -300,7 +300,7 @@ export default function ModulePlayer() {
         open={modalOpen}
         onOpenChange={setModalOpen}
         requestType={modalType}
-        moduleTitle={mod.title}
+        moduleTitle={moduleTitle}
         onSubmit={(data) => {
           dispatch({
             type: 'ADD_SERVICE_REQUEST',
@@ -309,7 +309,7 @@ export default function ModulePlayer() {
               role: state.currentRole,
               requestType: modalType,
               moduleId: id,
-              moduleTitle: mod.title,
+              moduleTitle: moduleTitle,
               message: data.message,
               preferredTimeframe: data.preferredTimeframe,
               requesterEmail: data.email,
