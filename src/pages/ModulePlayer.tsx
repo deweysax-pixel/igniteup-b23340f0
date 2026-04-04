@@ -66,7 +66,14 @@ export default function ModulePlayer() {
   const outcomes = dbModule?.learning_outcomes ?? [];
   const coreLesson = dbModule?.core_lesson ?? [];
 
-  if (!mod) {
+  if (!mod && !dbModule) {
+    if (dbLoading) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
     return (
       <div className="space-y-4">
         <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => navigate(-1)}>
@@ -76,6 +83,11 @@ export default function ModulePlayer() {
       </div>
     );
   }
+
+  const moduleTitle = mod?.title ?? dbModule?.title ?? '';
+  const moduleCategory = mod?.category ?? dbModule?.category ?? '';
+  const moduleLevel = mod?.level ?? dbModule?.level;
+  const moduleDesc = mod?.shortDescription ?? dbModule?.short_description ?? '';
 
   const handleToggleComplete = () => {
     if (!id) return;
