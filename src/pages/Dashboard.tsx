@@ -133,14 +133,13 @@ function AuthenticatedDashboard() {
 
   // Team Insight — headline + supporting sentence
   const insightData = useMemo(() => {
-    if (totalMembers === 0) return { headline: 'No team configured yet', detail: 'Add members to start tracking team progress.' };
-    if (teamCompletionsLoading) return { headline: 'Loading team data…', detail: '' };
+    if (totalMembers === 0) return { headline: 'No team configured yet', coaching: 'Add members to start tracking team progress.' };
+    if (teamCompletionsLoading) return { headline: 'Loading team data…', coaching: '' };
+    if (completedCount === 0) return { headline: 'No movement yet this week', coaching: 'Start by asking your team: "If we could only win at one thing this week, what is it?"' };
     const ratio = completedCount / totalMembers;
-    if (completedCount === 0) return { headline: 'No movement yet this week', detail: 'Your team has not started this week\'s action yet.' };
-    if (ratio === 1) return { headline: 'Excellent team follow-through', detail: 'All team members completed this week\'s action.' };
-    if (ratio >= 0.75) return { headline: 'Your team is gaining traction', detail: `${completedCount} out of ${totalMembers} members completed this week's action.` };
-    if (ratio >= 0.4) return { headline: 'Momentum is building', detail: `${completedCount} out of ${totalMembers} members completed this week's action.` };
-    return { headline: 'Engagement is still low', detail: `Only ${completedCount} out of ${totalMembers} members completed this week's action.` };
+    if (ratio >= 0.8) return { headline: 'Strong execution this week', coaching: 'Increase the challenge by pushing one team member to take ownership.' };
+    if (ratio >= 0.5) return { headline: 'Momentum is building', coaching: 'Reinforce it by highlighting one positive example publicly.' };
+    return { headline: 'Engagement is low', coaching: 'Reframe the importance of this week\'s action in your next interaction.' };
   }, [completedCount, totalMembers, teamCompletionsLoading]);
 
   const loading = teamLoading || teamCompletionsLoading;
