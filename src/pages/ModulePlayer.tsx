@@ -261,12 +261,12 @@ export default function ModulePlayer() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {mod.playbookRoute && (
+            {mod?.playbookRoute && (
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(mod.playbookRoute!)}>
                 <BookOpen className="h-3.5 w-3.5" /> Open Playbook
               </Button>
             )}
-            {mod.practiceRoute && (
+            {mod?.practiceRoute && (
               <Button size="sm" className="gap-1.5" onClick={() => navigate(mod.practiceRoute!)}>
                 <Play className="h-3.5 w-3.5" /> Start Practice
               </Button>
