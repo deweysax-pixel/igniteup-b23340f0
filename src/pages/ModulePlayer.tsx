@@ -116,8 +116,8 @@ export default function ModulePlayer() {
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3 flex-wrap">
-          <Badge variant="secondary" className="capitalize">{mod.category}</Badge>
-          {mod.level && <Badge variant="outline" className="text-xs">{mod.level}</Badge>}
+          <Badge variant="secondary" className="capitalize">{moduleCategory}</Badge>
+          {moduleLevel && <Badge variant="outline" className="text-xs">{moduleLevel}</Badge>}
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />{formatDuration(displayDuration)}
           </span>
@@ -127,12 +127,12 @@ export default function ModulePlayer() {
             </Badge>
           )}
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">{mod.title}</h1>
-        <p className="text-sm text-muted-foreground">{mod.shortDescription}</p>
+        <h1 className="text-2xl font-bold tracking-tight">{moduleTitle}</h1>
+        <p className="text-sm text-muted-foreground">{moduleDesc}</p>
       </div>
 
       {/* Outcomes */}
-      {content && (
+      {outcomes.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
@@ -141,7 +141,7 @@ export default function ModulePlayer() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {content.outcomes.map((o, i) => (
+              {outcomes.map((o, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
                   <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                   <span>{o}</span>
@@ -153,7 +153,7 @@ export default function ModulePlayer() {
       )}
 
       {/* Core Lesson */}
-      {content && (
+      {coreLesson.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
@@ -162,7 +162,7 @@ export default function ModulePlayer() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-2.5">
-              {content.coreLesson.map((l, i) => (
+              {coreLesson.map((l, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <Circle className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 mt-2" />
                   <span>{l}</span>
