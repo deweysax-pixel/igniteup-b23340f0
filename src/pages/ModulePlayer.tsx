@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
 import { useDemo } from '@/contexts/DemoContext';
+import { useCatalogModule } from '@/hooks/useCatalogModules';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle, HeadphonesIcon, MessageSquare, Users, Copy } from 'lucide-react';
-import { moduleContent } from '@/data/module-content';
+import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle, HeadphonesIcon, MessageSquare, Users, Copy, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SupportRequestModal } from '@/components/SupportRequestModal';
 import type { ServiceRequestType } from '@/types/demo';
@@ -55,14 +55,25 @@ export default function ModulePlayer() {
   const { state, currentUser, dispatch } = useDemo();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<ServiceRequestType>('coaching_session');
+  const { data: dbModule, isLoading: dbLoading } = useCatalogModule(id);
   const mod = id ? getModule(id) : undefined;
-  const content = id ? moduleContent[id] : undefined;
   const progress = id ? moduleProgress[id] : undefined;
   const isCompleted = progress?.status === 'completed';
   const hasUnits = mod?.units && mod.units.length > 0;
-  const displayDuration = mod?.totalDurationMinutes || mod?.durationMinutes || 0;
+  const displayDuration = mod?.totalDurationMinutes || mod?.durationMinutes || dbModule?.total_duration_minutes || dbModule?.duration_minutes || 0;
 
-  if (!mod) {
+  // Use DB content for outcomes/lesson, fall back to local module-content
+  const outcomes = dbModule?.learning_outcomes ?? [];
+  const coreLesson = dbModule?.core_lesson ?? [];
+
+  if (!mod && !dbModule) {
+    if (dbLoading) {
+      return (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        </div>
+      );
+    }
     return (
       <div className="space-y-4">
         <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => navigate(-1)}>
@@ -72,6 +83,11 @@ export default function ModulePlayer() {
       </div>
     );
   }
+
+  const moduleTitle = mod?.title ?? dbModule?.title ?? '';
+  const moduleCategory = mod?.category ?? dbModule?.category ?? '';
+  const moduleLevel = mod?.level ?? dbModule?.level;
+  const moduleDesc = mod?.shortDescription ?? dbModule?.short_description ?? '';
 
   const handleToggleComplete = () => {
     if (!id) return;
@@ -100,8 +116,8 @@ export default function ModulePlayer() {
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3 flex-wrap">
-          <Badge variant="secondary" className="capitalize">{mod.category}</Badge>
-          {mod.level && <Badge variant="outline" className="text-xs">{mod.level}</Badge>}
+          <Badge variant="secondary" className="capitalize">{moduleCategory}</Badge>
+          {moduleLevel && <Badge variant="outline" className="text-xs">{moduleLevel}</Badge>}
           <span className="flex items-center gap-1 text-xs text-muted-foreground">
             <Clock className="h-3 w-3" />{formatDuration(displayDuration)}
           </span>
@@ -111,12 +127,12 @@ export default function ModulePlayer() {
             </Badge>
           )}
         </div>
-        <h1 className="text-2xl font-bold tracking-tight">{mod.title}</h1>
-        <p className="text-sm text-muted-foreground">{mod.shortDescription}</p>
+        <h1 className="text-2xl font-bold tracking-tight">{moduleTitle}</h1>
+        <p className="text-sm text-muted-foreground">{moduleDesc}</p>
       </div>
 
       {/* Outcomes */}
-      {content && (
+      {outcomes.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
@@ -125,7 +141,7 @@ export default function ModulePlayer() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-2">
-              {content.outcomes.map((o, i) => (
+              {outcomes.map((o, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm">
                   <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                   <span>{o}</span>
@@ -137,7 +153,7 @@ export default function ModulePlayer() {
       )}
 
       {/* Core Lesson */}
-      {content && (
+      {coreLesson.length > 0 && (
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
@@ -146,7 +162,7 @@ export default function ModulePlayer() {
           </CardHeader>
           <CardContent>
             <ul className="space-y-2.5">
-              {content.coreLesson.map((l, i) => (
+              {coreLesson.map((l, i) => (
                 <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <Circle className="h-1.5 w-1.5 rounded-full bg-primary shrink-0 mt-2" />
                   <span>{l}</span>
@@ -245,12 +261,12 @@ export default function ModulePlayer() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {mod.playbookRoute && (
+            {mod?.playbookRoute && (
               <Button size="sm" variant="outline" className="gap-1.5" onClick={() => navigate(mod.playbookRoute!)}>
                 <BookOpen className="h-3.5 w-3.5" /> Open Playbook
               </Button>
             )}
-            {mod.practiceRoute && (
+            {mod?.practiceRoute && (
               <Button size="sm" className="gap-1.5" onClick={() => navigate(mod.practiceRoute!)}>
                 <Play className="h-3.5 w-3.5" /> Start Practice
               </Button>
@@ -284,7 +300,7 @@ export default function ModulePlayer() {
         open={modalOpen}
         onOpenChange={setModalOpen}
         requestType={modalType}
-        moduleTitle={mod.title}
+        moduleTitle={moduleTitle}
         onSubmit={(data) => {
           dispatch({
             type: 'ADD_SERVICE_REQUEST',
@@ -293,7 +309,7 @@ export default function ModulePlayer() {
               role: state.currentRole,
               requestType: modalType,
               moduleId: id,
-              moduleTitle: mod.title,
+              moduleTitle: moduleTitle,
               message: data.message,
               preferredTimeframe: data.preferredTimeframe,
               requesterEmail: data.email,

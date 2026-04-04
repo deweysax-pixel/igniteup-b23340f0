@@ -1,27 +1,26 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useJourney } from '@/contexts/JourneyContext';
+import { useCatalogModules } from '@/hooks/useCatalogModules';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Eye, Clock, Check, Flame } from 'lucide-react';
+import { Plus, Eye, Clock, Check, Flame, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { Module } from '@/types/journey';
 
 const categories = ['all', 'feedback', 'communication', 'delegation', 'coaching', 'strategy', 'team performance', 'gen z & the new work code'] as const;
 
 export default function CatalogPage() {
   const navigate = useNavigate();
-  const { modules, journey, addModuleToJourney, moduleProgress } = useJourney();
+  const { journey, addModuleToJourney, moduleProgress } = useJourney();
+  const { data: modules = [], isLoading } = useCatalogModules();
   const [filter, setFilter] = useState<string>('all');
-  const [preview, setPreview] = useState<Module | null>(null);
 
   const filtered = filter === 'all' ? modules : modules.filter(m => m.category === filter);
   const inJourney = new Set(journey.steps.map(s => s.moduleId));
 
-  const handleAdd = (mod: Module) => {
+  const handleAdd = (mod: { id: string; title: string }) => {
     addModuleToJourney(mod.id);
     toast.success(`"${mod.title}" added to your journey`);
   };
@@ -32,6 +31,14 @@ export default function CatalogPage() {
     if (p?.status === 'in_progress') return <Badge variant="outline" className="text-xs">In Progress</Badge>;
     return null;
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -55,6 +62,7 @@ export default function CatalogPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map(mod => {
           const added = inJourney.has(mod.id);
+          const duration = mod.total_duration_minutes || mod.duration_minutes;
           return (
             <Card key={mod.id} className="flex flex-col">
               <CardHeader className="pb-3">
@@ -63,12 +71,12 @@ export default function CatalogPage() {
                   <div className="flex items-center gap-2">
                     {statusBadge(mod.id)}
                     <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                      <Clock className="h-3 w-3" />{mod.totalDurationMinutes ? `${Math.floor(mod.totalDurationMinutes / 60)}h ${mod.totalDurationMinutes % 60}m` : `${mod.durationMinutes}m`}
+                      <Clock className="h-3 w-3" />{duration >= 60 ? `${Math.floor(duration / 60)}h ${duration % 60}m` : `${duration}m`}
                     </span>
                   </div>
                 </div>
                 <CardTitle className="text-base mt-2">{mod.title}</CardTitle>
-                <CardDescription className="text-xs">{mod.shortDescription}</CardDescription>
+                <CardDescription className="text-xs">{mod.short_description}</CardDescription>
                 {mod.category === 'gen z & the new work code' && (
                   <span className="inline-flex items-center gap-1 text-[10px] text-primary mt-1.5 font-medium uppercase tracking-wider">
                     <Flame className="h-3 w-3" /> Supports Ignite practice signals

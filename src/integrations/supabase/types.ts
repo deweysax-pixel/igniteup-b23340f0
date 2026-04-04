@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      catalog_modules: {
+        Row: {
+          category: string
+          core_lesson: Json
+          created_at: string
+          duration_minutes: number
+          id: string
+          learning_outcomes: Json
+          level: string | null
+          short_description: string
+          title: string
+          total_duration_minutes: number | null
+        }
+        Insert: {
+          category: string
+          core_lesson?: Json
+          created_at?: string
+          duration_minutes?: number
+          id: string
+          learning_outcomes?: Json
+          level?: string | null
+          short_description?: string
+          title: string
+          total_duration_minutes?: number | null
+        }
+        Update: {
+          category?: string
+          core_lesson?: Json
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          learning_outcomes?: Json
+          level?: string | null
+          short_description?: string
+          title?: string
+          total_duration_minutes?: number | null
+        }
+        Relationships: []
+      }
       challenge_action_completions: {
         Row: {
           challenge_action_id: string
@@ -364,6 +403,50 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      module_weeks: {
+        Row: {
+          action_prompt: string | null
+          created_at: string
+          description: string | null
+          id: string
+          module_id: string
+          support_content: string | null
+          title: string
+          week_number: number
+          xp: number
+        }
+        Insert: {
+          action_prompt?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_id: string
+          support_content?: string | null
+          title: string
+          week_number: number
+          xp?: number
+        }
+        Update: {
+          action_prompt?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          module_id?: string
+          support_content?: string | null
+          title?: string
+          week_number?: number
+          xp?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "module_weeks_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "catalog_modules"
             referencedColumns: ["id"]
           },
         ]
