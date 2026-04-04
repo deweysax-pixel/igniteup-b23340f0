@@ -224,11 +224,11 @@ function AuthenticatedDashboard() {
         </Card>
       </div>
 
-      {/* Insight + Coaching */}
+      {/* Team Insight */}
       <Card>
         <CardHeader className="flex flex-row items-center gap-2 pb-2">
           <Lightbulb className="h-4 w-4 text-primary" />
-          <CardTitle className="text-base">Insight + Coaching</CardTitle>
+          <CardTitle className="text-base">Team Insight</CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm font-medium">{insightData.headline}</p>
