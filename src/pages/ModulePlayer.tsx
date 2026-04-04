@@ -55,12 +55,16 @@ export default function ModulePlayer() {
   const { state, currentUser, dispatch } = useDemo();
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<ServiceRequestType>('coaching_session');
+  const { data: dbModule, isLoading: dbLoading } = useCatalogModule(id);
   const mod = id ? getModule(id) : undefined;
-  const content = id ? moduleContent[id] : undefined;
   const progress = id ? moduleProgress[id] : undefined;
   const isCompleted = progress?.status === 'completed';
   const hasUnits = mod?.units && mod.units.length > 0;
-  const displayDuration = mod?.totalDurationMinutes || mod?.durationMinutes || 0;
+  const displayDuration = mod?.totalDurationMinutes || mod?.durationMinutes || dbModule?.total_duration_minutes || dbModule?.duration_minutes || 0;
+
+  // Use DB content for outcomes/lesson, fall back to local module-content
+  const outcomes = dbModule?.learning_outcomes ?? [];
+  const coreLesson = dbModule?.core_lesson ?? [];
 
   if (!mod) {
     return (
