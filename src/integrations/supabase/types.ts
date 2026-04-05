@@ -409,6 +409,7 @@ export type Database = {
       }
       module_weeks: {
         Row: {
+          action: string | null
           action_prompt: string | null
           created_at: string
           description: string | null
@@ -420,6 +421,7 @@ export type Database = {
           xp: number
         }
         Insert: {
+          action?: string | null
           action_prompt?: string | null
           created_at?: string
           description?: string | null
@@ -431,6 +433,7 @@ export type Database = {
           xp?: number
         }
         Update: {
+          action?: string | null
           action_prompt?: string | null
           created_at?: string
           description?: string | null
