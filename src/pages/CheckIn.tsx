@@ -1,58 +1,63 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDemo } from '@/contexts/DemoContext';
-import { useJourney } from '@/contexts/JourneyContext';
+import { useAuth } from '@/hooks/useAuth';
+import { useChallengeData, getCurrentWeekFromDates } from '@/hooks/useChallengeData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { CheckCircle, Lightbulb, BookOpen, Copy, Map } from 'lucide-react';
+import { CheckCircle, Lightbulb, BookOpen, Copy } from 'lucide-react';
 import { SBI_TEMPLATE, copyToClipboard } from '@/lib/playbook-content';
 
 export default function CheckInPage() {
   const navigate = useNavigate();
-  const { state, dispatch, currentUser } = useDemo();
-  const { journey } = useJourney();
-  const activeChallenge = state.challenges.find(c => c.status === 'active');
+  const { user } = useAuth();
+  const { activeChallenge, isActionCompleted, markActionDone, loading } = useChallengeData();
   const [selectedActions, setSelectedActions] = useState<string[]>([]);
   const [note, setNote] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const currentWeek = 4; // Simulated current week
+  const totalWeeks = activeChallenge?.actions
+    ? Math.max(...activeChallenge.actions.map(a => a.week_number), 1)
+    : 1;
 
-  // Check if already submitted this week
-  const alreadyDone = state.checkIns.some(
-    ci => ci.userId === currentUser?.id && ci.challengeId === activeChallenge?.id && ci.weekNumber === currentWeek
-  );
+  const currentWeek =
+    activeChallenge?.start_date && activeChallenge?.end_date
+      ? getCurrentWeekFromDates(activeChallenge.start_date, activeChallenge.end_date, totalWeeks)
+      : 0;
 
   const toggleAction = (id: string) => {
-    setSelectedActions(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]);
+    setSelectedActions(prev =>
+      prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id],
+    );
   };
 
-  const handleSubmit = () => {
-    if (!currentUser || !activeChallenge) return;
-    dispatch({
-      type: 'CHECK_IN',
-      payload: {
-        userId: currentUser.id,
-        challengeId: activeChallenge.id,
-        weekNumber: currentWeek,
-        completedActionIds: selectedActions,
-        note,
-      },
-    });
-    dispatch({
-      type: 'ADD_EVIDENCE',
-      payload: {
-        userId: currentUser.id,
-        type: 'practice_done',
-        content: `Check-in submitted — Week ${currentWeek}, ${selectedActions.length} action(s).`,
-      },
-    });
+  const handleSubmit = async () => {
+    if (!user || !activeChallenge || selectedActions.length === 0) return;
+    setSubmitting(true);
+
+    for (const actionId of selectedActions) {
+      const action = activeChallenge.actions.find(a => a.id === actionId);
+      if (action && !isActionCompleted(actionId)) {
+        await markActionDone(actionId, action.points);
+      }
+    }
+
     setSubmitted(true);
+    setSubmitting(false);
     toast.success('Check-in submitted! Your XP has been updated.');
   };
+
+  if (loading) {
+    return (
+      <div className="animate-fade-in">
+        <h2 className="text-2xl font-bold tracking-tight mb-4">My Check-in</h2>
+        <p className="text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
 
   if (!activeChallenge) {
     return (
@@ -63,7 +68,7 @@ export default function CheckInPage() {
     );
   }
 
-  if (alreadyDone || submitted) {
+  if (submitted) {
     return (
       <div className="animate-fade-in flex flex-col items-center justify-center py-20 space-y-4">
         <CheckCircle className="h-16 w-16 text-primary animate-scale-in" />
@@ -73,6 +78,8 @@ export default function CheckInPage() {
     );
   }
 
+  const weekActions = activeChallenge.actions.filter(a => a.week_number === currentWeek);
+
   return (
     <div className="space-y-6 max-w-xl animate-fade-in">
       <div>
@@ -80,34 +87,30 @@ export default function CheckInPage() {
         <p className="text-sm text-muted-foreground mt-1">Week {currentWeek} · {activeChallenge.title}</p>
       </div>
 
-      {/* Journey link */}
-      <div className="flex items-center justify-between rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5">
-        <p className="text-xs text-muted-foreground">
-          This check-in supports your current journey: <span className="text-foreground font-medium">{journey.title}</span>
-        </p>
-        <Button variant="link" size="sm" className="h-auto p-0 gap-1.5 text-primary shrink-0" onClick={() => navigate('/app/journey')}>
-          <Map className="h-3.5 w-3.5" />
-          Back to My Journey
-        </Button>
-      </div>
-
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Actions completed this week</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {activeChallenge.weeklyActions.map(action => (
-            <label key={action.id} className="flex items-start gap-3 cursor-pointer">
-              <Checkbox
-                checked={selectedActions.includes(action.id)}
-                onCheckedChange={() => toggleAction(action.id)}
-              />
-              <div className="flex-1">
-                <span className="text-sm">{action.label}</span>
-                <span className="text-xs text-primary ml-2">+{action.points} pts</span>
-              </div>
-            </label>
-          ))}
+          {weekActions.length === 0 && (
+            <p className="text-sm text-muted-foreground">No actions scheduled for this week.</p>
+          )}
+          {weekActions.map(action => {
+            const done = isActionCompleted(action.id);
+            return (
+              <label key={action.id} className="flex items-start gap-3 cursor-pointer">
+                <Checkbox
+                  checked={done || selectedActions.includes(action.id)}
+                  disabled={done}
+                  onCheckedChange={() => toggleAction(action.id)}
+                />
+                <div className="flex-1">
+                  <span className={`text-sm ${done ? 'line-through text-muted-foreground' : ''}`}>{action.label}</span>
+                  <span className="text-xs text-primary ml-2">+{action.points} pts</span>
+                </div>
+              </label>
+            );
+          })}
 
           <div className="pt-2">
             <Textarea
@@ -135,9 +138,6 @@ export default function CheckInPage() {
                   onClick={async () => {
                     await copyToClipboard(SBI_TEMPLATE);
                     toast.success('Copied to clipboard');
-                    if (currentUser) {
-                      dispatch({ type: 'ADD_EVIDENCE', payload: { userId: currentUser.id, type: 'script_used', content: 'Copied: SBI Template' } });
-                    }
                   }}
                 >
                   <Copy className="h-3.5 w-3.5" />
@@ -158,10 +158,10 @@ export default function CheckInPage() {
 
           <Button
             onClick={handleSubmit}
-            disabled={selectedActions.length === 0}
+            disabled={selectedActions.length === 0 || submitting}
             className="w-full"
           >
-            Submit Check-in
+            {submitting ? 'Submitting…' : 'Submit Check-in'}
           </Button>
         </CardContent>
       </Card>
