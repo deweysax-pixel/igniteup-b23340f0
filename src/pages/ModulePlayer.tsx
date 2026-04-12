@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, BookOpen, Play, CheckCircle2, Clock, Target, Lightbulb, Circle, HeadphonesIcon, MessageSquare, Users, Copy, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SupportRequestModal } from '@/components/SupportRequestModal';
+import { useModuleWeeks } from '@/hooks/useModuleWeeks';
 import type { ServiceRequestType } from '@/types/demo';
 
 /* Copy-to-clipboard scripts for Scripts & Templates units */
