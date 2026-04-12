@@ -57,10 +57,12 @@ export default function ModulePlayer() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<ServiceRequestType>('coaching_session');
   const { data: dbModule, isLoading: dbLoading } = useCatalogModule(id);
+  const { data: weeks = [] } = useModuleWeeks(id);
   const mod = id ? getModule(id) : undefined;
   const progress = id ? moduleProgress[id] : undefined;
   const isCompleted = progress?.status === 'completed';
   const hasUnits = mod?.units && mod.units.length > 0;
+  const hasWeeks = weeks.length > 0;
   const displayDuration = mod?.totalDurationMinutes || mod?.durationMinutes || dbModule?.total_duration_minutes || dbModule?.duration_minutes || 0;
 
   // Use DB content for outcomes/lesson, fall back to local module-content
@@ -174,8 +176,42 @@ export default function ModulePlayer() {
         </Card>
       )}
 
-      {/* Units */}
-      {hasUnits && (
+      {/* Weeks from DB */}
+      {hasWeeks && (
+        <Card id="weeks">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base">Weekly Plan</CardTitle>
+            <CardDescription className="text-xs">{weeks.length} weeks</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {weeks.map((week) => (
+                <div key={week.id} className="rounded-md bg-secondary/30 hover:bg-secondary/50 transition-colors">
+                  <div className="flex items-center gap-3 p-3">
+                    <span className="text-xs font-medium text-primary w-6 shrink-0">{week.week_number}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{week.title}</p>
+                      {week.description && (
+                        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{week.description}</p>
+                      )}
+                      {week.action && (
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                          <Target className="h-3 w-3 text-primary shrink-0" />
+                          {week.action}
+                        </p>
+                      )}
+                    </div>
+                    <Badge variant="outline" className="text-xs shrink-0">{week.xp} XP</Badge>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Units (legacy local data) */}
+      {!hasWeeks && hasUnits && (
         <Card id="units">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Units</CardTitle>
