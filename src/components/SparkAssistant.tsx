@@ -13,7 +13,9 @@ import type { Msg, SavedConversation } from '@/components/spark/types';
 import { loadHistory, saveConversation, deleteConversation } from '@/components/spark/history-store';
 import { SparkHistory } from '@/components/spark/SparkHistory';
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/spark-chat`;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL ?? "https://enxpdwwlpvxyfriijcoq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVueHBkd3dscHZ4eWZyaWlqY29xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4Njc5NTMsImV4cCI6MjA4ODQ0Mzk1M30.QHIxSKTtYh7hCgzk3H1-O0eEEjEQuJ0MK_6V19LKhhQ";
+const CHAT_URL = `${SUPABASE_URL}/functions/v1/spark-chat`;
 
 function extractText(node: React.ReactNode): string {
   if (typeof node === 'string') return node;
@@ -91,7 +93,7 @@ async function streamChat({
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
     },
     body: JSON.stringify({ messages, currentAction }),
   });
