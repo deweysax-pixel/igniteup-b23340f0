@@ -277,7 +277,7 @@ export default function Landing() {
         {/* ── TRUST MICRO-BLOCK ── */}
         <section className="py-12 border-t border-border/40">
           <div className="max-w-2xl mx-auto px-6 text-center space-y-2">
-            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Trusted by teams serious about execution</p>
+            <p className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">TRUSTED BY TEAMS SERIOUS ABOUT EXECUTION.</p>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Used by managers to turn training into real behavior.<br />
               Designed for teams that care about measurable impact.
